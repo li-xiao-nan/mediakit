@@ -1,0 +1,51 @@
+/*
+ * imageType.cpp
+ *
+ *  Created on: 2013年9月8日
+ *      Author: lxn
+ */
+
+#include "ImageType.h"
+#include <iostream>
+using namespace std;
+namespace snail{
+namespace image{
+
+VideoImage::VideoImage(int w,int h, enum ImageType type):
+		_w(w),
+		_h(h),
+		_type(type),
+		_pts(0){
+	switch(_type){
+	case IMAGE_RGB:
+		_data = new unsigned char[_w*_h*3];
+		if(!_data){
+			//throw exception("new the image data buffer failed");
+			cout<<"create the image data buffer failed"<<endl;
+		}
+		break;
+	case IMAGE_ARGB:
+		_data = new unsigned char[_w*_h*sizeof(unsigned char)*4];
+		if(!_data){
+			//throw exception("new the image data buffer failed");
+			cout<<"create the image data buffer failed"<<endl;
+		}
+		break;
+	case IMAGE_YUV:
+		break;
+	default:
+		break;
+	}//switch(_type)
+}
+
+VideoImage::~VideoImage(){
+	if(_data){
+		//cout<<"delete the data"<<endl;
+		delete (_data);
+	}
+}
+
+}//namespace image
+}//namespace snail
+
+

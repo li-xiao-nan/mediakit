@@ -1,0 +1,14 @@
+prefix=/Users/linan/MediaKit/depend/mac
+exec_prefix=${prefix}
+libdir=${prefix}/lib
+includedir=${prefix}/include
+
+Name: libavformat
+Description: FFmpeg container format library
+Version: 56.25.101
+Requires: libavcodec >= 56.26.100, libswresample >= 1.1.100, libavutil >= 54.20.100
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavformat -framework QTKit -framework Foundation -framework QuartzCore -framework CoreVideo -framework Foundation -framework AVFoundation -framework CoreMedia -framework CoreFoundation -framework VideoDecodeAcceleration -framework QuartzCore -liconv -framework CoreGraphics -lm -lbz2 -lz -pthread
+Libs.private: 
+Cflags: -I${includedir}

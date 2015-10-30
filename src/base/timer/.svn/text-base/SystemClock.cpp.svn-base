@@ -1,0 +1,28 @@
+/*
+ * SystemClock.cpp
+ *
+ *  Created on: 2013-9-9
+ *      Author: lxn
+ */
+#include "SystemClock.h"
+#include "ClockTime.h"
+namespace snail{
+namespace timer{
+uint64_t fetchSystemTime(){
+	return getTicks();
+}
+
+SystemClock::SystemClock():
+	_startTime(fetchSystemTime()){
+
+}
+
+uint64_t SystemClock::elapsed() const{
+	return fetchSystemTime() - _startTime;
+}
+void SystemClock::restart(){
+	_startTime = fetchSystemTime();
+}
+
+}//namespace timer
+}//namespace snail

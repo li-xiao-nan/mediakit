@@ -1,0 +1,25 @@
+/*
+ * WallClockTimer.cpp
+ *
+ *  Created on: 2013-9-23
+ *      Author: lxn
+ */
+#include "WallClockTimer.h"
+#include "ClockTime.h"
+namespace snail{
+namespace timer{
+WallClockTimer::WallClockTimer():
+		_startTime(getTicks())
+{}
+
+void WallClockTimer::restart(){
+	_startTime = getTicks();
+}
+uint32_t WallClockTimer::elapsed() const{
+	uint64_t currTime = getTicks();
+	if(currTime <= _startTime) return 0;
+	return currTime-_startTime;
+}
+}//namespace timer
+}//namespace snail
+

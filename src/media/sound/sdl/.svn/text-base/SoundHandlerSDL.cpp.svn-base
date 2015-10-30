@@ -1,0 +1,87 @@
+/*
+ * SoundHandlerSDL.cpp
+ *
+ *  Created on: 2013-9-16
+ *      Author: lxn
+ */
+#include "SoundHandlerSDL.h"
+#include <iostream>
+#include <assert.h>
+using namespace std;
+namespace snail{
+namespace sound{
+SoundHandlerSDL::SoundHandlerSDL():
+		_audioOpened(false){
+	initAudio();
+}
+SoundHandlerSDL::~SoundHandlerSDL(){
+	SDL_PauseAudio(1);
+	SDL_CloseAudio();
+}
+void SoundHandlerSDL::initAudio(){
+	openAudio();
+	closeAudio();
+}
+void SoundHandlerSDL::openAudio(){
+	if(_audioOpened) return ;
+
+	_audioSpec.freq = 44100;
+
+	_audioSpec.format = AUDIO_S16SYS;
+	_audioSpec.channels = 2;
+	_audioSpec.callback = SoundHandlerSDL::sdlAudioCB;
+	_audioSpec.userdata = this;
+	_audioSpec.samples = 1024;
+
+	if(SDL_OpenAudio(&_audioSpec, NULL)<0){
+		cout<<"open sdl audio device failed"<<endl;
+		exit(0);
+	}
+	_audioOpened = true;
+}
+void SoundHandlerSDL::closeAudio(){
+	SDL_CloseAudio();
+	_audioOpened = false;
+}
+void SoundHandlerSDL::plugInputStream(auto_ptr<InputStream> in){
+	SoundHandler::plugInputStream(in);
+
+	openAudio();
+	SDL_PauseAudio(0);
+}
+void SoundHandlerSDL::sdlAudioCB(void *opaque, uint8_t *buffer, int bufferLength){
+	if(bufferLength < 0){
+		cout<<"Negative buffer length in sdlAudioCallback"<<endl;
+		return ;
+	}
+	if(bufferLength == 0){
+		cout<<"Zero buffer length in sdlAudioCallback"<<endl;
+		return ;
+	}
+	uint16_t bufferLen = static_cast<uint16_t>(bufferLength);
+	int16_t *samples = reinterpret_cast<int16_t*>(buffer);
+	assert(!(bufferLen%4));
+	uint16_t nSamples = bufferLen/2;
+
+	SoundHandlerSDL *handler = static_cast<SoundHandlerSDL*>(opaque);
+	handler->fetchSamples(samples,nSamples);
+}
+
+void SoundHandlerSDL::fetchSamples(int16_t *to, uint16_t nSamples){
+	SoundHandler::fetchSamples(to, nSamples);
+	if(!hasInputStreams()){
+		cout<<"Pausing SDL Audio"<<endl;
+		SDL_PauseAudio(1);
+	}
+}
+
+void SoundHandlerSDL::mix(int16_t *outSamples, int16_t *inSamples,
+		uint16_t nSamples, float volume){
+	Uint8 *out = reinterpret_cast<Uint8*>(outSamples);
+	Uint8 *in = reinterpret_cast<Uint8*>(inSamples);
+	uint16_t nBytes = nSamples*2;
+	SDL_MixAudio(out, in, nBytes, SDL_MIX_MAXVOLUME*volume);
+}
+}//namespace sound
+}//namespace snail
+

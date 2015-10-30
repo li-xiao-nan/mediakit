@@ -1,0 +1,32 @@
+#ifndef MEDIA_BASE_VIDEO_FRAME_H
+#define MEDIA_BASE_VIDEO_FRAME_H
+
+namespace media{
+class VideoFrame{
+public:
+	enum Format{
+	UNKNOWN,
+	YUV,
+	RGB,
+	ARGB,
+	FORMAT_MAX,
+	};
+
+	VideoFrame(int w, int h, ImageType type);
+	~VideoFrame();
+	
+	unsigned char* begin() const{ return _data; }
+
+	unsigned int _w;
+	unsigned int _h;
+	Format  _format;
+	unsigned char *_data;
+	unsigned char *_yuvData[3];
+	unsigned char *_yuv;
+	int _yuvStride[3];
+	int _yuvLineCnt[3];
+	uint64_t _pts;
+};
+} // namespace media
+
+#endif

@@ -1,0 +1,64 @@
+/*
+ * fileStream.cpp
+ *
+ *  Created on: 2013-6-28
+ *      Author: lxn
+ */
+#include <stdio.h>
+#include "FileStreamProvider.h"
+#include <string>
+namespace snail{
+namespace netWork{
+FileStreamProvider::FileStreamProvider(FILE* fp):
+				_fp(fp),
+				_pos(0),
+				_error(false)
+{
+	fseek(_fp,0,SEEK_END);
+	_size = ftell(_fp);
+	fseek(_fp,0,SEEK_SET);
+	printf("position = %ld\n",ftell(_fp));
+}
+std::streamsize FileStreamProvider::read(void* dst,std::streamsize num){
+	if(_fp){
+		int cont=0;
+		cont = fread(dst,1,num,_fp);
+		_pos += cont;
+		return cont;
+	}
+	return -1;
+}
+std::streampos FileStreamProvider::tell() const {
+	if(_fp){
+		return ftell(_fp);
+	}
+	return -1;
+}
+bool FileStreamProvider::seek(std::streampos p){
+	if(_fp){
+		int ret = fseek(_fp,p,SEEK_SET);
+		return ret;
+	}
+	return false;
+}
+void FileStreamProvider::go_to_end(){
+	if(_fp){
+		fseek(_fp,0,SEEK_END);
+	}
+}
+bool FileStreamProvider::eof() const {
+	if(_fp){
+		return feof(_fp);
+	}
+	return true;
+}
+bool FileStreamProvider::bad()const {
+	return _error;
+}
+size_t FileStreamProvider::size() const {
+	return _size;
+}
+}//namespace netWork
+}//namespace snail
+
+

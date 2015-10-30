@@ -1,0 +1,53 @@
+/*
+ * inputStreamProvider.cpp
+ *
+ *  Created on: 2013-9-3
+ *      Author: lxn
+ */
+
+#include "InputStreamProvider.h"
+#include "NetworkAdapter.h"
+#include <iostream>
+#include <memory>
+#include "IOChannel.h"
+#include "FileStreamProvider.h"
+#include "BtFileAdapter.h"
+using namespace std;
+
+namespace snail{
+namespace netWork{
+
+InputStreamProvider::InputStreamProvider(Url& url):
+	_url(url){
+	//here you don't need do nothing
+}
+auto_ptr<IOChannel> InputStreamProvider::getStream() const{
+
+	auto_ptr<IOChannel> stream;
+	if(_url.protocol() == "file"){
+		string path = _url.path();
+		if(0){
+
+		}else{
+			FILE *inFp = fopen(path.c_str(),"rb");
+			if(!inFp){
+				printf("<lxn>%s(%d)-->fopen the file of %s failed\n",__FILE__,__LINE__,path.c_str());
+				return stream;
+			}
+			auto_ptr<IOChannel> fs(new FileStreamProvider(inFp));
+			stream = fs;
+		}
+	}else if(_url.protocol() == "http"){
+		stream = NetworkAdapter::makeStream(_url.str(),"");
+	}else if(_url.protocol() == "bt"){
+		cout<<"now to create BiFileAdapter()"<<endl;
+		auto_ptr<IOChannel> bt(new BtFileAdapter());
+		stream = bt;
+	}
+	return stream;
+}
+bool InputStreamProvider::allowAccess() const{
+		return 1;
+}
+}//netWork
+}//namespace snail
