@@ -14,8 +14,12 @@
 
 namespace media {
 
-int kMircoSecondPerSecond = 100000;
+int kMircoSecondPerSecond = 1000000;
+int kMillionSecondPerSecond = 1000;
+AVRational kMillionTimeBase = {1, kMillionSecondPerSecond};
 AVRational kMicroTimeBase = {1, kMircoSecondPerSecond};
+AVRational g_video_stream_time_base;
+AVRational g_audio_stream_time_base;
 
 VideoCodec AVCodecIDToVideoCodec(AVCodecID av_codec_id) {
   switch (av_codec_id) {
@@ -24,7 +28,7 @@ VideoCodec AVCodecIDToVideoCodec(AVCodecID av_codec_id) {
     case AV_CODEC_ID_MPEG4:
       return CODEC_MPEG4;
     default:
-      std::cout<<"av_codec_id:"<<av_codec_id<<std::endl;
+      std::cout << "av_codec_id:" << av_codec_id << std::endl;
       return CODEC_INVALID;
   }
 }
@@ -54,7 +58,7 @@ VideoPixelFormat AVPixelFormatToVideoPixelFormat(
     case PIX_FMT_YUVA420P:
       return YV12A;
     default:
-      std::cout<<"AVPixelFormat:"<<av_pixel_format<<std::endl;
+      std::cout << "AVPixelFormat:" << av_pixel_format << std::endl;
       break;
   }
   return UNKNOWN;
@@ -74,30 +78,31 @@ AVPixelFormat VideoPixelFormatToAVPixelFormat(
     default:
       break;
   }
+  return PIX_FMT_YUVA420P;
 }
 
 VideoCodecProfile ProfileIDToVideoCodecProfile(int profile) {
-    switch (profile) {
-      case FF_PROFILE_H264_BASELINE:
-        return H264PROFILE_BASELINE;
-      case FF_PROFILE_H264_MAIN:
-        return H264PROFILE_MAIN;
-      case FF_PROFILE_H264_EXTENDED:
-        return H264PROFILE_EXTENDED;
-      case FF_PROFILE_H264_HIGH:
-        return H264PROFILE_HIGH;
-      case FF_PROFILE_H264_HIGH_10:
-        return H264PROFILE_HIGH10PROFILE;
-      case FF_PROFILE_H264_HIGH_422:
-        return H264PROFILE_HIGH422PROFILE;
-      case FF_PROFILE_H264_HIGH_444_PREDICTIVE:
-        return H264PROFILE_HIGH444PREDICTIVEPROFILE;
-      default:
-        std::cout<<"AVCodecProfile:"<<profile<<std::endl;
-        break;
-    }
-    return VIDEO_CODEC_PROFILE_UNKNOWN;
+  switch (profile) {
+    case FF_PROFILE_H264_BASELINE:
+      return H264PROFILE_BASELINE;
+    case FF_PROFILE_H264_MAIN:
+      return H264PROFILE_MAIN;
+    case FF_PROFILE_H264_EXTENDED:
+      return H264PROFILE_EXTENDED;
+    case FF_PROFILE_H264_HIGH:
+      return H264PROFILE_HIGH;
+    case FF_PROFILE_H264_HIGH_10:
+      return H264PROFILE_HIGH10PROFILE;
+    case FF_PROFILE_H264_HIGH_422:
+      return H264PROFILE_HIGH422PROFILE;
+    case FF_PROFILE_H264_HIGH_444_PREDICTIVE:
+      return H264PROFILE_HIGH444PREDICTIVEPROFILE;
+    default:
+      std::cout << "AVCodecProfile:" << profile << std::endl;
+      break;
   }
+  return VIDEO_CODEC_PROFILE_UNKNOWN;
+}
 
 int VideoCodecProfileToProfileID(VideoCodecProfile video_codec_profile) {
   switch (video_codec_profile) {
@@ -123,63 +128,67 @@ int VideoCodecProfileToProfileID(VideoCodecProfile video_codec_profile) {
 
 void AVCodecContextToVideoDecoderConfig(AVCodecContext* av_codec_context,
                                         VideoDecoderConfig* config) {
-  config->Initialize(AVCodecIDToVideoCodec(av_codec_context->codec_id)
-                   , ProfileIDToVideoCodecProfile(av_codec_context->profile)
-                   , AVPixelFormatToVideoPixelFormat(av_codec_context->pix_fmt)
-                   , av_codec_context->width
-                   , av_codec_context->height
-                   , av_codec_context->coded_width
-                   , av_codec_context->coded_height
-                   , av_codec_context->extradata
-                   , av_codec_context->extradata_size);
+  config->Initialize(
+      AVCodecIDToVideoCodec(av_codec_context->codec_id),
+      ProfileIDToVideoCodecProfile(av_codec_context->profile),
+      AVPixelFormatToVideoPixelFormat(av_codec_context->pix_fmt),
+      av_codec_context->width, av_codec_context->height,
+      av_codec_context->coded_width, av_codec_context->coded_height,
+      av_codec_context->extradata, av_codec_context->extradata_size);
 }
 
-void VideoDecoderConfigToAVCodecContext(VideoDecoderConfig* config, AVCodecContext* av_codec_context){
+void VideoDecoderConfigToAVCodecContext(VideoDecoderConfig* config,
+                                        AVCodecContext* av_codec_context) {
   av_codec_context->codec_type = AVMEDIA_TYPE_VIDEO;
   av_codec_context->codec_id = VideoCodecToAVCodec(config->codec_id());
-  av_codec_context->profile =  VideoCodecProfileToProfileID(config->profile());
+  av_codec_context->profile = VideoCodecProfileToProfileID(config->profile());
   av_codec_context->coded_width = config->width();
   av_codec_context->coded_height = config->height();
-  av_codec_context->pix_fmt = VideoPixelFormatToAVPixelFormat(config->pixel_format());
+  av_codec_context->pix_fmt =
+      VideoPixelFormatToAVPixelFormat(config->pixel_format());
   av_codec_context->extradata_size = config->extra_data_size();
-  av_codec_context->extradata = (uint8_t*)av_malloc(av_codec_context->extradata_size + FF_INPUT_BUFFER_PADDING_SIZE);
-  memcpy(av_codec_context->extradata, config->extra_data(), config->extra_data_size());
-  memset(av_codec_context->extradata + config->extra_data_size(), '\0', FF_INPUT_BUFFER_PADDING_SIZE);
+  av_codec_context->extradata = (uint8_t*)av_malloc(
+      av_codec_context->extradata_size + FF_INPUT_BUFFER_PADDING_SIZE);
+  memcpy(av_codec_context->extradata, config->extra_data(),
+         config->extra_data_size());
+  memset(av_codec_context->extradata + config->extra_data_size(), '\0',
+         FF_INPUT_BUFFER_PADDING_SIZE);
 }
 
 void AVStreamToVideoDecoderConfig(const AVStream* stream,
                                   VideoDecoderConfig* config) {
   BOOST_ASSERT(stream != 0);
-  if (!stream)
-    return;
+  if (!stream) return;
   AVCodecContextToVideoDecoderConfig(stream->codec, config);
 }
 
-
 int64_t ConvertToTimeBase(int64_t timestamp, const AVRational& time_base) {
-  return av_rescale_q(timestamp, time_base, kMicroTimeBase);
+  return av_rescale_q(timestamp, kMicroTimeBase, time_base);
+}
+
+int64_t TimeBaseToMillionSecond(int64_t timestamp,
+                                const AVRational& time_base) {
+  return av_rescale_q(timestamp, time_base, kMillionTimeBase);
 }
 
 /////////////////////////////////audio//////////////////
 void AVCodecContextToAudioDecoderConfig(AVCodecContext* audio_codec_context,
                                         AudioDecoderConfig* config) {
-  config->Initialize(AVCodecIDToAudioCodec(audio_codec_context->codec_id)
-                   , AVSampleFormatToSampleFormat(audio_codec_context->sample_fmt)
-                   , FFmpegChannelLayoutToChannelLayout(audio_codec_context->channel_layout)
-                   , audio_codec_context->sample_rate
-                   , audio_codec_context->extradata
-                   , audio_codec_context->extradata_size);
+  config->Initialize(
+      AVCodecIDToAudioCodec(audio_codec_context->codec_id),
+      AVSampleFormatToSampleFormat(audio_codec_context->sample_fmt),
+      FFmpegChannelLayoutToChannelLayout(audio_codec_context->channel_layout),
+      audio_codec_context->sample_rate, audio_codec_context->extradata,
+      audio_codec_context->extradata_size);
 }
 
-void AudioDecoderConfigToAVCodecContext(AudioDecoderConfig* config, AVCodecContext* audio_codec_context){
-
-}
+void AudioDecoderConfigToAVCodecContext(AudioDecoderConfig* config,
+                                        AVCodecContext* audio_codec_context) {}
 
 void AVStreamToAudioDecoderConfig(const AVStream* stream,
                                   AudioDecoderConfig* config) {
   BOOST_ASSERT(stream != 0);
-  if (!stream)
-    return;
+  if (!stream) return;
   AVCodecContextToAudioDecoderConfig(stream->codec, config);
 }
 
@@ -227,7 +236,7 @@ SampleFormat AVSampleFormatToSampleFormat(AVSampleFormat sample_format) {
     case AV_SAMPLE_FMT_S32P:
       return SAMPLE_FORMAT_PLANAR_S32;
     default:
-      std::cout<<"AVSampleFormat:"<<sample_format<<std::endl;
+      std::cout << "AVSampleFormat:" << sample_format << std::endl;
       BOOST_ASSERT(0);
       return SAMPLE_FORMAT_UNKNOWN;
   }
@@ -270,7 +279,7 @@ ChannelLayout FFmpegChannelLayoutToChannelLayout(int64_t channel_layout) {
       return CHANNEL_LAYOUT_2_2;
     default:
       BOOST_ASSERT(0);
-      std::cout<<"ffmpegChannelLayout:"<<channel_layout<<std::endl;
+      std::cout << "ffmpegChannelLayout:" << channel_layout << std::endl;
       return CHANNEL_LAYOUT_MONO;
   }
 }
@@ -335,5 +344,44 @@ int ChannelLayoutToChannelCount(ChannelLayout channel_layout) {
       return 0;
   }
 }
+
+void AVFrameToVideoFrame(AVFrame* av_frame, VideoFrame* video_frame) {
+  unsigned char* s, *d;
+  int height, width;
+  width = video_frame->_w;
+  height = video_frame->_h;
+  s = av_frame->data[0];
+  if (s) {
+    d = video_frame->_yuvData[0];
+    for (int i = 0; i < height; i++) {
+      memcpy(d, s, video_frame->_yuvStride[0]);
+      s = s + av_frame->linesize[0];
+      d = d + video_frame->_yuvStride[0];
+    }
+  }
+  int uvHeight = height >> 1;
+  if (av_frame->data[1] && av_frame->data[2]) {
+    for (int i = 0; i < uvHeight; i++) {
+      memcpy(video_frame->_yuvData[1] + i * video_frame->_yuvStride[1],
+             av_frame->data[1] + i * av_frame->linesize[1],
+             video_frame->_yuvStride[1]);
+      memcpy(video_frame->_yuvData[2] + i * video_frame->_yuvStride[2],
+             av_frame->data[2] + i * av_frame->linesize[2],
+             video_frame->_yuvStride[2]);
+    }
+  }
+}
+
+void SetVideoStreamTimeBase(const AVRational& time_base) {
+  g_video_stream_time_base = time_base;
+}
+
+AVRational GetVideoStreamTimeBase() { return g_video_stream_time_base; }
+
+void SetAudioStreamTimeBase(const AVRational& time_base) {
+  g_audio_stream_time_base = time_base;
+}
+
+AVRational GetAudioStreamTimeBase() { return g_audio_stream_time_base; }
 
 }  // namespace media

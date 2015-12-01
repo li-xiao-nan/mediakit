@@ -28,8 +28,7 @@ FFmpegDemuxer::FFmpegDemuxer(TaskRunner* task_runner,
   data_source_ = data_source;
 }
 
-FFmpegDemuxer::~FFmpegDemuxer() {
-}
+FFmpegDemuxer::~FFmpegDemuxer() {}
 
 void FFmpegDemuxer::Initialize(PipelineStatusCB status_cb) {
   StartBlockingTaskRunner();
@@ -46,20 +45,13 @@ void FFmpegDemuxer::Seek(int64_t timestamp, PipelineStatusCB status_cb) {
                                           timestamp, status_cb, action_cb));
 }
 
-void FFmpegDemuxer::Stop() {
-}
+void FFmpegDemuxer::Stop() {}
 
-int64_t FFmpegDemuxer::GetStartTime() {
-  return start_time_;
-}
+int64_t FFmpegDemuxer::GetStartTime() { return start_time_; }
 
-int64_t FFmpegDemuxer::GetDuration() {
-  return duration_;
-}
+int64_t FFmpegDemuxer::GetDuration() { return duration_; }
 
-int64_t FFmpegDemuxer::GetTimelineOffset() {
-  return 0;
-}
+int64_t FFmpegDemuxer::GetTimelineOffset() { return 0; }
 
 DemuxerStream* FFmpegDemuxer::GetDemuxerStream(DemuxerStream::Type type) {
   for (int i = 0; i < streams_.size(); i++) {
@@ -70,9 +62,7 @@ DemuxerStream* FFmpegDemuxer::GetDemuxerStream(DemuxerStream::Type type) {
   return NULL;
 }
 
-void FFmpegDemuxer::NotifyDemuxerCapacityAvailable() {
-  ReadFrameIfNeeded();
-}
+void FFmpegDemuxer::NotifyDemuxerCapacityAvailable() { ReadFrameIfNeeded(); }
 
 void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
                                               ActionCB action_cb) {
@@ -172,9 +162,9 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
           static_cast<FFmpegDemuxerStream*>(
               GetDemuxerStream(DemuxerStream::VIDEO));
 
-      if (video_demuxer_stream)
-        continue;
+      if (video_demuxer_stream) continue;
 
+      SetVideoStreamTimeBase(stream->time_base);
       video_demuxer_stream = new FFmpegDemuxerStream(this, stream);
       VideoDecoderConfig video_decoder_config;
       AVStreamToVideoDecoderConfig(stream, &video_decoder_config);
@@ -185,9 +175,9 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
       FFmpegDemuxerStream* audio_demuxer_stream =
           static_cast<FFmpegDemuxerStream*>(
               GetDemuxerStream(DemuxerStream::AUDIO));
-      if (audio_demuxer_stream)
-        continue;
+      if (audio_demuxer_stream) continue;
 
+      SetAudioStreamTimeBase(stream->time_base);
       audio_demuxer_stream = new FFmpegDemuxerStream(this, stream);
       AudioDecoderConfig audio_decoder_config;
       AVStreamToAudioDecoderConfig(stream, &audio_decoder_config);
@@ -209,11 +199,9 @@ void FFmpegDemuxer::StartBlockingTaskRunner() {
       boost::bind(&boost::asio::io_service::run, blocking_task_runner_.get())));
 }
 
-void FFmpegDemuxer::StopBlockingTaskRunner() {
-}
+void FFmpegDemuxer::StopBlockingTaskRunner() {}
 // blocking thread
-void FFmpegDemuxer::SeekAction(int64_t timestamp,
-                               PipelineStatusCB state_cb,
+void FFmpegDemuxer::SeekAction(int64_t timestamp, PipelineStatusCB state_cb,
                                ActionCB action_cb) {
   AVRational av_time_base = {1, AV_TIME_BASE};
   int ret = av_seek_frame(av_format_context_, -1,
@@ -246,14 +234,13 @@ void FFmpegDemuxer::ReadFrameIfNeeded() {
   std::shared_ptr<EncodedAVFrame> encoded_avframe(new AVPacket());
   ActionCB action_cb =
       boost::bind(&FFmpegDemuxer::OnReadFrameDone, this, encoded_avframe, _1);
-  base::AsyncTask task = boost::bind(&FFmpegDemuxer::ReadFrameAction, this,
-                                     encoded_avframe, action_cb);
+  AsyncTask task = boost::bind(&FFmpegDemuxer::ReadFrameAction, this,
+                               encoded_avframe, action_cb);
   blocking_task_runner_->post(task);
 }
 
 void FFmpegDemuxer::ReadFrameAction(
-    std::shared_ptr<EncodedAVFrame> encoded_avframe,
-    ActionCB action_cb) {
+    std::shared_ptr<EncodedAVFrame> encoded_avframe, ActionCB action_cb) {
   bool result = !av_read_frame(av_format_context_, encoded_avframe.get());
   if (!result) {
     std::cout << "av_read_frame failed" << std::endl;
@@ -263,8 +250,7 @@ void FFmpegDemuxer::ReadFrameAction(
 }
 
 void FFmpegDemuxer::OnReadFrameDone(
-    std::shared_ptr<EncodedAVFrame> encoded_avframe,
-    bool result) {
+    std::shared_ptr<EncodedAVFrame> encoded_avframe, bool result) {
   FFmpegDemuxerStream* video_stream =
       static_cast<FFmpegDemuxerStream*>(GetDemuxerStream(DemuxerStream::VIDEO));
   FFmpegDemuxerStream* audio_stream =
@@ -305,8 +291,7 @@ int64_t FFmpegDemuxer::SeekCB(int64_t offset, int whence) {
   }
   return data_source_->tell();
 }
-int FFmpegDemuxer::FFmpegReadPacketCB(void* opaque,
-                                      unsigned char* buffer,
+int FFmpegDemuxer::FFmpegReadPacketCB(void* opaque, unsigned char* buffer,
                                       int buffer_size) {
   FFmpegDemuxer* ffmpeg_demuxer = static_cast<FFmpegDemuxer*>(opaque);
   ffmpeg_demuxer->ReadPacketCB(buffer, buffer_size);

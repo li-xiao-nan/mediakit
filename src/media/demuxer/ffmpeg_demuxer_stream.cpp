@@ -12,25 +12,23 @@
 const int kMaxQueueSize = 4;
 
 namespace media {
-FFmpegDemuxerStream::FFmpegDemuxerStream(FFmpegDemuxer* demuxer, AVStream* stream) 
-        : is_demux_complete_(false)
-        , demuxer_(demuxer)
-{
-    stream_index_ = stream->index;
-    time_base_ = stream->time_base;
-    duration_ = ConvertToTimeBase(stream->duration, stream->time_base);
-    switch(stream->codec->codec_type){
-      case AVMEDIA_TYPE_VIDEO:
-        type_ = VIDEO;
-        break;
-      case AVMEDIA_TYPE_AUDIO:
-        type_ = AUDIO;
-        break;
-      default:
-        type_ = NONE;
-        break;
-    }
-
+FFmpegDemuxerStream::FFmpegDemuxerStream(FFmpegDemuxer* demuxer,
+                                         AVStream* stream)
+    : is_demux_complete_(false), demuxer_(demuxer) {
+  stream_index_ = stream->index;
+  time_base_ = stream->time_base;
+  duration_ = ConvertToTimeBase(stream->duration, stream->time_base);
+  switch (stream->codec->codec_type) {
+    case AVMEDIA_TYPE_VIDEO:
+      type_ = VIDEO;
+      break;
+    case AVMEDIA_TYPE_AUDIO:
+      type_ = AUDIO;
+      break;
+    default:
+      type_ = NONE;
+      break;
+  }
 }
 
 FFmpegDemuxerStream::~FFmpegDemuxerStream() {
@@ -43,21 +41,40 @@ DemuxerStream::Type FFmpegDemuxerStream::type() {
 void FFmpegDemuxerStream::EnqueueEncodedFrame(
     std::shared_ptr<EncodedAVFrame> frame) {
   encoded_avframe_queue_.push(frame);
-  std::cout<<"queue size is "<<encoded_avframe_queue_.size()<<std::endl;
+  if (read_cb_) {
+    std::shared_ptr<EncodedAVFrame> av_frame = encoded_avframe_queue_.front();
+    encoded_avframe_queue_.pop();
+    read_cb_(av_frame);
+    read_cb_ = NULL;
+  }
 }
 
 std::shared_ptr<EncodedAVFrame> FFmpegDemuxerStream::GetNextEncodedFrame() {
-  if (encoded_avframe_queue_.size() < kMaxQueueSize){
+  if (encoded_avframe_queue_.size() < kMaxQueueSize) {
     demuxer_->NotifyDemuxerCapacityAvailable();
   }
   std::shared_ptr<EncodedAVFrame> encoded_avframe;
-  if (encoded_avframe_queue_.empty()){
-    std::cout<<"queue is empty"<<std::endl;
+  if (encoded_avframe_queue_.empty()) {
+    std::cout << "queue is empty" << std::endl;
     return encoded_avframe;
-  }
-  else {
+  } else {
     encoded_avframe = encoded_avframe_queue_.front();
     encoded_avframe_queue_.pop();
+  }
+}
+
+void FFmpegDemuxerStream::Read(ReadCB read_cb) {
+  if (encoded_avframe_queue_.size() < kMaxQueueSize) {
+    demuxer_->NotifyDemuxerCapacityAvailable();
+  }
+  std::shared_ptr<EncodedAVFrame> encoded_avframe;
+  if (encoded_avframe_queue_.empty()) {
+    std::cout << "queue is empty" << std::endl;
+    read_cb_ = read_cb;
+  } else {
+    encoded_avframe = encoded_avframe_queue_.front();
+    encoded_avframe_queue_.pop();
+    read_cb(encoded_avframe);
   }
 }
 
@@ -91,8 +108,8 @@ bool FFmpegDemuxerStream::HasAvailableCapacity() {
   return encoded_avframe_queue_.size() < kMaxQueueSize;
 }
 
-void FFmpegDemuxerStream::ShowConfigInfo(){
-  switch(type_){
+void FFmpegDemuxerStream::ShowConfigInfo() {
+  switch (type_) {
     case AUDIO:
       audio_decoder_config_.ShowAudioConfigInfo();
       break;

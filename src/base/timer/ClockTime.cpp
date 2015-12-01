@@ -25,22 +25,20 @@ namespace MediaCore {
 #if defined(_WIN32) || defined(WIN32)
 #include <windows.h>
 #include <mmsystem.h>
-uint64_t getTicks(){
-	return timeGetTime();
-}
-#else//not the windows platform
+uint64_t getTicks() { return timeGetTime(); }
+#else  // not the windows platform
 #include <sys/time.h>
-//unit millonSecond
-uint64_t getTicks(){
-	struct timeval tv;
+// unit millonSecond
+uint64_t getTicks() {
+  struct timeval tv;
 
-	gettimeofday(&tv, 0);
-	uint64_t result = static_cast<uint64_t>(tv.tv_sec) * 1000000L;
-	//time Uint: microsecond
-	result +=tv.tv_usec;
+  gettimeofday(&tv, 0);
+  uint64_t result = static_cast<uint64_t>(tv.tv_sec) * 1000000L;
+  // time Uint: microsecond
+  result += tv.tv_usec;
 
-	return static_cast<uint64_t>(result/1000.0);
+  return static_cast<uint64_t>(result / 1000.0);
 }
-#endif //not windows platform
+#endif  // not windows platform
 
-} // namespace
+}  // namespace

@@ -18,22 +18,26 @@
  *
  */
 
-#ifndef WALLCLOCKTIMER_H_
-#define WALLCLOCKTIMER_H_
+#include "wall_clock_timer.h"
+#include "ClockTime.h"
 
-#include <stdint.h>
+namespace MediaCore {
 
-namespace MediaCore{
+WallClockTimer::WallClockTimer() : start_timestamp_(0), is_ticking_(false) {}
 
-class WallClockTimer{
-public:
-	WallClockTimer();
-	uint32_t elapsed() const;
-	void restart();
-private:
-	uint64_t _startTime;
-};
+void WallClockTimer::Start() {
+  start_timestamp_ = getTicks();
+  is_ticking_ = true;
+}
 
-} // namespace
+void WallClockTimer::Stop() { is_ticking_ = false; }
 
-#endif /* WALLCLOCKTIMER_H_ */
+void WallClockTimer::Restart() { Start(); }
+
+int64_t WallClockTimer::Elapsed() const {
+  int64_t current_timestamp = getTicks();
+  if (!is_ticking_ || current_timestamp <= start_timestamp_) return 0;
+  return current_timestamp - start_timestamp_;
+}
+
+}  // namespace

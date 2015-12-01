@@ -9,33 +9,36 @@
 #include "av_pipeline.h"
 
 #include "boost/bind.hpp"
-#include "base/CommonDef.h"
 
 namespace media {
 AVPipeline::AVPipeline(TaskRunner* task_runner)
-    : task_runner_(task_runner), state_(STATE_CREATE) {
-}
+    : task_runner_(task_runner), state_(STATE_CREATE) {}
 
 void AVPipeline::Start(std::shared_ptr<Demuxer> demuxer,
-                       PipelineStatusCB error_cb,
-                       PipelineStatusCB seek_cb) {
+                       std::shared_ptr<Renderer> renderer,
+                       PipelineStatusCB error_cb, PipelineStatusCB seek_cb,
+                       VideoRenderer::PaintCB paint_cb) {
   demuxer_ = demuxer;
+  renderer_ = renderer;
   error_cb_ = error_cb;
   seek_cb_ = seek_cb;
+  paint_cb_ = paint_cb;
+  task_runner_->post(boost::bind(&AVPipeline::StartAction, this));
 }
 
-void AVPipeline::StartAction() {
-  StateTransitAction(PIPELINE_OK);
+void AVPipeline::StartAction() { StateTransitAction(PIPELINE_OK); }
+
+void AVPipeline::InitializeDemuxer(PipelineStatusCB done_cb) {
+  demuxer_->Initialize(done_cb);
 }
 
-void AVPipeline::InitializeDemuxer(PipelineStatusCB status_cb) {
-  AsyncTask init_task =
-      boost::bind(&Demuxer::Initialize, demuxer_.get(), status_cb);
-  task_runner_->post(init_task);
+void AVPipeline::InitializeRenderer(PipelineStatusCB done_cb) {
+  renderer_->Initialize(demuxer_.get(), done_cb,
+                        boost::bind(&AVPipeline::FiltersStatusCB, this, _1),
+                        paint_cb_);
 }
 
-void AVPipeline::Stop() {
-}
+void AVPipeline::Stop() {}
 
 void AVPipeline::Seek(int64_t timestamp, PipelineStatusCB seek_cb) {
   AsyncTask task =
@@ -64,12 +67,18 @@ void AVPipeline::StateTransitAction(PipelineStatus status) {
     return;
   }
 
-  PipelineStatusCB task_callback =
+  PipelineStatusCB done_cb =
       boost::bind(&AVPipeline::StateTransitAction, this, _1);
   SetState(GetNextState());
   switch (state_) {
     case STATE_INIT_DEMUXER:
-      InitializeDemuxer(task_callback);
+      InitializeDemuxer(done_cb);
+      break;
+    case STATE_INIT_RENDERER:
+      InitializeRenderer(done_cb);
+      break;
+    case STATE_PLAYING:
+      renderer_->StartPlayingFrom(demuxer_->GetStartTime());
       break;
     case STATE_SEEKING:
       // do nothing
@@ -82,14 +91,19 @@ AVPipeline::PipelineState AVPipeline::GetNextState() {
     case STATE_CREATE:
       return STATE_INIT_DEMUXER;
     case STATE_INIT_DEMUXER:
-    // return STATE_INIT_DECODER;
-    case STATE_INIT_DECODER:
+      return STATE_INIT_RENDERER;
+    case STATE_INIT_RENDERER:
+      return STATE_PLAYING;
     case STATE_SEEKING:
       return STATE_PLAYING;
+    default:
+      assert(NULL);
   }
 }
-void AVPipeline::SetState(AVPipeline::PipelineState state) {
-  state_ = state;
+void AVPipeline::SetState(AVPipeline::PipelineState state) { state_ = state; }
+
+void AVPipeline::FiltersStatusCB(PipelineStatus filters_status) {
+  // todo(lixiaonan): add process filter status logic
 }
 
 }  // namespace media

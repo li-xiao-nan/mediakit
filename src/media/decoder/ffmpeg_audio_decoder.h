@@ -1,0 +1,30 @@
+#ifndef MEDIA_DECODER_FFMPEG_AUDIO_DECODER_H
+#define MEDIA_DECODER_FFMPEG_AUDIO_DECODER_H
+
+#include "media/decoder/audio_decoder.h"
+#include "base/base_type.h"
+#include "audio_decoder_config.h"
+
+namespace media {
+class FFmpegAudioDecoder : public AudioDecoder {
+ public:
+  FFmpegAudioDecoder(TaskRunner* task_runner);
+  virtual void Initialize(const AudioDecoderConfig& config, InitCB init_cb,
+                          OutputCB output_cb) override;
+  virtual void Decode(const std::shared_ptr<EncodedAVFrame>,
+                      DecodeCB decode_cb) override;
+
+ private:
+  bool ConfigureDecoder();
+  void ReleaseFFmpegResource();
+  void FFmpegDecode(const std::shared_ptr<EncodedAVFrame>, DecodeCB decode_cb);
+
+  AVCodecContext* av_codec_context_;
+  TaskRunner* task_runner_;
+  OutputCB output_cb_;
+  AudioDecoderConfig config_;
+  DecoderState state_;
+  AVFrame* av_frame_;
+};
+}  // namespace media
+#endif

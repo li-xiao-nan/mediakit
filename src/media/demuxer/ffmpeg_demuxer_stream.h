@@ -29,6 +29,7 @@ class FFmpegDemuxerStream : public DemuxerStream {
   virtual void EnqueueEncodedFrame(
       std::shared_ptr<EncodedAVFrame> frame) override;
   virtual std::shared_ptr<EncodedAVFrame> GetNextEncodedFrame() override;
+  virtual void Read(ReadCB read_cb) override;
   virtual void set_demux_complete() override;
   virtual bool is_demux_complete() override;
   virtual const VideoDecoderConfig& video_decoder_config() const override;
@@ -43,13 +44,15 @@ class FFmpegDemuxerStream : public DemuxerStream {
   int64_t duration() { return duration_; }
   const AVRational& time_base() { return time_base_; }
   void ShowConfigInfo();
+
  private:
   int stream_index_;
-  //micro second 
+  // micro second
   int64_t duration_;
   AVRational time_base_;
   bool is_demux_complete_;
   Type type_;
+  ReadCB read_cb_;
   AudioDecoderConfig audio_decoder_config_;
   VideoDecoderConfig video_decoder_config_;
   FFmpegDemuxer* demuxer_;
