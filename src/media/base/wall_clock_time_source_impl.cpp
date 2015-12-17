@@ -1,8 +1,11 @@
+#include <iostream>
+
 #include "wall_clock_time_source_impl.h"
 
 namespace media {
 WallClockTimeSourceImpl::WallClockTimeSourceImpl()
-    : is_ticking_(false), playback_rate_(1.0), current_media_time_(0) {}
+    : is_ticking_(false), playback_rate_(1.0), current_media_time_(0) {
+}
 
 void WallClockTimeSourceImpl::StartTicking() {
   wall_clock_timer_.Start();
@@ -21,7 +24,8 @@ void WallClockTimeSourceImpl::SetPlaybackRate(float rate) {
 }
 
 void WallClockTimeSourceImpl::SetStartTime(int64_t start_time) {
-  if (is_ticking_) return;
+  if (is_ticking_)
+    return;
   current_media_time_ = start_time;
 }
 

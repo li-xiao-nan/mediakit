@@ -11,10 +11,12 @@ class AudioFrame {
   int data_size();
   unsigned char* data();
   int64_t pts();
+  int Read(uint8_t* data, int length);
 
  private:
   std::vector<unsigned char> data_;
   int64_t pts_;
+  int offset_;
 };
 }  // namespace media
 #endif

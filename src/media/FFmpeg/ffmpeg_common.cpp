@@ -158,7 +158,8 @@ void VideoDecoderConfigToAVCodecContext(VideoDecoderConfig* config,
 void AVStreamToVideoDecoderConfig(const AVStream* stream,
                                   VideoDecoderConfig* config) {
   BOOST_ASSERT(stream != 0);
-  if (!stream) return;
+  if (!stream)
+    return;
   AVCodecContextToVideoDecoderConfig(stream->codec, config);
 }
 
@@ -183,12 +184,35 @@ void AVCodecContextToAudioDecoderConfig(AVCodecContext* audio_codec_context,
 }
 
 void AudioDecoderConfigToAVCodecContext(AudioDecoderConfig* config,
-                                        AVCodecContext* audio_codec_context) {}
+                                        AVCodecContext* audio_codec_context) {
+  audio_codec_context->codec_type = AVMEDIA_TYPE_AUDIO;
+  audio_codec_context->codec_id = AudioCodecToAVCodecID(config->codec());
+  audio_codec_context->sample_fmt =
+      SampleFormatToAVSampleFormat(config->sample_format());
+
+  audio_codec_context->channels =
+      ChannelLayoutToChannelCount(config->channel_layout());
+  audio_codec_context->sample_rate = config->sample_rate();
+
+  if (config->extra_data()) {
+    audio_codec_context->extradata_size = config->extra_data_size();
+    audio_codec_context->extradata = reinterpret_cast<uint8_t*>(
+        av_malloc(config->extra_data_size() + FF_INPUT_BUFFER_PADDING_SIZE));
+    memcpy(audio_codec_context->extradata, config->extra_data(),
+           config->extra_data_size());
+    memset(audio_codec_context->extradata + config->extra_data_size(), '\0',
+           FF_INPUT_BUFFER_PADDING_SIZE);
+  } else {
+    audio_codec_context->extradata = NULL;
+    audio_codec_context->extradata_size = 0;
+  }
+}
 
 void AVStreamToAudioDecoderConfig(const AVStream* stream,
                                   AudioDecoderConfig* config) {
   BOOST_ASSERT(stream != 0);
-  if (!stream) return;
+  if (!stream)
+    return;
   AVCodecContextToAudioDecoderConfig(stream->codec, config);
 }
 
@@ -346,7 +370,7 @@ int ChannelLayoutToChannelCount(ChannelLayout channel_layout) {
 }
 
 void AVFrameToVideoFrame(AVFrame* av_frame, VideoFrame* video_frame) {
-  unsigned char* s, *d;
+  unsigned char *s, *d;
   int height, width;
   width = video_frame->_w;
   height = video_frame->_h;
@@ -376,12 +400,68 @@ void SetVideoStreamTimeBase(const AVRational& time_base) {
   g_video_stream_time_base = time_base;
 }
 
-AVRational GetVideoStreamTimeBase() { return g_video_stream_time_base; }
+AVRational GetVideoStreamTimeBase() {
+  return g_video_stream_time_base;
+}
 
 void SetAudioStreamTimeBase(const AVRational& time_base) {
   g_audio_stream_time_base = time_base;
 }
 
-AVRational GetAudioStreamTimeBase() { return g_audio_stream_time_base; }
+AVRational GetAudioStreamTimeBase() {
+  return g_audio_stream_time_base;
+}
+
+void AVFrameToAudioFrame(AVFrame* av_frame,
+                         std::shared_ptr<AudioFrame>& audio_frame,
+                         AVCodecContext* av_codec_context) {
+  //**********************convert the sample format **********/
+  static SwrContext* swr_context_ = NULL;
+  int wanted_nb_samples = av_frame->nb_samples;
+  if (!swr_context_) {
+    swr_free(&swr_context_);
+    swr_context_ = swr_alloc_set_opts(
+        NULL, av_codec_context->channel_layout, AV_SAMPLE_FMT_S16,
+        av_frame->sample_rate, av_codec_context->channel_layout,
+        (enum AVSampleFormat)av_frame->format, av_frame->sample_rate, 0, NULL);
+    if (!swr_context_ || swr_init(swr_context_) < 0) {
+      std::cout << "create the swrContext failed" << std::endl;
+      return;
+    }
+  }
+  if (swr_context_) {
+    const uint8_t** in = (const uint8_t**)av_frame->extended_data;
+    int outCount = wanted_nb_samples + 256;
+    int outSize = av_samples_get_buffer_size(NULL, av_frame->channels, outCount,
+                                             AV_SAMPLE_FMT_S16, 0);
+
+    uint8_t* tmpPtr = NULL;
+    uint8_t** out = &tmpPtr;
+    *out = new uint8_t[outSize];  //(uint8_t*)malloc(sizeof(uint8_t)*outSize);
+    memset(*out, 0, outSize);
+    if (!(*out)) {
+      std::cout << __FILE__ << ": " << __LINE__ << "ERROR: alloc buffer failed"
+                << std::endl;
+      return;
+    }
+    int resLen =
+        swr_convert(swr_context_, out, outCount, in, av_frame->nb_samples);
+    if (resLen < 0) {
+      std::cout << __FILE__ << ": " << __LINE__ << "convert the frame failed"
+                << std::endl;
+      return;
+    }
+    if (resLen == outCount) {
+      std::cout << "WARNING: audio buffer is probably to small" << std::endl;
+    }
+    int resampledDataSize = resLen * av_frame->channels *
+                            av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
+
+    audio_frame.reset(new AudioFrame(
+        *out, resampledDataSize,
+        TimeBaseToMillionSecond(av_frame->pkt_pts, GetAudioStreamTimeBase())));
+    delete[] * out;
+  }  // if(_swrCtx)
+}
 
 }  // namespace media

@@ -1,26 +1,30 @@
+#include "media/decoder/ffmpeg_audio_decoder.h"
+#include "media/ffmpeg/ffmpeg_common.h"
 
 namespace media {
 FFmpegAudioDecoder::FFmpegAudioDecoder(TaskRunner* task_runner)
-    : task_runner_(task_runner) {}
+    : task_runner_(task_runner) {
+}
 void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
-                                    InitCB init_cb, OutputCB output_cb) {
+                                    InitCB init_cb,
+                                    OutputCB output_cb) {
   config_ = config;
   init_cb_ = init_cb;
   output_cb_ = output_cb;
-  ConfigureDecoder();
+  bool result = ConfigureDecoder();
+  init_cb_(result);
 }
-void FFmpegAudioDecoder::Decode(const std::shared_ptr<EncodedAVFrame>,
-                                DecodeCB decode_cb) {}
+void FFmpegAudioDecoder::Decode(
+    const std::shared_ptr<EncodedAVFrame> encoded_avframe,
+    DecodeCB decode_cb) {
+  FFmpegDecode(encoded_avframe, decode_cb);
+}
 
 bool FFmpegAudioDecoder::ConfigureDecoder() {
   av_codec_context_ = avcodec_alloc_context3(NULL);
-  if (!av_codec_context_) return false;
+  if (!av_codec_context_)
+    return false;
   AudioDecoderConfigToAVCodecContext(&config_, av_codec_context_);
-
-  av_codec_context_->thread_count = kDecodeThreads;
-  av_codec_context_->thread_type =
-      low_delay ? FF_THREAD_SLICE : FF_THREAD_FRAME;
-  av_codec_context_->flags |= CODEC_FLAG_EMU_EDGE;
   av_codec_context_->refcounted_frames = 0;
 
   AVCodec* codec = avcodec_find_decoder(av_codec_context_->codec_id);
@@ -39,22 +43,31 @@ void FFmpegAudioDecoder::ReleaseFFmpegResource() {
 }
 
 void FFmpegAudioDecoder::FFmpegDecode(
-    const std::shared_ptr<EncodedAVFrame> av_packet, DecodeCB decode_cb) {
+    const std::shared_ptr<EncodedAVFrame> av_packet,
+    DecodeCB decode_cb) {
   int decode_count;
-  int result = avcodec_decode_audio4(_audioCodecCtx, av_frame_, &decode_count,
-                                     av_packet.get());
+  int result = avcodec_decode_audio4(av_codec_context_, av_frame_,
+                                     &decode_count, av_packet.get());
   if (result < 0) {
     state_ = STATE_OCCUR_ERROR;
     decode_cb(STATUS_DECODE_ERROR);
     return;
   }
 
-  if (decode_count == 0 && !encoded_avframe.get()) {
+  if (decode_count == 0 && !av_packet.get()) {
     state_ = STATE_DECODE_COMPLETED;
     decode_cb(STATUS_DECODE_COMPLETED);
+    return;
   }
-
   std::shared_ptr<AudioFrame> audio_frame;
+  AVFrameToAudioFrame(av_frame_, audio_frame, av_codec_context_);
+  if (!audio_frame.get()) {
+    state_ = STATE_OCCUR_ERROR;
+    decode_cb(STATUS_DECODE_ERROR);
+    return;
+  }
+  output_cb_(audio_frame);
+  decode_cb(STATUS_OK);
 }
 
 }  // namespace media

@@ -18,27 +18,22 @@ enum AudioCodec {
 class AudioDecoderConfig {
  public:
   AudioDecoderConfig();
-  AudioDecoderConfig(AudioCodec audio_codec,
-                     SampleFormat sample_format,
-                     ChannelLayout channle_layout,
-                     int sample_per_second,
-                     uint8_t* extradata,
-                     int extradata_size);
-  void Initialize(AudioCodec audio_codec,
-                  SampleFormat sample_format,
-                  ChannelLayout channle_layout,
-                  int sample_per_second,
-                  uint8_t* extradata,
-                  int extradata_size);
+  AudioDecoderConfig(AudioCodec audio_codec, SampleFormat sample_format,
+                     ChannelLayout channle_layout, int sample_per_second,
+                     uint8_t* extradata, int extradata_size);
+  void Initialize(AudioCodec audio_codec, SampleFormat sample_format,
+                  ChannelLayout channle_layout, int sample_per_second,
+                  uint8_t* extradata, int extradata_size);
   AudioCodec codec();
   SampleFormat sample_format();
-  int sample_per_second();
+  int sample_rate();
   ChannelLayout channel_layout();
   uint8_t* extra_data();
   int extra_data_size();
   int bytes_per_channel();
   int bytes_per_frame();
   void ShowAudioConfigInfo();
+  int channel_count();
 
  private:
   const char* AudioCodecToString(AudioCodec audio_codec);

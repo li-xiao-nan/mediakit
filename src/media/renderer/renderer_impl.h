@@ -19,7 +19,8 @@ class RendererImpl : public Renderer {
                std::shared_ptr<AudioRenderer> audio_renderer,
                std::shared_ptr<VideoRenderer> video_renderer);
   virtual void Initialize(DemuxerStreamProvider* demuxer_stream_provider,
-                          PipelineStatusCB init_cb, PipelineStatusCB status_cb,
+                          PipelineStatusCB init_cb,
+                          PipelineStatusCB status_cb,
                           VideoRenderer::PaintCB paint_cb);
   virtual void StartPlayingFrom(int64_t time_offset);
   virtual void SetPlaybackRate(float rate);
@@ -44,7 +45,7 @@ class RendererImpl : public Renderer {
   void InitializeVideoRenderer();
   void OnInitializeVideoRendererDone(PipelineStatus status);
 
-  int64_t GetCurrentTime(void);
+  int64_t GetCurrentTime();
 
   TaskRunner* task_runner_;
   VideoRenderer::PaintCB paint_cb_;

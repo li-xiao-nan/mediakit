@@ -1,7 +1,10 @@
-#ifdef MEDIA_DECODER_AUDIO_DECODER_H
+#ifndef MEDIA_DECODER_AUDIO_DECODER_H
 #define MEDIA_DECODER_AUDIO_DECODER_H
 
+#include "boost/function.hpp"
+
 #include "media/base/audio_frame.h"
+#include "base/base_type.h"
 
 namespace media {
 class AudioDecoderConfig;
@@ -22,7 +25,8 @@ class AudioDecoder {
 
   virtual ~AudioDecoder() {}
 
-  virtual void Initialize(const AudioDecoderConfig& config, InitCB init_cb,
+  virtual void Initialize(const AudioDecoderConfig& config,
+                          InitCB init_cb,
                           OutputCB output_cb) = 0;
   virtual void Decode(const std::shared_ptr<EncodedAVFrame>,
                       DecodeCB decode_cb) = 0;

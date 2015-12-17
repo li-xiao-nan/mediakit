@@ -17,6 +17,7 @@
 #include "media/renderer/video_renderer_impl.h"
 #include "media/renderer/audio_renderer_impl.h"
 #include "media/decoder/ffmpeg_video_decoder.h"
+#include "media/decoder/ffmpeg_audio_decoder.h"
 #include "net/url.h"
 #include "net/io_channel.h"
 
@@ -38,7 +39,8 @@ void GlobalPaintCallBack(std::shared_ptr<media::VideoFrame> video_frame) {
 std::shared_ptr<media::VideoFrame> GlobalReadVideoFrame() {
   boost::mutex::scoped_lock lock(queue_mutex);
   std::shared_ptr<media::VideoFrame> video_frame;
-  if (queue_video_frame.empty()) return video_frame;
+  if (queue_video_frame.empty())
+    return video_frame;
   video_frame = queue_video_frame.front();
   queue_video_frame.pop();
   return video_frame;
@@ -49,10 +51,15 @@ void InitRenderer(boost::asio::io_service* task_runner) {
       new media::FFmpegVideoDecoder(task_runner);
   vector_video_decoder.push_back(video_decoder);
 
+  media::AudioDecoder* audio_decoder =
+      new media::FFmpegAudioDecoder(task_runner);
+  std::vector<media::AudioDecoder*> vector_audio_decoder;
+  vector_audio_decoder.push_back(audio_decoder);
+
   std::shared_ptr<media::VideoRenderer> video_renderer(
       new media::VideoRendererImpl(task_runner, vector_video_decoder));
   std::shared_ptr<media::AudioRenderer> audio_renderer(
-      new media::AudioRendererImpl());
+      new media::AudioRendererImpl(task_runner, vector_audio_decoder));
   renderer.reset(
       new media::RendererImpl(task_runner, audio_renderer, video_renderer));
 }
@@ -108,10 +115,16 @@ void setShader();
 void display();
 void reshape(int w, int h);
 void updateTexture(std::shared_ptr<media::VideoFrame> image);
-void xcb() { glutPostRedisplay(); }
+void xcb() {
+  glutPostRedisplay();
+}
 
-void ycb() { glutPostRedisplay(); }
-void zcb() { glutPostRedisplay(); }
+void ycb() {
+  glutPostRedisplay();
+}
+void zcb() {
+  glutPostRedisplay();
+}
 void seek();
 void pauseCB();
 void keyboard(unsigned char key, int x, int y) {
@@ -333,7 +346,8 @@ void updateTexture(std::shared_ptr<media::VideoFrame> image) {
   }
 }
 
-void seek() {}
+void seek() {
+}
 
 const char* vsSrc =
     "void main() \

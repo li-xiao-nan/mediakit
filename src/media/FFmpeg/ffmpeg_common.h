@@ -10,8 +10,10 @@
 #define MEDIA_FFMPEG_FFMPEG_COMMON_H_
 
 extern "C" {
-#include <libavformat/avformat.h>
-#include <libavutil/avutil.h>
+#include "libavformat/avformat.h"
+#include "libavutil/avutil.h"
+#include "libavutil/samplefmt.h"
+#include "libswresample/swresample.h"
 }
 
 #include "media/base/sample_format.h"
@@ -19,6 +21,7 @@ extern "C" {
 #include "media/base/audio_decoder_config.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
+#include "media/base/audio_frame.h"
 
 namespace media {
 class AudioDecoderConfig;
@@ -81,6 +84,9 @@ int SampleFormatToBytesPerChannel(SampleFormat sample_format);
 int ChannelLayoutToChannelCount(ChannelLayout channel_layout);
 
 void AVFrameToVideoFrame(AVFrame* av_frame, VideoFrame* video_frame);
+void AVFrameToAudioFrame(AVFrame* av_frame,
+                         std::shared_ptr<AudioFrame>& audio_frame,
+                         AVCodecContext* av_codec_context);
 
 }  // namespace media
 #endif

@@ -11,11 +11,13 @@ VideoRendererImpl::VideoRendererImpl(
       state_(STATE_UNINITIALIZED),
       task_runner_(task_runner),
       video_frame_stream_(
-          new VideoFrameStream(task_runner, vec_video_decoders)) {}
+          new VideoFrameStream(task_runner, vec_video_decoders)) {
+}
 
 void VideoRendererImpl::Initialize(DemuxerStream* demuxer_stream,
                                    PipelineStatusCB init_cb,
-                                   PipelineStatusCB status_cb, PaintCB paint_cb,
+                                   PipelineStatusCB status_cb,
+                                   PaintCB paint_cb,
                                    GetTimeCB get_time_cb) {
   init_cb_ = init_cb;
   status_cb_ = status_cb;
@@ -52,7 +54,8 @@ void VideoRendererImpl::StartPlayingFrom(int64_t offset) {
       new boost::thread(boost::bind(&VideoRendererImpl::ThreadMain, this)));
 }
 
-void VideoRendererImpl::SetPlaybackRate(float rate) {}
+void VideoRendererImpl::SetPlaybackRate(float rate) {
+}
 
 void VideoRendererImpl::ThreadMain() {
   for (;;) {
@@ -78,6 +81,8 @@ void VideoRendererImpl::ThreadMain() {
       case OPERATION_PAINT_IMMEDIATELY:
         paint_cb_(next_frame);
         pending_paint_frames_.pop();
+        std::cout << "pending_video_frame size:" << pending_paint_frames_.size()
+                  << std::endl;
         break;
       case OPERATION_WAIT_FOR_PAINT:
         break;
@@ -90,7 +95,8 @@ void VideoRendererImpl::ThreadMain() {
 VideoRendererImpl::FrameOperation
 VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
                                                int64_t next_frame_pts) {
-  if (next_frame_pts > current_time) return OPERATION_WAIT_FOR_PAINT;
+  if (next_frame_pts > current_time)
+    return OPERATION_WAIT_FOR_PAINT;
   int64_t time_delta = current_time - next_frame_pts;
   if (time_delta <= 100) {
     return OPERATION_PAINT_IMMEDIATELY;
@@ -100,7 +106,8 @@ VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
 }
 
 void VideoRendererImpl::OnReadFrameDone(
-    VideoFrameStream::Status status, std::shared_ptr<VideoFrame> video_frame) {
+    VideoFrameStream::Status status,
+    std::shared_ptr<VideoFrame> video_frame) {
   boost::mutex::scoped_lock lock(ready_frames_lock_);
 
   if (video_frame.get()) {
@@ -113,7 +120,8 @@ void VideoRendererImpl::OnReadFrameDone(
 
 void VideoRendererImpl::PaintReadyVideoFrame(
     std::shared_ptr<VideoFrame> video_frame) {
-  if (!video_frame.get()) return;
+  if (!video_frame.get())
+    return;
   int64_t current_time = get_time_cb_();
   int64_t video_frame_pts = video_frame->timestamp_;
   if (video_frame_pts < current_time) {
@@ -128,7 +136,8 @@ void VideoRendererImpl::PaintReadyVideoFrame(
 }
 
 void VideoRendererImpl::ReadFrameIfNeeded() {
-  if (pending_paint_frames_.size() >= kMaxPendingPaintFrameCount) return;
+  if (pending_paint_frames_.size() >= kMaxPendingPaintFrameCount)
+    return;
   task_runner_->post(boost::bind(&VideoRendererImpl::ReadFrame, this));
 }
 

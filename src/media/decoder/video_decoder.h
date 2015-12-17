@@ -1,8 +1,6 @@
 #ifndef MEDIA_DECODER_VIDEO_DECODER_H
 #define MEDIA_DECODER_VIDEO_DECODER_H
 
-#include "video_decoder.h"
-
 #include "boost/function.hpp"
 
 #include "media/base/video_decoder_config.h"
@@ -26,7 +24,8 @@ class VideoDecoder {
 
   virtual ~VideoDecoder() {}
 
-  virtual void Initialize(const VideoDecoderConfig& config, InitCB init_cb,
+  virtual void Initialize(const VideoDecoderConfig& config,
+                          InitCB init_cb,
                           OutputCB output_cb) = 0;
   virtual void Decode(const std::shared_ptr<EncodedAVFrame>,
                       DecodeCB decode_cb) = 0;
