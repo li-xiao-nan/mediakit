@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<package id="manifest-0-038-1f45-292b3e">
+    <release tarname="gcc-core-4.8.1-4-mingw32-info.tar.lzma" />
+    <references>
+        <sysroot id="sysroot-0-002-a7c6-d7dbb5" />
+    </references>
+    <manifest>
+        <dir path="share" />
+        <dir path="share/info" />
+        <file path="share/info/cpp.info" />
+        <file path="share/info/cppinternals.info" />
+        <file path="share/info/gcc.info" />
+        <file path="share/info/gccinstall.info" />
+        <file path="share/info/gccint.info" />
+        <file path="share/info/libgomp.info" />
+        <file path="share/info/libquadmath.info" />
+    </manifest>
+</package>
