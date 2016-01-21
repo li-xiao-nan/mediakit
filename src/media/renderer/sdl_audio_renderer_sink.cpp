@@ -7,7 +7,7 @@ SdlAudioRendererSink::SdlAudioRendererSink() {
 }
 SdlAudioRendererSink::~SdlAudioRendererSink() {
 }
-bool SdlAudioRendererSink::Initialize(RenderCallback* render_callback,
+void SdlAudioRendererSink::Initialize(RenderCallback* render_callback,
                                       InitCB init_cb,
                                       const AudioParameters& parameters) {
   render_callback_ = render_callback;
@@ -29,12 +29,13 @@ void SdlAudioRendererSink::Stop() {
 void SdlAudioRendererSink::InitializeSDLAudio() {
   sdl_audio_spec_.freq = audio_parameters_.sample_rate_;
   sdl_audio_spec_.format = AUDIO_S16SYS;  // audio_parameters_.sample_format_;
-  sdl_audio_spec_.channels = audio_parameters_.channel_count_;
+  sdl_audio_spec_.channels = static_cast<uint8_t>(audio_parameters_.channel_count_);
   sdl_audio_spec_.callback = SdlAudioRendererSink::SdlAudioCallback;
   sdl_audio_spec_.userdata = this;
   sdl_audio_spec_.samples = kSDLAudioSampleBufferSize;
-
-  if (SDL_OpenAudio(&sdl_audio_spec_, NULL) < 0) {
+  int sdl_init_result = SDL_Init(SDL_INIT_AUDIO);
+  SDL_AudioSpec spec;
+  if (SDL_OpenAudio(&sdl_audio_spec_, &spec) < 0) {
     std::cout << "open sdl audio device failed" << std::endl;
     init_cb_(false);
   }

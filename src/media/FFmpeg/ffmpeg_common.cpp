@@ -47,15 +47,15 @@ AVCodecID VideoCodecToAVCodec(VideoCodec video_codec) {
 VideoPixelFormat AVPixelFormatToVideoPixelFormat(
     AVPixelFormat av_pixel_format) {
   switch (av_pixel_format) {
-    case PIX_FMT_YUV422P:
+    case AV_PIX_FMT_YUV422P:
       return YV16;
-    case PIX_FMT_YUV444P:
+    case AV_PIX_FMT_YUV444P:
       return YV24;
-    case PIX_FMT_YUV420P:
+    case AV_PIX_FMT_YUV420P:
       return YV12;
-    case PIX_FMT_YUVJ420P:
+    case AV_PIX_FMT_YUVJ420P:
       return YV12J;
-    case PIX_FMT_YUVA420P:
+    case AV_PIX_FMT_YUVA420P:
       return YV12A;
     default:
       std::cout << "AVPixelFormat:" << av_pixel_format << std::endl;
@@ -68,17 +68,17 @@ AVPixelFormat VideoPixelFormatToAVPixelFormat(
     VideoPixelFormat video_pixel_format) {
   switch (video_pixel_format) {
     case YV16:
-      return PIX_FMT_YUV422P;
+      return AV_PIX_FMT_YUV422P;
     case YV24:
-      return PIX_FMT_YUV420P;
+      return AV_PIX_FMT_YUV420P;
     case YV12:
-      return PIX_FMT_YUVJ420P;
+      return AV_PIX_FMT_YUVJ420P;
     case YV12J:
-      return PIX_FMT_YUVA420P;
+      return AV_PIX_FMT_YUVA420P;
     default:
       break;
   }
-  return PIX_FMT_YUVA420P;
+  return AV_PIX_FMT_YUVA420P;
 }
 
 VideoCodecProfile ProfileIDToVideoCodecProfile(int profile) {

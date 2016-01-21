@@ -18,7 +18,7 @@
  *
  */
 
-#include "curl_adapter.h"
+#include "net/curl/curl_adapter.h"
 #include "net/io_channel.h"
 #include "base/snail_exception.h"
 #include "base/timer/wall_clock_timer.h"
@@ -26,12 +26,9 @@
 #include <iostream>
 #include <cstdio>
 
-using std::auto_ptr;
-using std::string;
-using std::map;
-using std::cout;
-using std::endl;
-using MediaCore::WallClockTimer;
+#ifdef max
+#undef max
+#endif
 
 namespace net {
 
@@ -93,7 +90,7 @@ void CurlStreamFile::fillCache(std::streampos size) {
   const long maxSleepUsec = 10000;  // 1/100 of a second
 
   const unsigned int userTimeout = 60000;
-  WallClockTimer lastProgress;
+  MediaCore::WallClockTimer lastProgress;
   while (_running) {
     fillCacheNonBlocking();
     if (_cached >= size || !_running) break;

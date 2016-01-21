@@ -1,8 +1,8 @@
 #ifndef MEDIA_RENDERER_SDL_AUDIO_RENDERER_SINK_H
 #define MEDIA_RENDERER_SDL_AUDIO_RENDERER_SINK_H
 
-#include "SDL2/SDL_audio.h"
-#include "SDL2/SDL.h"
+#include "SDL_audio.h"
+#include "SDL.h"
 
 #include "media/renderer/audio_renderer_sink.h"
 #include "media/base/audio_parameters.h"
@@ -12,7 +12,7 @@ class SdlAudioRendererSink : public AudioRendererSink {
  public:
   SdlAudioRendererSink();
   virtual ~SdlAudioRendererSink();
-  virtual bool Initialize(RenderCallback* render_callback,
+  virtual void Initialize(RenderCallback* render_callback,
                           InitCB init_cb,
                           const AudioParameters& parameters) override;
   virtual void Start() override;

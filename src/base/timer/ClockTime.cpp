@@ -20,12 +20,18 @@
 
 #include "ClockTime.h"
 
-namespace MediaCore {
+#include "boost/date_time/microsec_time_clock.hpp"
+#include <boost/date_time/posix_time/posix_time.hpp>  
 
+namespace MediaCore {
+#include <Windows.h>
 #if defined(_WIN32) || defined(WIN32)
-#include <windows.h>
-#include <mmsystem.h>
-uint64_t getTicks() { return timeGetTime(); }
+	uint64_t getTicks() {
+		static boost::posix_time::ptime epoch(boost::gregorian::date(1970, boost::gregorian::Jan, 1));
+		boost::posix_time::time_duration time_from_epoch =
+			boost::posix_time::microsec_clock::universal_time() - epoch;
+		return time_from_epoch.total_milliseconds();
+	}
 #else  // not the windows platform
 #include <sys/time.h>
 // unit millonSecond

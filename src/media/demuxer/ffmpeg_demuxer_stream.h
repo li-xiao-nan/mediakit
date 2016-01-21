@@ -28,7 +28,6 @@ class FFmpegDemuxerStream : public DemuxerStream {
   virtual Type type();
   virtual void EnqueueEncodedFrame(
       std::shared_ptr<EncodedAVFrame> frame) override;
-  virtual std::shared_ptr<EncodedAVFrame> GetNextEncodedFrame() override;
   virtual void Read(ReadCB read_cb) override;
   virtual void set_demux_complete() override;
   virtual bool is_demux_complete() override;

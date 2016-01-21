@@ -43,7 +43,6 @@ class VideoRendererImpl : public VideoRenderer {
   void OnReadFrameDone(VideoFrameStream::Status status,
                        std::shared_ptr<VideoFrame> video_frame);
   void ReadFrame();
-  void PaintReadyVideoFrame(std::shared_ptr<VideoFrame> video_frame);
   void ReadFrameIfNeeded();
   FrameOperation DetermineNextFrameOperation(int64_t current_time,
                                              int64_t next_frame_pts);

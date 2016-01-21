@@ -9,6 +9,8 @@
 #ifndef MEDIA_FFMPEG_FFMPEG_COMMON_H_
 #define MEDIA_FFMPEG_FFMPEG_COMMON_H_
 
+#include <memory>
+
 extern "C" {
 #include "libavformat/avformat.h"
 #include "libavutil/avutil.h"

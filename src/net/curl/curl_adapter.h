@@ -3,8 +3,8 @@
 
 #include "net/io_channel.h"
 
-extern "C" {
-#include <curl/curl.h>
+extern "C"{
+#include "curl/curl.h"
 }
 
 namespace net{

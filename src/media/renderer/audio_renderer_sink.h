@@ -16,7 +16,7 @@ class AudioRendererSink {
     virtual ~RenderCallback(){};
   };
   virtual ~AudioRendererSink() {}
-  virtual bool Initialize(RenderCallback* render_callback,
+  virtual void Initialize(RenderCallback* render_callback,
                           InitCB init_cb,
                           const AudioParameters& paramters) = 0;
   virtual void Start() = 0;

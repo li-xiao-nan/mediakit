@@ -27,7 +27,6 @@ class DemuxerStream {
   virtual Type type() = 0;
   //此函数会返回当前stream类型的数据包。调用者负责保证，将数据包交给正确的解码器进行解码
   virtual void EnqueueEncodedFrame(std::shared_ptr<EncodedAVFrame> frame) = 0;
-  virtual std::shared_ptr<EncodedAVFrame> GetNextEncodedFrame() = 0;
   virtual void Read(ReadCB read_cb) = 0;
   // demuxer state
   virtual void set_demux_complete() = 0;

@@ -52,7 +52,7 @@ class FFmpegDemuxer : public Demuxer {
                                 int buffer_size);
   static int64_t FFmpegSeekCB(void* opaque, int64_t offset, int whence);
 
-  void ReadPacketCB(unsigned char* buffer, int buffer_size);
+  int ReadPacketCB(unsigned char* buffer, int buffer_size);
   int64_t SeekCB(int64_t offset, int whence);
   
   void OpenAVFormatContextAction(PipelineStatusCB status_cb,

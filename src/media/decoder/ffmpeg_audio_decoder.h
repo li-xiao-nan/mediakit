@@ -3,7 +3,7 @@
 
 #include "media/decoder/audio_decoder.h"
 #include "base/base_type.h"
-#include "audio_decoder_config.h"
+#include "media/base/audio_decoder_config.h"
 
 namespace media {
 class FFmpegAudioDecoder : public AudioDecoder {

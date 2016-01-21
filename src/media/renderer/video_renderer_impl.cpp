@@ -2,7 +2,7 @@
 #include "media/decoder/video_frame_stream.h"
 
 namespace media {
-const int kMaxPendingPaintFrameCount = 4;
+const int kMaxPendingPaintFrameCount = 2<<5;
 
 VideoRendererImpl::VideoRendererImpl(
     TaskRunner* task_runner,
@@ -11,7 +11,8 @@ VideoRendererImpl::VideoRendererImpl(
       state_(STATE_UNINITIALIZED),
       task_runner_(task_runner),
       video_frame_stream_(
-          new VideoFrameStream(task_runner, vec_video_decoders)) {
+          new VideoFrameStream(task_runner, vec_video_decoders)),
+	  droped_frame_count_(0){
 }
 
 void VideoRendererImpl::Initialize(DemuxerStream* demuxer_stream,
@@ -58,31 +59,30 @@ void VideoRendererImpl::SetPlaybackRate(float rate) {
 }
 
 void VideoRendererImpl::ThreadMain() {
-  for (;;) {
+	for (;;) {
     boost::mutex::scoped_lock lock(ready_frames_lock_);
+	int64_t beg_time = get_time_cb_();
     if (pending_paint_frames_.empty()) {
       ReadFrameIfNeeded();
+	  int64_t begin_wait_timestamp = get_time_cb_();
       frame_available_.wait(lock);
     }
 
-    std::shared_ptr<VideoFrame> next_frame = pending_paint_frames_.front();
+	std::shared_ptr<VideoFrame> next_frame = pending_paint_frames_.front();
     int64_t next_frame_timestamp = next_frame->timestamp_;
-    int64_t current_time = get_time_cb_();
+	static int64_t pre_timestamp;
+	int64_t current_time = get_time_cb_();
 
     FrameOperation operation =
         DetermineNextFrameOperation(current_time, next_frame_timestamp);
     switch (operation) {
       case OPERATION_DROP_FRAME:
         pending_paint_frames_.pop();
-        droped_frame_count_++;
-        std::cout << "drop frame: " << droped_frame_count_ << std::endl;
         continue;
         break;
       case OPERATION_PAINT_IMMEDIATELY:
         paint_cb_(next_frame);
         pending_paint_frames_.pop();
-        std::cout << "pending_video_frame size:" << pending_paint_frames_.size()
-                  << std::endl;
         break;
       case OPERATION_WAIT_FOR_PAINT:
         break;
@@ -98,6 +98,7 @@ VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
   if (next_frame_pts > current_time)
     return OPERATION_WAIT_FOR_PAINT;
   int64_t time_delta = current_time - next_frame_pts;
+
   if (time_delta <= 100) {
     return OPERATION_PAINT_IMMEDIATELY;
   } else {
@@ -118,22 +119,6 @@ void VideoRendererImpl::OnReadFrameDone(
   ReadFrameIfNeeded();
 }
 
-void VideoRendererImpl::PaintReadyVideoFrame(
-    std::shared_ptr<VideoFrame> video_frame) {
-  if (!video_frame.get())
-    return;
-  int64_t current_time = get_time_cb_();
-  int64_t video_frame_pts = video_frame->timestamp_;
-  if (video_frame_pts < current_time) {
-    pending_paint_ = true;
-    return;
-  }
-  if (video_frame_pts - current_time <= 100) {
-    paint_cb_(video_frame);
-  }
-  video_frame.reset();
-  pending_paint_ = false;
-}
 
 void VideoRendererImpl::ReadFrameIfNeeded() {
   if (pending_paint_frames_.size() >= kMaxPendingPaintFrameCount)

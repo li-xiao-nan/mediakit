@@ -14,7 +14,7 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/audio_decoder_config.h"
 
-int kFFmpgeAVIOBufferSize = 1024;
+int kFFmpgeAVIOBufferSize = 1024*3;
 
 namespace media {
 
@@ -39,6 +39,7 @@ void FFmpegDemuxer::Initialize(PipelineStatusCB status_cb) {
 }
 
 void FFmpegDemuxer::Seek(int64_t timestamp, PipelineStatusCB status_cb) {
+	return;
   ActionCB action_cb =
       boost::bind(&FFmpegDemuxer::OnSeekDone, this, status_cb, _1);
   blocking_task_runner_->post(boost::bind(&FFmpegDemuxer::SeekAction, this,
@@ -69,44 +70,25 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
   av_register_all();
 
   bool result = false;
-  do {
+    av_format_context_ = avformat_alloc_context();
     av_io_buffer_ = (unsigned char*)av_malloc(kFFmpgeAVIOBufferSize);
-
-    if (!av_io_buffer_) {
-      result = false;
-      break;
-    }
-
     av_io_context_ =
         avio_alloc_context(av_io_buffer_, kFFmpgeAVIOBufferSize, 0, this,
                            FFmpegReadPacketCB, NULL, FFmpegSeekCB);
-    if (!av_io_context_) {
-      result = false;
-      break;
-    }
-    AVInputFormat* av_input_format;
-    if (av_probe_input_buffer(av_io_context_, &av_input_format, "", NULL, 0,
-                              4096) != 0) {
-      result = false;
-      break;
-    } else {
-      // printf("inputFormat is :%s\n", av_input_format->long_name);
-      printf("OK: success probe the input type\n");
-    }
+
     av_io_context_->seekable = 0;
-    av_format_context_ = avformat_alloc_context();
+    av_io_context_->write_flag = false;
+    // Enable fast, but inaccurate seeks for MP3.
+    av_format_context_->flags |= AVFMT_FLAG_FAST_SEEK;
     av_format_context_->pb = av_io_context_;
     // open the input file
-    if ((avformat_open_input(&av_format_context_, "", NULL, NULL)) < 0) {
+    if ((avformat_open_input(&av_format_context_, NULL, NULL, NULL)) != 0) {
       result = false;
-      break;
     } else {
       printf("OK: success open the input file\n");
     }
 
     result = true;
-    break;
-  } while (1);
 
   task_runner_->post(boost::bind(action_cb, result));
 }
@@ -265,14 +247,13 @@ void FFmpegDemuxer::OnReadFrameDone(
                encoded_avframe_stream_id == video_stream->stream_index()) {
       video_stream->EnqueueEncodedFrame(encoded_avframe);
     } else {
-      std::cout << __FILE__ << "<" << __LINE__ << ">" << std::endl;
     }
   }
   ReadFrameIfNeeded();
 }
 
-void FFmpegDemuxer::ReadPacketCB(unsigned char* buffer, int buffer_size) {
-  data_source_->read(buffer, buffer_size);
+int FFmpegDemuxer::ReadPacketCB(unsigned char* buffer, int buffer_size) {
+ return data_source_->read(buffer, buffer_size);
 }
 
 int64_t FFmpegDemuxer::SeekCB(int64_t offset, int whence) {
@@ -294,11 +275,12 @@ int64_t FFmpegDemuxer::SeekCB(int64_t offset, int whence) {
 int FFmpegDemuxer::FFmpegReadPacketCB(void* opaque, unsigned char* buffer,
                                       int buffer_size) {
   FFmpegDemuxer* ffmpeg_demuxer = static_cast<FFmpegDemuxer*>(opaque);
-  ffmpeg_demuxer->ReadPacketCB(buffer, buffer_size);
+  return ffmpeg_demuxer->ReadPacketCB(buffer, buffer_size);
 }
 int64_t FFmpegDemuxer::FFmpegSeekCB(void* opaque, int64_t offset, int whence) {
   FFmpegDemuxer* ffmpeg_demuxer = static_cast<FFmpegDemuxer*>(opaque);
   ffmpeg_demuxer->SeekCB(offset, whence);
+  return 0;
 }
 
 int64_t FFmpegDemuxer::EstimateStartTimeFromProbeAVPacketBuffer(

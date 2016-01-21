@@ -9,7 +9,7 @@
 #include "ffmpeg_demuxer_stream.h"
 #include "media/demuxer/ffmpeg_demuxer.h"
 #include "media/FFmpeg/ffmpeg_common.h"
-const int kMaxQueueSize = 4;
+const int kMaxQueueSize = 2<<6;
 
 namespace media {
 FFmpegDemuxerStream::FFmpegDemuxerStream(FFmpegDemuxer* demuxer,
@@ -41,25 +41,19 @@ DemuxerStream::Type FFmpegDemuxerStream::type() {
 void FFmpegDemuxerStream::EnqueueEncodedFrame(
     std::shared_ptr<EncodedAVFrame> frame) {
   encoded_avframe_queue_.push(frame);
+  switch (type_) {
+  case AUDIO:
+	  //std::cout << "[AUDIO] queue is empty" << std::endl;
+	  break;
+  case VIDEO:
+	  //std::cout << "[VIDEO] queue size:" << encoded_avframe_queue_.size()<<std::endl;
+	  break;
+  }
   if (read_cb_) {
     std::shared_ptr<EncodedAVFrame> av_frame = encoded_avframe_queue_.front();
     encoded_avframe_queue_.pop();
     read_cb_(av_frame);
     read_cb_ = NULL;
-  }
-}
-
-std::shared_ptr<EncodedAVFrame> FFmpegDemuxerStream::GetNextEncodedFrame() {
-  if (encoded_avframe_queue_.size() < kMaxQueueSize) {
-    demuxer_->NotifyDemuxerCapacityAvailable();
-  }
-  std::shared_ptr<EncodedAVFrame> encoded_avframe;
-  if (encoded_avframe_queue_.empty()) {
-    std::cout << "queue is empty" << std::endl;
-    return encoded_avframe;
-  } else {
-    encoded_avframe = encoded_avframe_queue_.front();
-    encoded_avframe_queue_.pop();
   }
 }
 
@@ -69,7 +63,14 @@ void FFmpegDemuxerStream::Read(ReadCB read_cb) {
   }
   std::shared_ptr<EncodedAVFrame> encoded_avframe;
   if (encoded_avframe_queue_.empty()) {
-    std::cout << "queue is empty" << std::endl;
+	  switch (type_) {
+	  case AUDIO:
+		  //std::cout << "[AUDIO] queue is empty" << std::endl;
+		  break;
+	  case VIDEO:
+		  //std::cout << "[VIDEO] queue is empty" << std::endl;
+		  break;
+	  }
     read_cb_ = read_cb;
   } else {
     encoded_avframe = encoded_avframe_queue_.front();

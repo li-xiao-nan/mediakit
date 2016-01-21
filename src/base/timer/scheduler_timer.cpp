@@ -1,5 +1,9 @@
 #include "scheduler_timer.h"
+
+#ifdef _WIN32
+#else
 #include <sys/time.h>
+#endif
 
 namespace MediaCore {
 
@@ -11,11 +15,15 @@ SchedulerTimer::SchedulerTimer()
 
 // time Uint: microsecond
 uint64_t SchedulerTimer::GetTicks() {
+  uint64_t result = 0;
+#ifdef _WIN32
+
+#else
   struct timeval tv;
   gettimeofday(&tv, 0);
-  uint64_t result = static_cast<uint64_t>(tv.tv_sec) * 1000000L;
+  result = static_cast<uint64_t>(tv.tv_sec) * 1000000L;
   result += tv.tv_usec;
-
+#endif
   return static_cast<uint64_t>(result / 1000.0);
 }
 

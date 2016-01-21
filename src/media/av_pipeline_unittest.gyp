@@ -112,7 +112,14 @@
       # ],
       'include_dirs': [
             '../../src',
+            '../third_party/boost/include',
+            '../third_party/ffmpeg/include',
+            '../third_party/freeglut/include',
+            '../third_party/sdl/include',
+            '../third_party/curl/include',
             '/opt/X11/include'
+      ],
+      'conditions': [
       ],
       'sources': [
         'av_pipeline.h',
@@ -131,8 +138,8 @@
         'base/video_frame.cpp',
         'base/wall_clock_time_source_impl.h',
         'base/wall_clock_time_source_impl.cpp',
-        '../third_party/glew/GL/glew.h',
-        '../third_party/glew/glew.c',
+        #'../third_party/glew/GL/glew.h',
+        #'../third_party/glew/glew.c',
         'demuxer/demuxer.h',
         'demuxer/demuxer.cpp',
         'demuxer/demuxer_stream.h',
@@ -201,14 +208,48 @@
          ['OS=="win"', {
            'msvs_settings': {
              'VCLinkerTool': {
-               'AdditionalDependencies': '',
-               'conditions': [
-                 ['library=="static_library"', {
-                   'AdditionalLibraryDirectories': '$(OutDir)\\lib'
-                 }]
-               ]
+               'ImageHasSafeExceptionHandlers' : 'false',
+               'AdditionalLibraryDirectories': [
+                  '$(OutDir)\\lib',
+                  '../third_party/boost/lib/win',
+                  '../third_party/freeglut/lib/win',
+                  '../third_party/glew/lib/<(CONFIGURATION_NAME)/win32',
+                  '../third_party/curl/lib/<(CONFIGURATION_NAME)/win32',
+                  '../third_party/ffmpeg/lib/win',
+                  '../third_party/sdl/lib/win/x86'
+                  ],
+               'AdditionalDependencies': [
+                  'libboost_thread-vc120-mt-gd-1_56.lib',
+                  'glew32sd.lib',
+				  'avcodec.lib',
+                  'avformat.lib',
+                  'avcodec.lib',
+                  'avutil.lib',
+				  'sdl.lib',
+                  'swresample.lib',
+                  'swscale.lib',
+                  'ws2_32.lib',
+                  'wldap32.lib',
+                  'libcurld.lib',
+                  'kernel32.lib',
+                  'user32.lib',
+                  'gdi32.lib',
+                  'winspool.lib',
+                  'comdlg32.lib',
+                  'advapi32.lib',
+                  'shell32.lib'
+                ],
              }
-           }
+           },
+          
+          'defines': [
+              'BUILDING_LIBCURL',
+              'DEBUGBUILD',
+              'CURL_STATICLIB',
+              'WIN32_LEAN_AND_MEAN',
+              'GLEW_STATIC',
+			  'WIN32'
+          ],
          }],
           ['OS=="mac"', {
             'mac_framework_dirs':[

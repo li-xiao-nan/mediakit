@@ -1,6 +1,7 @@
 #ifndef MEDIA_BASE_VIDEO_DECODER_CONFIG_H_
 #define MEDIA_BASE_VIDEO_DECODER_CONFIG_H_
 
+#include <stdint.h>
 #include <vector>
 
 namespace media {

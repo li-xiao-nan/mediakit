@@ -9,16 +9,18 @@ AudioFrame::AudioFrame(unsigned char* data, int data_size, int64_t pts) {
 }
 
 int AudioFrame::Read(uint8_t* data, int length) {
-  int current_size = data_size();
-  int read_data_length;
+  int current_size, can_read_size;
+  current_size = data_size();
+  can_read_size = current_size;
+
   if (length <= current_size) {
-    read_data_length = length;
+	  can_read_size = length;
   } else {
-    read_data_length = current_size;
+	  can_read_size = current_size;
   }
-  memcpy(data, &data_[offset_], length);
-  offset_ += length;
-  return read_data_length;
+  memcpy(data, &data_[offset_], can_read_size);
+  offset_ += can_read_size;
+  return can_read_size;
 }
 int AudioFrame::data_size() {
   return data_.size() - offset_;

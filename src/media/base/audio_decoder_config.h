@@ -1,6 +1,7 @@
 #ifndef MEDIA_BASE_AUDIO_DECODER_CONFIG_H_
 #define MEDIA_BASE_AUDIO_DECODER_CONFIG_H_
 
+#include <stdint.h>
 #include <vector>
 #include "sample_format.h"
 #include "channel_layout.h"

@@ -46,25 +46,27 @@ void FFmpegAudioDecoder::FFmpegDecode(
     const std::shared_ptr<EncodedAVFrame> av_packet,
     DecodeCB decode_cb) {
   int decode_count;
+  int packet_data_size = av_packet->size;
+  
   int result = avcodec_decode_audio4(av_codec_context_, av_frame_,
-                                     &decode_count, av_packet.get());
+		  &decode_count, av_packet.get());
   if (result < 0) {
-    state_ = STATE_OCCUR_ERROR;
-    decode_cb(STATUS_DECODE_ERROR);
-    return;
+	  state_ = STATE_OCCUR_ERROR;
+	  decode_cb(STATUS_DECODE_ERROR);
+	  return;
   }
 
   if (decode_count == 0 && !av_packet.get()) {
-    state_ = STATE_DECODE_COMPLETED;
-    decode_cb(STATUS_DECODE_COMPLETED);
-    return;
+	  state_ = STATE_DECODE_COMPLETED;
+	  decode_cb(STATUS_DECODE_COMPLETED);
+	  return;
   }
   std::shared_ptr<AudioFrame> audio_frame;
   AVFrameToAudioFrame(av_frame_, audio_frame, av_codec_context_);
   if (!audio_frame.get()) {
-    state_ = STATE_OCCUR_ERROR;
-    decode_cb(STATUS_DECODE_ERROR);
-    return;
+	  state_ = STATE_OCCUR_ERROR;
+	  decode_cb(STATUS_DECODE_ERROR);
+	  return;
   }
   output_cb_(audio_frame);
   decode_cb(STATUS_OK);

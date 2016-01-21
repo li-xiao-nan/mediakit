@@ -10,6 +10,9 @@
 #include "media/decoder/video_decoder.h"
 #include "media/demuxer/demuxer_stream_provider.h"
 #include "media/base/time_source.h"
+#ifdef GetCurrentTime
+#undef GetCurrentTime
+#endif
 
 namespace media {
 

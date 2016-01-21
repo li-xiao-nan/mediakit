@@ -4,8 +4,10 @@
 #include "boost/thread.hpp"
 #include <stdio.h>
 
-#include "third_party/glew/GL/glew.h"
-#include <GL/glut.h>
+extern "C"{
+#include "third_party/glew/include/GL/glew.h"
+}
+#include "GL/glut.h"
 
 #include "media/av_pipeline.h"
 #include "media/demuxer/ffmpeg_demuxer.h"
@@ -156,7 +158,7 @@ int main(int argc, char* argv[]) {
   boost::thread thread(boost::bind(&boost::asio::io_service::run, task_runner));
 
   // init datasoruce
-  std::string url = "/Users/linan/Downloads/1.mp4";
+  std::string url = "E:\\mediakit\\src\\media\\Debug\\1.mp4";
   net::Url newUrl(url);
   std::shared_ptr<net::IOChannel> data_source(
       net::IOChannel::CreateIOChannel(newUrl));
@@ -316,7 +318,6 @@ void updateTexture(std::shared_ptr<media::VideoFrame> image) {
     hasInitTex = true;
   } else {
 #ifdef USE_YUV
-
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texname[0]);
     glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, image->_yuvStride[0],

@@ -23,7 +23,6 @@ void RendererImpl::Initialize(DemuxerStreamProvider* demuxer_stream_provider,
   paint_cb_ = paint_cb;
   init_cb_ = init_cb;
   status_cb_ = status_cb;
-
   InitializeAudioRenderer();
 }
 
@@ -34,9 +33,6 @@ void RendererImpl::StartPlayingFrom(int64_t time_offset) {
   video_renderer_->StartPlayingFrom(time_offset);
   audio_renderer_->StartPlayingFrom(time_offset);
   time_source_->StartTicking();
-
-  // todo(lixiaonan) 实现 audioRenderer实现播放的部分
-  // audio_renderer_->StartPlayingFrome(time_offset);
 }
 void RendererImpl::SetPlaybackRate(float rate) {
 }

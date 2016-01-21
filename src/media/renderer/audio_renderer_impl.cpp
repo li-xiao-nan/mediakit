@@ -73,6 +73,10 @@ void AudioRendererImpl::SetPlaybackRate(float rate) {
 void AudioRendererImpl::SetVolume(float volume) {
 }
 void AudioRendererImpl::Render(uint8_t* data, int data_size) {
+
+	static int pre_timestamp = 0;
+	int64_t new_timestamp = get_time_cb_();
+	pre_timestamp = new_timestamp - pre_timestamp;
   memset(data, 0, data_size);
   ReadReadyFrameLocked();
   if (pending_paint_frames_.empty())
@@ -118,7 +122,6 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
   boost::mutex::scoped_lock lock(frame_queue_mutex_);
   static int64_t pre_timestamp;
   int64_t current_time = get_time_cb_();
-  std::cout << "interval:" << current_time - pre_timestamp << std::endl;
   pre_timestamp = current_time;
   for (int i = 0; i < ready_audio_frames_.size(); i++) {
     std::shared_ptr<AudioFrame> next_audio_frame = ready_audio_frames_.front();
@@ -126,14 +129,10 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
     if (next_frame_pts > current_time)
       return;
     int64_t time_delta = current_time - next_frame_pts;
-    std::cout << "current_time:" << current_time << "; next_frame_pts"
-              << next_frame_pts << std::endl;
-    if (time_delta <= 50) {
+	if (1) {
       pending_paint_frames_.push(next_audio_frame);
     }
-    std::cout << "size01:" << ready_audio_frames_.size() << std::endl;
     ready_audio_frames_.pop();
-    std::cout << "size02:" << ready_audio_frames_.size() << std::endl;
   }
 }
 
