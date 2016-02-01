@@ -1,8 +1,13 @@
+#include <math.h>
+
 #include <iostream>
+
 #include "media/renderer/sdl_audio_renderer_sink.h"
 
 namespace media {
-const int kSDLAudioSampleBufferSize = 256;
+const int kSDLMinAudioBufferSize = 512;
+const int kSDLAudioMaxCallbacksPerSec = 30;
+
 SdlAudioRendererSink::SdlAudioRendererSink() {
 }
 SdlAudioRendererSink::~SdlAudioRendererSink() {
@@ -32,7 +37,7 @@ void SdlAudioRendererSink::InitializeSDLAudio() {
   sdl_audio_spec_.channels = static_cast<uint8_t>(audio_parameters_.channel_count_);
   sdl_audio_spec_.callback = SdlAudioRendererSink::SdlAudioCallback;
   sdl_audio_spec_.userdata = this;
-  sdl_audio_spec_.samples = kSDLAudioSampleBufferSize;
+  sdl_audio_spec_.samples = std::max(kSDLMinAudioBufferSize, 2 << static_cast<int>((log2(sdl_audio_spec_.freq / kSDLAudioMaxCallbacksPerSec))));
   int sdl_init_result = SDL_Init(SDL_INIT_AUDIO);
   SDL_AudioSpec spec;
   if (SDL_OpenAudio(&sdl_audio_spec_, &spec) < 0) {

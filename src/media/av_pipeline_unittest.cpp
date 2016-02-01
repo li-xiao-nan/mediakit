@@ -158,7 +158,11 @@ int main(int argc, char* argv[]) {
   boost::thread thread(boost::bind(&boost::asio::io_service::run, task_runner));
 
   // init datasoruce
-  std::string url = "E:\\mediakit\\src\\media\\Debug\\1.mp4";
+  if (argc < 2){
+      std::cout << "you need input video file!" << std::endl;
+      exit(0);
+  }
+  std::string url(argv[1]);
   net::Url newUrl(url);
   std::shared_ptr<net::IOChannel> data_source(
       net::IOChannel::CreateIOChannel(newUrl));
