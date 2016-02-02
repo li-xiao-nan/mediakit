@@ -11,7 +11,7 @@
 #include "media/decoder/audio_decoder.h"
 #include "media/decoder/video_decoder.h"
 
-const int kMaxAudioFrameQueueSize = 2<<5;
+const int kMaxAudioFrameQueueSize = 2<<2;
 
 namespace media {
 

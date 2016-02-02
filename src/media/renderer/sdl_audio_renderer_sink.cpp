@@ -35,7 +35,7 @@ void SdlAudioRendererSink::InitializeSDLAudio() {
   sdl_audio_spec_.freq = audio_parameters_.sample_rate_;
   sdl_audio_spec_.format = AUDIO_S16SYS;  // audio_parameters_.sample_format_;
   sdl_audio_spec_.channels = static_cast<uint8_t>(audio_parameters_.channel_count_);
-  sdl_audio_spec_.callback = SdlAudioRendererSink::SdlAudioCallback;
+  sdl_audio_spec_.callback = SdlAudioRendererSink::SDLAudioCallback;
   sdl_audio_spec_.userdata = this;
   sdl_audio_spec_.samples = std::max(kSDLMinAudioBufferSize, 2 << static_cast<int>((log2(sdl_audio_spec_.freq / kSDLAudioMaxCallbacksPerSec))));
   int sdl_init_result = SDL_Init(SDL_INIT_AUDIO);
@@ -48,7 +48,7 @@ void SdlAudioRendererSink::InitializeSDLAudio() {
   init_cb_(true);
 }
 
-void SdlAudioRendererSink::SdlAudioCallback(void* opaque,
+void SdlAudioRendererSink::SDLAudioCallback(void* opaque,
                                             uint8_t* buffer,
                                             int buffer_length) {
   SdlAudioRendererSink* sdl_audio_renderer_sink =

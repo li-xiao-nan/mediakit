@@ -2,7 +2,8 @@
 #include "media/decoder/video_frame_stream.h"
 
 namespace media {
-const int kMaxPendingPaintFrameCount = 2<<5;
+const int kMaxPendingPaintFrameCount = 2<<2;
+const int kMaxTimeDelta = 100; //ms
 
 VideoRendererImpl::VideoRendererImpl(
     TaskRunner* task_runner,
@@ -97,13 +98,15 @@ VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
                                                int64_t next_frame_pts) {
   if (next_frame_pts > current_time)
     return OPERATION_WAIT_FOR_PAINT;
+
   int64_t time_delta = current_time - next_frame_pts;
 
-  if (time_delta <= 100) {
+  if (time_delta <= kMaxTimeDelta) {
     return OPERATION_PAINT_IMMEDIATELY;
   } else {
     return OPERATION_DROP_FRAME;
   }
+
 }
 
 void VideoRendererImpl::OnReadFrameDone(
