@@ -35,17 +35,17 @@ void AudioDecoderConfig::Initialize(AudioCodec audio_codec,
       bytes_per_channel_ * ChannelLayoutToChannelCount(channel_layout_);
 }
 
-int AudioDecoderConfig::channel_count() {
+int AudioDecoderConfig::channel_count() const {
   return ChannelLayoutToChannelCount(channel_layout_);
 }
 
 AudioCodec AudioDecoderConfig::codec() { return audio_codec_; }
 
-SampleFormat AudioDecoderConfig::sample_format() { return sample_format_; }
+SampleFormat AudioDecoderConfig::sample_format() const { return sample_format_; }
 
-int AudioDecoderConfig::sample_rate() { return sample_per_second_; }
+int AudioDecoderConfig::sample_rate() const { return sample_per_second_; }
 
-ChannelLayout AudioDecoderConfig::channel_layout() { return channel_layout_; }
+ChannelLayout AudioDecoderConfig::channel_layout() const { return channel_layout_; }
 
 uint8_t* AudioDecoderConfig::extra_data() {
   if (extra_data_.empty())

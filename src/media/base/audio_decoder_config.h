@@ -26,15 +26,15 @@ class AudioDecoderConfig {
                   ChannelLayout channle_layout, int sample_per_second,
                   uint8_t* extradata, int extradata_size);
   AudioCodec codec();
-  SampleFormat sample_format();
-  int sample_rate();
-  ChannelLayout channel_layout();
+  SampleFormat sample_format() const;
+  int sample_rate() const;
+  ChannelLayout channel_layout() const ;
   uint8_t* extra_data();
   int extra_data_size();
   int bytes_per_channel();
   int bytes_per_frame();
   void ShowAudioConfigInfo();
-  int channel_count();
+  int channel_count() const;
 
  private:
   const char* AudioCodecToString(AudioCodec audio_codec);

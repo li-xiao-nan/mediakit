@@ -48,6 +48,8 @@ class AudioRendererImpl : public AudioRenderer,
                        std::shared_ptr<AudioFrame> audio_frame);
   void ReadFrameIfNeeded();
   void ReadReadyFrameLocked();
+  void InitAudioRenderSink(const AudioDecoderConfig& audio_decoder_config,
+                           AudioRendererSink::InitCB init_cb);
 
   bool pending_read_;
   std::queue<std::shared_ptr<AudioFrame> > ready_audio_frames_;

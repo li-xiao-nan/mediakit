@@ -20,7 +20,7 @@ class SdlAudioRendererSink : public AudioRendererSink {
   virtual void Stop() override;
 
  private:
-  static void SdlAudioCallback(void* opaque,
+  static void SDLAudioCallback(void* opaque,
                                uint8_t* buffer,
                                int buffer_length);
   void InitializeSDLAudio();
