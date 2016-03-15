@@ -38,7 +38,7 @@ void AudioFrameStream::Read(ReadCB read_cb) {
   }
 
   read_cb_ = read_cb;
-  DecodeFrameIfNeeded();
+  task_runner_->post(boost::bind(&AudioFrameStream::DecodeFrameIfNeeded, this));
 }
 
 void AudioFrameStream::DecoderOutputCB(
