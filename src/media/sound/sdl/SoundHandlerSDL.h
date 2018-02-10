@@ -23,8 +23,8 @@
 #ifndef SOULDHANDLERSDL_H_
 #define SOULDHANDLERSDL_H_
 #include "media/sound/SoundHandler.h"
-#include "SDL2/SDL_audio.h"
-#include "SDL2/SDL.h"
+#include "SDL_audio.h"
+#include "SDL.h"
 
 namespace MediaCore {
 
