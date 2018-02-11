@@ -46,7 +46,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\..\..\third_party\sdl\include\;$(SolutionDir)\..\..\..\third_party\glew\include\;$(SolutionDir)\..\..\..\third_party\freeglut\include\;$(SolutionDir)\..\..\..\third_party\ffmpeg\include\;$(SolutionDir)\..\..\..\third_party\boost\include\;$(SolutionDir)\..\..\..\third_party\curl\include\;$(SolutionDir)\..\..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>

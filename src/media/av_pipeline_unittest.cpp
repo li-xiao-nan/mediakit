@@ -291,15 +291,15 @@ void display(void) {
     videoW = videoFrame->_w;
     updateTexture(videoFrame);
   }
-  float playingH = videoH * (winW * 1.0) / (videoW * 1.0);
-  float playingYPos = (winH * 1.0 - playingH) / 2.0;
+  float playingH = videoH * (winW * 1.0f) / (videoW * 1.0f);
+  float playingYPos = (winH * 1.0f - playingH) / 2.0f;
   glBegin(GL_QUADS);
   glTexCoord2f(0.0, 0.0);
   glVertex2f(0.0, playingYPos);
   glTexCoord2f(1.0, 0.0);
-  glVertex2f(winW, playingYPos);
+  glVertex2f(winW*1.0f, playingYPos);
   glTexCoord2f(1.0, 1.0);
-  glVertex2f(winW, playingYPos + playingH);
+  glVertex2f(winW*1.0f, playingYPos + playingH);
   glTexCoord2f(0.0, 1.0);
   glVertex2f(0.0, playingYPos + playingH);
   glEnd();
