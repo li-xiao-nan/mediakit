@@ -83,7 +83,7 @@
     <ClCompile Include="..\..\..\..\media\base\audio_frame.cpp" />
     <ClCompile Include="..\..\..\..\media\base\video_decoder_config.cpp" />
     <ClCompile Include="..\..\..\..\media\base\video_frame.cpp" />
-    <ClCompile Include="..\..\..\..\media\base\wall_clock_time_source_impl.cpp" />
+    <ClCompile Include="..\..\..\..\media\base\playback_clock.cpp" />
     <ClCompile Include="..\..\..\..\media\decoder\audio_frame_stream.cpp" />
     <ClCompile Include="..\..\..\..\media\decoder\ffmpeg_audio_decoder.cpp" />
     <ClCompile Include="..\..\..\..\media\decoder\ffmpeg_video_decoder.cpp" />
@@ -127,7 +127,7 @@
     <ClInclude Include="..\..\..\..\media\base\time_source.h" />
     <ClInclude Include="..\..\..\..\media\base\video_decoder_config.h" />
     <ClInclude Include="..\..\..\..\media\base\video_frame.h" />
-    <ClInclude Include="..\..\..\..\media\base\wall_clock_time_source_impl.h" />
+    <ClInclude Include="..\..\..\..\media\base\playback_clock.h" />
     <ClInclude Include="..\..\..\..\media\decoder\audio_decoder.h" />
     <ClInclude Include="..\..\..\..\media\decoder\audio_frame_stream.h" />
     <ClInclude Include="..\..\..\..\media\decoder\ffmpeg_audio_decoder.h" />

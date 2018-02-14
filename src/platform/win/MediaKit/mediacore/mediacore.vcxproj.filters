@@ -81,9 +81,6 @@
     <ClCompile Include="..\..\..\..\media\base\video_frame.cpp">
       <Filter>media\base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\..\media\base\wall_clock_time_source_impl.cpp">
-      <Filter>media\base</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\..\media\decoder\audio_frame_stream.cpp">
       <Filter>media\decoder</Filter>
     </ClCompile>
@@ -137,6 +134,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\base\timer\wall_clock_timer.cpp">
       <Filter>base\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\media\base\playback_clock.cpp">
+      <Filter>media\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -195,9 +195,6 @@
       <Filter>media\base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\media\base\video_frame.h">
-      <Filter>media\base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\..\media\base\wall_clock_time_source_impl.h">
       <Filter>media\base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\media\decoder\audio_decoder.h">
@@ -286,6 +283,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\base\timer\wall_clock_timer.h">
       <Filter>base\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\media\base\playback_clock.h">
+      <Filter>media\base</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
