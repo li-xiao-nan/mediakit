@@ -42,14 +42,14 @@ size_t CurlStreamFile::recv(void *buf, size_t size, size_t nmemb, void *userp) {
   CurlStreamFile *stream = static_cast<CurlStreamFile *>(userp);
   return stream->cache(buf, size * nmemb);
 }
-std::streamsize CurlStreamFile::cache(void *from, std::streamsize size) {
+size_t CurlStreamFile::cache(void *from, size_t size) {
   // take note of current position
   long curr_pos = std::ftell(_cache);
 
   // seek to the end
   std::fseek(_cache, 0, SEEK_END);
 
-  std::streamsize wrote = std::fwrite(from, 1, size, _cache);
+  size_t wrote = std::fwrite(from, 1, size, _cache);
   if (wrote < 1) {
     throw base::SnailException(string("writting to cache file failed"));
   }
@@ -197,7 +197,7 @@ void CurlStreamFile::init(const string &url, const string &cachefile) {
   if (!_cache) {
     throw base::SnailException("Could not create temporary cache file");
   }
-  _cachefd = fileno(_cache);
+  _cachefd = _fileno(_cache);
 
   CURLcode ccode;
 // Overrid cURL's default verification of ssl certificates
@@ -280,14 +280,14 @@ CurlStreamFile::~CurlStreamFile() {
   }
 }
 
-std::streamsize CurlStreamFile::read(void *dst, std::streamsize bytes) {
+size_t CurlStreamFile::read(void *dst, size_t bytes) {
   if (eof() || _error) return 0;
   fillCache(bytes + tell());
   if (_error) return 0;
   return std::fread(dst, 1, bytes, _cache);
 }
-std::streamsize CurlStreamFile::readNonBlocking(void *dst,
-                                                std::streamsize bytes) {
+size_t CurlStreamFile::readNonBlocking(void *dst,
+                                                size_t bytes) {
   if (eof() || _error) return 0;
   fillCacheNonBlocking();
   if (_error) {
@@ -295,7 +295,7 @@ std::streamsize CurlStreamFile::readNonBlocking(void *dst,
                  "throw an exception" << std::endl;
     return 0;
   }
-  std::streamsize actuallyRead = std::fread(dst, 1, bytes, _cache);
+  size_t actuallyRead = std::fread(dst, 1, bytes, _cache);
   if (_running) {
     // if we're still running drop any eof flag
     // on the cache
@@ -308,27 +308,28 @@ bool CurlStreamFile::eof() const {
   return ret;
 }
 bool CurlStreamFile::bad() const { return _error; }
-std::streampos CurlStreamFile::tell() const {
-  std::streampos ret = std::ftell(_cache);
+long CurlStreamFile::tell() const {
+  long ret = std::ftell(_cache);
   return ret;
 }
 
-bool CurlStreamFile::seek(std::streampos pos) {
+int CurlStreamFile::seek(long pos) {
+  int result = -1;
   if (pos < 0) {
     std::ostringstream os;
     os << "CurlStreamFile: can't seek to negative absolute position" << pos;
     throw base::SnailException(os.str());
   }
   fillCache(pos);
-  if (_error) return false;
-  if (_cached < pos) {
-    return false;
+  if (_error || _cached < pos) {
+    return result;
   }
-  if (std::fseek(_cache, pos, SEEK_SET) == -1) {
+
+  result = std::fseek(_cache, pos, SEEK_SET);
+  if (result == -1) {
     std::cout << "warning : fseek failed" << std::endl;
-    return false;
   }
-  return true;
+  return result;
 }
 void CurlStreamFile::go_to_end() {
   CURLMcode mcode;

@@ -30,7 +30,8 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
     STATE_SEEKING,
     STATE_PLAYING,
     STATE_STOPING,
-    STATE_STOPPED
+    STATE_STOPPED,
+    STATE_ERROR
   };
 
   AVPipeline(TaskRunner* task_runner);

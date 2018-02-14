@@ -16,10 +16,6 @@ extern "C" {
 #define UINT64_C(c) (c##ULL)
 #endif
 
-#ifndef PRId64
-#define PRId64 "lld"
-#endif
-
 #include <libavutil/imgutils.h>
 #include <libavutil/samplefmt.h>
 #include <libavutil/mathematics.h>
@@ -29,8 +25,6 @@ extern "C" {
 #include <libswscale/swscale.h>
 #include <libswresample/swresample.h>
 }
-
-#include <stdint.h>
 
 namespace media {
 #define EncodedAVFrame AVPacket

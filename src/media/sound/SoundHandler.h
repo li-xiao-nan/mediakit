@@ -42,7 +42,7 @@ public:
 	virtual InputStream* attachAuxStreamer(auxStreamPtr ptr, void *uData);
 	virtual void fetchSamples(int16_t *to, uint16_t nSamples);
 	virtual void mix(int16_t *outSamples, int16_t *inSamples,
-			uint16_t nSamples, float volume) = 0;
+			uint16_t nSamples, int volume) = 0;
 	bool hasInputStreams() const{
 		return !_inputStreams.empty();
 	}

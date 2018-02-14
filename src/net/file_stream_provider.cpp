@@ -31,7 +31,7 @@ FileStreamProvider::FileStreamProvider(FILE* fp)
   fseek(_fp, 0, SEEK_SET);
   printf("position = %ld\n", ftell(_fp));
 }
-std::streamsize FileStreamProvider::read(void* dst, std::streamsize num) {
+size_t FileStreamProvider::read(void* dst, size_t num) {
   if (_fp) {
     int cont = 0;
     cont = fread(dst, 1, num, _fp);
@@ -40,18 +40,18 @@ std::streamsize FileStreamProvider::read(void* dst, std::streamsize num) {
   }
   return -1;
 }
-std::streampos FileStreamProvider::tell() const {
+long FileStreamProvider::tell() const {
   if (_fp) {
     return ftell(_fp);
   }
   return -1;
 }
-bool FileStreamProvider::seek(std::streampos p) {
+int FileStreamProvider::seek(long p) {
+  int result = -1;
   if (_fp) {
-    int ret = fseek(_fp, p, SEEK_SET);
-    return ret;
+    result = fseek(_fp, p, SEEK_SET);
   }
-  return false;
+  return result;
 }
 void FileStreamProvider::go_to_end() {
   if (_fp) {
@@ -60,7 +60,7 @@ void FileStreamProvider::go_to_end() {
 }
 bool FileStreamProvider::eof() const {
   if (_fp) {
-    return feof(_fp);
+    return feof(_fp) == 0x0010;
   }
   return true;
 }

@@ -99,6 +99,7 @@ AVPipeline::PipelineState AVPipeline::GetNextState() {
     default:
       assert(NULL);
   }
+  return STATE_ERROR;
 }
 void AVPipeline::SetState(AVPipeline::PipelineState state) { state_ = state; }
 

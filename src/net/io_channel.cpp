@@ -76,8 +76,8 @@ IOChannel::read_byte(){
 	}
 	return u;
 }
-std::streamsize
-IOChannel::write(const void*,std::streamsize){
+size_t
+IOChannel::write(const void*,size_t num){
 	return 1;
 }
 

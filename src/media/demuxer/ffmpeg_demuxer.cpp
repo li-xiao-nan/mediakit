@@ -55,7 +55,7 @@ int64_t FFmpegDemuxer::GetDuration() { return duration_; }
 int64_t FFmpegDemuxer::GetTimelineOffset() { return 0; }
 
 DemuxerStream* FFmpegDemuxer::GetDemuxerStream(DemuxerStream::Type type) {
-  for (int i = 0; i < streams_.size(); i++) {
+  for (size_t i = 0; i < streams_.size(); i++) {
     if (streams_[i]->type() == type) {
       return streams_[i];
     }
@@ -256,7 +256,7 @@ int FFmpegDemuxer::ReadPacketCB(unsigned char* buffer, int buffer_size) {
  return data_source_->read(buffer, buffer_size);
 }
 
-int64_t FFmpegDemuxer::SeekCB(int64_t offset, int whence) {
+long FFmpegDemuxer::SeekCB(long offset, int whence) {
   if (whence == SEEK_SET) {
     if (offset < 0)
       return -1;
@@ -279,7 +279,7 @@ int FFmpegDemuxer::FFmpegReadPacketCB(void* opaque, unsigned char* buffer,
 }
 int64_t FFmpegDemuxer::FFmpegSeekCB(void* opaque, int64_t offset, int whence) {
   FFmpegDemuxer* ffmpeg_demuxer = static_cast<FFmpegDemuxer*>(opaque);
-  ffmpeg_demuxer->SeekCB(offset, whence);
+  ffmpeg_demuxer->SeekCB(static_cast<long>(offset), whence);
   return 0;
 }
 
@@ -309,7 +309,7 @@ int64_t FFmpegDemuxer::EstimateStartTimeFromProbeAVPacketBuffer(
 }
 
 void FFmpegDemuxer::ShowMediaConfigInfo() {
-  for (int i = 0; i < streams_.size(); i++) {
+  for (size_t i = 0; i < streams_.size(); i++) {
     streams_[i]->ShowConfigInfo();
   }
 }

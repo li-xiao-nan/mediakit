@@ -8,7 +8,7 @@ namespace media {
 VideoFrameStream::VideoFrameStream(TaskRunner* task_runner,
                                    const VecVideoDecoders& vec_video_decoders)
     : task_runner_(task_runner) {
-  for (int i = 0; i < vec_video_decoders.size(); i++) {
+  for (size_t i = 0; i < vec_video_decoders.size(); i++) {
     vec_video_decoders_.push_back(vec_video_decoders[i]);
   }
 }

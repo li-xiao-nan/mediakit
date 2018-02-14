@@ -3,7 +3,7 @@
 
 namespace media {
 const int kMaxPendingPaintFrameCount = 2<<2;
-const int kMaxTimeDelta = 100; //ms
+const int kMaxTimeDelta = 100;  // ms
 
 VideoRendererImpl::VideoRendererImpl(
     TaskRunner* task_runner,
@@ -13,7 +13,7 @@ VideoRendererImpl::VideoRendererImpl(
       task_runner_(task_runner),
       video_frame_stream_(
           new VideoFrameStream(task_runner, vec_video_decoders)),
-	  droped_frame_count_(0){
+          droped_frame_count_(0) {
 }
 
 void VideoRendererImpl::Initialize(DemuxerStream* demuxer_stream,
@@ -60,19 +60,19 @@ void VideoRendererImpl::SetPlaybackRate(float rate) {
 }
 
 void VideoRendererImpl::ThreadMain() {
-	for (;;) {
+  for (;;) {
     boost::mutex::scoped_lock lock(ready_frames_lock_);
-	int64_t beg_time = get_time_cb_();
+    int64_t beg_time = get_time_cb_();
     if (pending_paint_frames_.empty()) {
       ReadFrameIfNeeded();
-	  int64_t begin_wait_timestamp = get_time_cb_();
+      int64_t begin_wait_timestamp = get_time_cb_();
       frame_available_.wait(lock);
     }
 
-	std::shared_ptr<VideoFrame> next_frame = pending_paint_frames_.front();
+    std::shared_ptr<VideoFrame> next_frame = pending_paint_frames_.front();
     int64_t next_frame_timestamp = next_frame->timestamp_;
-	static int64_t pre_timestamp;
-	int64_t current_time = get_time_cb_();
+    static int64_t pre_timestamp;
+    int64_t current_time = get_time_cb_();
 
     FrameOperation operation =
         DetermineNextFrameOperation(current_time, next_frame_timestamp);
@@ -106,7 +106,6 @@ VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
   } else {
     return OPERATION_DROP_FRAME;
   }
-
 }
 
 void VideoRendererImpl::OnReadFrameDone(

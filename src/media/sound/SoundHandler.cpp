@@ -88,7 +88,7 @@ void SoundHandler::fetchSamples(int16_t *to, uint16_t nSamples){
 	if(isPaused()){
 		return ;
 	}
-	float  finalVolumeFact = getFinalVolume()/100.0;
+	int  finalVolumeFact = getFinalVolume()/100;
 	std::fill(to, to+nSamples, 0);
 	//call SnailPlayer or Sound audio callbacks
 	if(!_inputStreams.empty()){

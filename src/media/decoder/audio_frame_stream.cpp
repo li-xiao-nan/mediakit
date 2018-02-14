@@ -5,7 +5,7 @@ namespace media {
 AudioFrameStream::AudioFrameStream(TaskRunner* task_runner,
                                    const VecAudioDecoders& decoders)
     : task_runner_(task_runner) {
-  for (int i = 0; i < decoders.size(); i++) {
+  for (size_t i = 0; i < decoders.size(); i++) {
     vec_decoders_.push_back(decoders[i]);
   }
 }

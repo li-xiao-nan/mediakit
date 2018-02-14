@@ -36,7 +36,7 @@ public:
 	//see dox in SoundHandler.h
 	void fetchSamples(int16_t* to, uint16_t nSamples);
 	virtual void mix(int16_t *outSamples, int16_t *inSamples,
-			uint16_t nSamples, float volume);
+			uint16_t nSamples, int volume);
     virtual void OpenAudio(int smaples_rate, uint8_t channel_count);
 private:
 	SDL_AudioSpec _audioSpec;

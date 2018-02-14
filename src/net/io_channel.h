@@ -19,19 +19,19 @@ public:
 	unsigned char read_le16();
 
 	unsigned char read_byte();
-	virtual std::streamsize read(void* dst, std::streamsize num) =0;
-	virtual std::streamsize readNonBlocking(void* dst, std::streamsize num){
+	virtual size_t read(void* dst, size_t num) =0;
+	virtual size_t readNonBlocking(void* dst, size_t num){
 		return read(dst,num);
 	}
 
-	virtual std::streamsize write(const void* src, std::streamsize num);
+	virtual size_t write(const void* src, size_t num);
 
 	int read_string(char* dst, int max_length);
 
 	float read_float32();
 	//return current stream position
-	virtual std::streampos tell() const  = 0;
-	virtual bool seek(std::streampos p) = 0;
+	virtual long tell() const  = 0;
+	virtual int seek(long p) = 0;
 	virtual void go_to_end() = 0;
 	virtual bool eof() const =0;
 	virtual bool bad() const = 0;

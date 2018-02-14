@@ -91,7 +91,7 @@ void SoundHandlerSDL::fetchSamples(int16_t *to, uint16_t nSamples){
 }
 
 void SoundHandlerSDL::mix(int16_t *outSamples, int16_t *inSamples,
-		uint16_t nSamples, float volume){
+		uint16_t nSamples, int volume){
 	Uint8 *out = reinterpret_cast<Uint8*>(outSamples);
 	Uint8 *in = reinterpret_cast<Uint8*>(inSamples);
 	uint16_t nBytes = nSamples*2;

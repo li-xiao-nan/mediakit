@@ -77,7 +77,7 @@ void AudioRendererImpl::SetVolume(float volume) {
 
 void AudioRendererImpl::Render(uint8_t* data, int data_size) {
 
-	static int pre_timestamp = 0;
+	static int64_t pre_timestamp = 0;
 	int64_t new_timestamp = get_time_cb_();
 	pre_timestamp = new_timestamp - pre_timestamp;
   memset(data, 0, data_size);
@@ -127,7 +127,7 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
   static int64_t pre_timestamp;
   int64_t current_time = get_time_cb_();
   pre_timestamp = current_time;
-  for (int i = 0; i < ready_audio_frames_.size(); i++) {
+  for (size_t i = 0; i < ready_audio_frames_.size(); i++) {
     std::shared_ptr<AudioFrame> next_audio_frame = ready_audio_frames_.front();
     int64_t next_frame_pts = next_audio_frame->pts();
     if (next_frame_pts > current_time)

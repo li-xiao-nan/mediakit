@@ -29,9 +29,9 @@ namespace net {
 class FileStreamProvider: public IOChannel{
 public:
 	FileStreamProvider(FILE* fp);
-	virtual std::streamsize read(void* dst, std::streamsize num);
-	virtual std::streampos tell() const;
-	virtual bool seek(std::streampos p);
+	virtual size_t read(void* dst, size_t num);
+	virtual long tell() const;
+	virtual int seek(long p);
 	virtual void go_to_end();
 	virtual bool eof() const;
 	virtual bool bad() const ;

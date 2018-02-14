@@ -7,6 +7,14 @@
 namespace media {
 class VideoFrame {
  public:
+     class TimeRecoder{
+     public:
+         int _frameNo;
+         int _decodeExpendTime;
+         int _addQueueTime;
+         int _displayTime;
+     };
+
   enum Format {
     UNKNOWN,
     YUV,
@@ -30,6 +38,7 @@ class VideoFrame {
   int _yuvLineCnt[3];
   int64_t _pts;
   int64_t timestamp_;
+  TimeRecoder _timeRecoder;
 };
 }  // namespace media
 

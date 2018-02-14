@@ -20,13 +20,13 @@ public:
 	~CurlStreamFile();
 
 	//see dox in IOChannel.h
-	virtual std::streamsize read(void *dst, std::streamsize bytes);
-	virtual std::streamsize readNonBlocking(void* dst, std::streamsize bytes);
+	virtual size_t read(void *dst, size_t bytes);
+	virtual size_t readNonBlocking(void* dst, size_t bytes);
 	virtual bool eof() const;
 	virtual bool bad() const;
-	virtual std::streampos tell() const ; // return the global position within the file
+	virtual long tell() const ; // return the global position within the file
 	virtual void go_to_end();
-	virtual bool seek(std::streampos pos);
+	virtual int seek(long pos);
 	//return the size of the stream
 	// if size of the stream is unknown, 0 is returned .
 	//in that case you might try calling this function again after filling
@@ -70,7 +70,7 @@ private:
 	//will call libcurl routines to fetch data
 	void fillCacheNonBlocking();
 	//appedn sz bytes to the cache;
-	std::streamsize cache(void* from, std::streamsize sz);
+	size_t cache(void* from, size_t sz);
 
 	//callback for libcurl ,will  be called
 	//by fillCache() and will call cache();
