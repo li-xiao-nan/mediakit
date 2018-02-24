@@ -39,6 +39,7 @@ class FFmpegVideoDecoder : public VideoDecoder {
 
   bool ConfigureDecoder(bool low_delay);
   void ReleaseFFmpegResource();
+  int64_t GetPlaybackTime();
 
   AVCodecContext* av_codec_context_;
   TaskRunner* task_runner_;

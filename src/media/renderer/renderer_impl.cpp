@@ -1,18 +1,37 @@
-#include "renderer_impl.h"
+﻿#include "renderer_impl.h"
 
 #include "boost/bind.hpp"
-
-#include "media/base/wall_clock_time_source_impl.h"
+#include "media/base/playback_clock.h" 
 
 namespace media {
+
+std::map<int, std::shared_ptr<TimeSource>> RendererImpl::playback_clock_map_;
+
+std::shared_ptr<TimeSource> RendererImpl::GetPlaybackClock(int pipelineId){
+  std::map<int, std::shared_ptr<TimeSource>>::iterator iter =
+    playback_clock_map_.find(pipelineId);
+
+  if (iter == playback_clock_map_.end()) {
+    return NULL;
+    }
+  return iter->second;
+}
+
 RendererImpl::RendererImpl(TaskRunner* task_runner,
                            std::shared_ptr<AudioRenderer> audio_renderer,
                            std::shared_ptr<VideoRenderer> video_renderer)
     : task_runner_(task_runner),
       state_(STATE_UNINITIALIZED),
-      time_source_(new WallClockTimeSourceImpl()),
+      playback_clock_(new PlaybackClock()),
       audio_renderer_(audio_renderer),
       video_renderer_(video_renderer) {
+  // TODO(lixiaonan): 暂时不添加多个pipeline实例的ID管理模块，默认ID为0，后续需要添加，并修改此处代码
+  playback_clock_map_.insert(std::pair<int, std::shared_ptr<TimeSource>>(0, playback_clock_));
+}
+
+RendererImpl::~RendererImpl(){
+  // TODO(lixiaonan): 暂时不添加多个pipeline实例的ID管理模块，默认ID为0，后续需要添加，并修改此处代码
+  playback_clock_map_.erase(0);
 }
 
 void RendererImpl::Initialize(DemuxerStreamProvider* demuxer_stream_provider,
@@ -29,13 +48,14 @@ void RendererImpl::Initialize(DemuxerStreamProvider* demuxer_stream_provider,
 void RendererImpl::StartPlayingFrom(int64_t time_offset) {
   if (state_ != STATE_NORMAL)
     return;
-  time_source_->SetStartTime(time_offset);
+  playback_clock_->SetStartTime(time_offset);
   video_renderer_->StartPlayingFrom(time_offset);
   audio_renderer_->StartPlayingFrom(time_offset);
-  time_source_->StartTicking();
+  playback_clock_->StartTicking();
 }
 void RendererImpl::SetPlaybackRate(float rate) {
 }
+
 void RendererImpl::SetVolume(float volume) {
 }
 
@@ -63,13 +83,12 @@ void RendererImpl::InitializeVideoRenderer() {
 }
 
 void RendererImpl::OnInitializeVideoRendererDone(PipelineStatus status) {
-  // TODO(lixiaonan):增加 init audio renderer的初始化状态处理
+  // TODO(lixiaonan): 增加 init audio renderer的初始化状态处理
   state_ = status == PIPELINE_OK ? STATE_NORMAL : STATE_NORMAL;
   init_cb_(status);
 }
-
 int64_t RendererImpl::GetCurrentTime() {
-  return time_source_->GetCurrentMediaTime();
+  return playback_clock_->GetCurrentMediaTime();
 }
 
 }  // namespace media

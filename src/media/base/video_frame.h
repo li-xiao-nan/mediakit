@@ -9,10 +9,14 @@ class VideoFrame {
  public:
      class TimeRecoder{
      public:
+        
+     public:
          int _frameNo;
          int _decodeExpendTime;
          int _addQueueTime;
-         int _displayTime;
+         int64_t _pst;
+         int64_t _popupTime;
+         std::wstring _renderResult;
      };
 
   enum Format {
@@ -28,6 +32,12 @@ class VideoFrame {
 
   unsigned char* begin() const { return _data; }
 
+  static int frame_count_base_;
+private:
+  int GetNextFrameNo();
+
+public:
+  int frame_no_;
   unsigned int _w;
   unsigned int _h;
   Format _format;

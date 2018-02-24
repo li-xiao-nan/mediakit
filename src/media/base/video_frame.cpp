@@ -2,6 +2,9 @@
 
 namespace media {
 
+
+int VideoFrame::frame_count_base_ = 0;
+
 VideoFrame::VideoFrame(int w, int h, enum Format format)
     : _w(w), _h(h), _format(format), _data(0), _pts(0) {
   switch (_format) {
@@ -38,6 +41,9 @@ VideoFrame::VideoFrame(int w, int h, enum Format format)
     default:
       break;
   }  // switch(_type)
+
+  frame_no_ = GetNextFrameNo();
+  _timeRecoder._frameNo = frame_no_;
 }
 
 VideoFrame::~VideoFrame() {
@@ -53,6 +59,10 @@ VideoFrame::~VideoFrame() {
     // free(_yuvData);
     free(_yuv);
   }
+}
+
+int VideoFrame::GetNextFrameNo() {
+  return ++frame_count_base_;
 }
 
 }  // namespace media

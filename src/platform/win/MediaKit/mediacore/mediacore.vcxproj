@@ -47,7 +47,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\..\third_party\sdl\include\;$(SolutionDir)\..\..\..\third_party\glew\include\;$(SolutionDir)\..\..\..\third_party\freeglut\include\;$(SolutionDir)\..\..\..\third_party\ffmpeg\include\;$(SolutionDir)\..\..\..\third_party\boost\include\;$(SolutionDir)\..\..\..\third_party\curl\include\;$(SolutionDir)\..\..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\..\..\..\third_party\include\;$(SolutionDir)\..\..\..\third_party\sdl\include\;$(SolutionDir)\..\..\..\third_party\glew\include\;$(SolutionDir)\..\..\..\third_party\freeglut\include\;$(SolutionDir)\..\..\..\third_party\ffmpeg\include\;$(SolutionDir)\..\..\..\third_party\boost\include\;$(SolutionDir)\..\..\..\third_party\curl\include\;$(SolutionDir)\..\..\..\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -78,7 +78,6 @@
     <ClCompile Include="..\..\..\..\base\timer\SystemClock.cpp" />
     <ClCompile Include="..\..\..\..\base\timer\wall_clock_timer.cpp" />
     <ClCompile Include="..\..\..\..\media\av_pipeline.cpp" />
-    <ClCompile Include="..\..\..\..\media\av_pipeline_unittest.cpp" />
     <ClCompile Include="..\..\..\..\media\base\audio_decoder_config.cpp" />
     <ClCompile Include="..\..\..\..\media\base\audio_frame.cpp" />
     <ClCompile Include="..\..\..\..\media\base\video_decoder_config.cpp" />
@@ -105,6 +104,7 @@
     <ClCompile Include="..\..\..\..\net\file_stream_provider.cpp" />
     <ClCompile Include="..\..\..\..\net\io_channel.cpp" />
     <ClCompile Include="..\..\..\..\net\url.cpp" />
+    <ClCompile Include="..\..\..\..\utils\string_utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\base\base_type.h" />
@@ -156,6 +156,7 @@
     <ClInclude Include="..\..\..\..\net\file_stream_provider.h" />
     <ClInclude Include="..\..\..\..\net\io_channel.h" />
     <ClInclude Include="..\..\..\..\net\url.h" />
+    <ClInclude Include="..\..\..\..\utils\string_utils.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

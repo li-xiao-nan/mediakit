@@ -1,5 +1,7 @@
 #include "ffmpeg_video_decoder.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/renderer/renderer_impl.h"
+#include "media/base/time_source.h"
 
 namespace media {
 FFmpegVideoDecoder::FFmpegVideoDecoder(TaskRunner* task_runner)
@@ -26,8 +28,12 @@ void FFmpegVideoDecoder::Decode(
   // avpkt->size=0 at the end to return the remaining frames.
 
   int decode_count;
-  if (avcodec_decode_video2(av_codec_context_, av_frame_, &decode_count,
-                            encoded_avframe.get()) < 0) {
+  // TODO(lixiaonan): log the cost time that decode one frame
+  int64_t pre_decode_timestamp = GetPlaybackTime();
+  int decode_result = avcodec_decode_video2(av_codec_context_, av_frame_, &decode_count,
+    encoded_avframe.get());
+  int decode_expend_time = static_cast<int>(GetPlaybackTime() - pre_decode_timestamp);
+  if (decode_result < 0) {
     state_ = STATE_OCCUR_ERROR;
     decode_cb(STATUS_DECODE_ERROR);
     return;
@@ -45,6 +51,10 @@ void FFmpegVideoDecoder::Decode(
     AVFrameToVideoFrame(av_frame_, new_video_frame.get());
     new_video_frame->timestamp_ =
         TimeBaseToMillionSecond(av_frame_->pkt_pts, GetVideoStreamTimeBase());
+    // record decode cost time
+    new_video_frame->_timeRecoder._decodeExpendTime = decode_expend_time;
+    new_video_frame->_timeRecoder._addQueueTime = static_cast<int>(GetPlaybackTime());
+    new_video_frame->_timeRecoder._pst = new_video_frame->timestamp_;
     output_cb_(new_video_frame);
     decode_cb(STATUS_OK);
   } else {
@@ -75,6 +85,18 @@ bool FFmpegVideoDecoder::ConfigureDecoder(bool low_delay) {
   }
   av_frame_ = av_frame_alloc();
   return true;
+}
+
+int64_t FFmpegVideoDecoder::GetPlaybackTime(){
+  static std::shared_ptr<TimeSource> playback_clock = NULL;
+  if (playback_clock == NULL){
+    playback_clock = RendererImpl::GetPlaybackClock(0);
+  }
+
+  if (playback_clock == NULL){
+    return 0;
+  }
+  return playback_clock->GetCurrentMediaTime();
 }
 
 }  // namespace media

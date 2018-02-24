@@ -4,7 +4,7 @@
 #include "boost/thread.hpp"
 #include <stdio.h>
 
-extern "C"{
+extern "C" {
 #include "third_party/glew/include/GL/glew.h"
 }
 #include "GL/glut.h"
@@ -23,6 +23,18 @@ extern "C"{
 #include "net/url.h"
 #include "net/io_channel.h"
 
+#include "log4cplus/logger.h"
+#include <log4cplus/fileappender.h>
+#include <log4cplus/asyncappender.h>
+#include <log4cplus/layout.h>
+#include <log4cplus/ndc.h>
+#include <log4cplus/helpers/loglog.h>
+#include <log4cplus/helpers/property.h>
+#include <log4cplus/loggingmacros.h>
+
+using namespace log4cplus;
+using namespace log4cplus::helpers;
+
 void PipelineStatusCallBack(media::PipelineStatus status);
 void SeekCB(media::PipelineStatus);
 
@@ -38,6 +50,23 @@ void GlobalPaintCallBack(std::shared_ptr<media::VideoFrame> video_frame) {
   queue_video_frame.push(video_frame);
 }
 
+std::wstring toWString(int64_t value){
+  std::wostringstream wstream;
+  wstream << value;
+  return wstream.str();
+}
+
+void LogDecodeInfo(std::shared_ptr<media::VideoFrame> frame){
+  Logger test = Logger::getInstance(LOG4CPLUS_TEXT("Decoder"));
+  tstring log_item = L"FNO." + toWString(frame->_timeRecoder._frameNo);
+  log_item += L" dst:" + toWString(frame->_timeRecoder._decodeExpendTime);
+  log_item += L" Add:" + toWString(frame->_timeRecoder._popupTime);
+  log_item += L" Pst:" + toWString(frame->_timeRecoder._pst);
+  log_item += L" Pop:" + toWString(frame->_timeRecoder._popupTime);
+  log_item += L" Render:" + frame->_timeRecoder._renderResult;
+  LOG4CPLUS_DEBUG(test, log_item);
+}
+
 std::shared_ptr<media::VideoFrame> GlobalReadVideoFrame() {
   boost::mutex::scoped_lock lock(queue_mutex);
   std::shared_ptr<media::VideoFrame> video_frame;
@@ -45,6 +74,7 @@ std::shared_ptr<media::VideoFrame> GlobalReadVideoFrame() {
     return video_frame;
   video_frame = queue_video_frame.front();
   queue_video_frame.pop();
+  LogDecodeInfo(video_frame);
   return video_frame;
 }
 
@@ -127,6 +157,12 @@ void ycb() {
 void zcb() {
   glutPostRedisplay();
 }
+
+void ExitApp(){
+  log4cplus::Logger::shutdown();
+  exit(0);
+}
+
 void seek();
 void pauseCB();
 void keyboard(unsigned char key, int x, int y) {
@@ -140,6 +176,9 @@ void keyboard(unsigned char key, int x, int y) {
     case 'z':
       zcb();
       break;
+    case 'q':
+      ExitApp();
+      break;
     default:
       break;
   }
@@ -151,6 +190,15 @@ int videoW, videoH;
 GLuint vsID, fsID, pID;
 bool hasInitTex;
 int main(int argc, char* argv[]) {
+
+  log4cplus::initialize();
+  helpers::LogLog::getLogLog()->setInternalDebugging(true);
+  SharedFileAppenderPtr append_1(
+    new RollingFileAppender(LOG4CPLUS_TEXT(".\\mediakit.log")));
+  append_1->setName(LOG4CPLUS_TEXT("FFmpegDecoder"));
+  append_1->setLayout(std::auto_ptr<Layout>(new SimpleLayout()));
+  Logger::getRoot().addAppender(SharedAppenderPtr(append_1.get()));
+
   // pipeline initliazie
   // init task_runner
   task_runner = new boost::asio::io_service();
