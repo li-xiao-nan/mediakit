@@ -1,17 +1,6 @@
 #include "video_renderer_impl.h"
 #include "media/decoder/video_frame_stream.h"
 
-#include "log4cplus/logger.h"
-#include <log4cplus/fileappender.h>
-#include <log4cplus/layout.h>
-#include <log4cplus/ndc.h>
-#include <log4cplus/helpers/loglog.h>
-#include <log4cplus/helpers/property.h>
-#include <log4cplus/loggingmacros.h>
-
-using namespace log4cplus;
-using namespace log4cplus::helpers;
-
 namespace media {
 const int kMaxPendingPaintFrameCount = 2<<2;
 const int kMaxTimeDelta = 100;  // ms
@@ -77,14 +66,13 @@ std::wstring toWString(int64_t value){
 }
 
 void LogDecodeInfo(std::shared_ptr<VideoFrame> frame){
-  Logger test = Logger::getInstance(LOG4CPLUS_TEXT("Decoder"));
-  tstring log_item = L"FNO." + toWString(frame->_timeRecoder._frameNo);
+
+  std::wstring log_item = L"FNO." + toWString(frame->_timeRecoder._frameNo);
   log_item += L" dst:" + toWString(frame->_timeRecoder._decodeExpendTime);
   log_item += L" Add:" + toWString(frame->_timeRecoder._popupTime);
   log_item += L" Pst:" + toWString(frame->_timeRecoder._pst);
   log_item += L" Pop:" + toWString(frame->_timeRecoder._popupTime);
   log_item += L" Render:" + frame->_timeRecoder._renderResult;
-  LOG4CPLUS_DEBUG(test, log_item);
 }
 void VideoRendererImpl::ThreadMain() {
   for (;;) {

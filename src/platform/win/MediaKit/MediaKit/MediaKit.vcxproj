@@ -59,7 +59,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)\libs;$(SolutionDir)\..\..\..\third_party\curl\lib\;$(SolutionDir)\..\..\..\third_party\boost\lib\win\;$(SolutionDir)\..\..\..\third_party\ffmpeg\lib\win\;$(SolutionDir)\..\..\..\third_party\freeglut\lib\win\;$(SolutionDir)\..\..\..\third_party\sdl\lib\win\x86\;$(SolutionDir)\..\..\..\third_party\glew\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>log4cplusUD.lib;glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;mediacore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;mediacore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
