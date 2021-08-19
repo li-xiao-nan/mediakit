@@ -7,3 +7,9 @@
 支持音视频播放数据可视化功能。
 第三阶段：
 支持音视频的编辑
+
+1. 工程构建
+- Visual studio版本：VS2013
+- 工程目录：src\platform\win\MediaKit\MediaKit.sln
+2. 应用启动
+- MediaKit.exe "视频文件全路径"
