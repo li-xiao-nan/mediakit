@@ -144,11 +144,27 @@ int ChannelLayoutToChannelCount(int64_t channel_layout) {
       return 3;
     case AV_CH_LAYOUT_SURROUND:
     case AV_CH_LAYOUT_QUAD:
-    case AV_CH_LAYOUT_4POINT0:
     case AV_CH_LAYOUT_2_2:
       return 4;
+    case AV_CH_LAYOUT_3POINT1:
+    case AV_CH_LAYOUT_4POINT0:
+      return 5;
+    case AV_CH_LAYOUT_4POINT1:
+    case AV_CH_LAYOUT_5POINT0:
+    case AV_CH_LAYOUT_5POINT0_BACK:
+    case AV_CH_LAYOUT_6POINT0_FRONT:
+      return 6;
+    case AV_CH_LAYOUT_5POINT1:
+    case AV_CH_LAYOUT_5POINT1_BACK:
+    case AV_CH_LAYOUT_6POINT0:
+      return 7;
+    case AV_CH_LAYOUT_HEXAGONAL:
+    case AV_CH_LAYOUT_6POINT1:
+    case AV_CH_LAYOUT_6POINT1_BACK:
+      return 8;
     default:
-      BOOST_ASSERT(0);
+      std::string error_message = "unsupported ChannelLayout:" + std::to_string(channel_layout);
+      BOOST_ASSERT_MSG(0, error_message.c_str());
       return 0;
   }
 }
