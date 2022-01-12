@@ -36,7 +36,7 @@ void SdlAudioRendererSink::InitializeSDLAudio() {
   sdl_audio_spec_.format = AUDIO_S16SYS;  // audio_parameters_.sample_format_;
   // SDL 只支持单声道和双声道，如果设置声道数>2,则会初始化失败
   // TODO(lixiaonan):调研支持多声道解决方案
-  sdl_audio_spec_.channels = std::max<uint8_t>(2, static_cast<uint8_t>(audio_parameters_.channel_count_));
+  sdl_audio_spec_.channels = std::min<uint8_t>(2, static_cast<uint8_t>(audio_parameters_.channel_count_));
   sdl_audio_spec_.callback = SdlAudioRendererSink::SDLAudioCallback;
   sdl_audio_spec_.userdata = this;
   sdl_audio_spec_.samples = std::max(kSDLMinAudioBufferSize, 2 << static_cast<int>((log2(sdl_audio_spec_.freq / kSDLAudioMaxCallbacksPerSec))));
