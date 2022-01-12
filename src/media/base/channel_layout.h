@@ -9,35 +9,6 @@
 #ifndef MEDIA_BASE_CHANNLE_LAYOUT_H
 #define MEDIA_BASE_CHANNLE_LAYOUT_H
 namespace media {
-enum ChannelLayout {
-  CHANNEL_LAYOUT_NONE = 0,
-  CHANNEL_LAYOUT_UNSUPPORTED = 1,
-
-  // Front C
-  CHANNEL_LAYOUT_MONO = 2,
-
-  // Front L, Front R
-  CHANNEL_LAYOUT_STEREO = 3,
-
-  // Front L, Front R, Back C
-  CHANNEL_LAYOUT_2_1 = 4,
-
-  // Front L, Front R, Front C
-  CHANNEL_LAYOUT_SURROUND = 5,
-
-  // Front L, Front R, Front C, Back C
-  CHANNEL_LAYOUT_4_0 = 6,
-
-  // Front L, Front R, Side L, Side R
-  CHANNEL_LAYOUT_2_2 = 7,
-
-  // Front L, Front R, Back L, Back R
-  CHANNEL_LAYOUT_QUAD = 8,
-
-  CHANNEL_LAYOUT_MAX = CHANNEL_LAYOUT_QUAD,
-
-};
-
 enum Channel {
   CHANNEL_LEFT = 0,
   CHANNEL_RIGHT,

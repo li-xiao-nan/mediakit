@@ -46,44 +46,18 @@ void VideoDecoderConfigToAVCodecContext(VideoDecoderConfig* config,
 
 void AudioDecoderConfigToAVCodecContext(AudioDecoderConfig* config,
                                         AVCodecContext* av_codec_context);
-
-VideoCodec AVCodecIDToVideoCodec(AVCodecID av_codec_id);
-
-AVCodecID VideoCodecToAVCodec(VideoCodec video_codec);
-
 // convert million second to fixed time_base
 int64_t ConvertToTimeBase(int64_t timestamp, const AVRational& time_base);
 
 // fixed time_base to million second
 int64_t TimeBaseToMillionSecond(int64_t timestamp, const AVRational& time_base);
 
-VideoPixelFormat AVPixelFormatToVideoPixelFormat(AVPixelFormat av_pixel_format);
-
-AVPixelFormat VideoPixelFormatToAVPixelFormat(
-    VideoPixelFormat video_pixel_format);
-
-VideoCodecProfile ProfileIDToVideoCodecProfile(int profile);
-
-int VideoCodecProfileToProfileID(VideoCodecProfile video_codec_profile);
-
 void AVCodecContextToVideoDecoderConfig(AVCodecContext* av_codec_context,
                                         VideoDecoderConfig* config);
 
-AudioCodec AVCodecIDToAudioCodec(AVCodecID id);
-
-AVCodecID AudioCodecToAVCodecID(AudioCodec id);
-
-SampleFormat AVSampleFormatToSampleFormat(AVSampleFormat sample_format);
-
-AVSampleFormat SampleFormatToAVSampleFormat(SampleFormat sample_format);
-
-ChannelLayout FFmpegChannelLayoutToChannelLayout(int64_t channel_layout);
-
-int64_t ChannelLayoutToFFmpegChannelLayout(ChannelLayout channel_layout);
-
 int SampleFormatToBytesPerChannel(SampleFormat sample_format);
 
-int ChannelLayoutToChannelCount(ChannelLayout channel_layout);
+int ChannelLayoutToChannelCount(int64_t channel_layout);
 
 void AVFrameToVideoFrame(AVFrame* av_frame, VideoFrame* video_frame);
 void AVFrameToAudioFrame(AVFrame* av_frame,

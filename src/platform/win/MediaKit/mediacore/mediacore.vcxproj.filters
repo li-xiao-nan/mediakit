@@ -293,5 +293,8 @@
     <ClInclude Include="..\..\..\..\utils\string_utils.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\..\media\base\type_define.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

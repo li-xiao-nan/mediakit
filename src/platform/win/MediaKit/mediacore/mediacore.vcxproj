@@ -125,6 +125,7 @@
     <ClInclude Include="..\..\..\..\media\base\pipeline_status.h" />
     <ClInclude Include="..\..\..\..\media\base\sample_format.h" />
     <ClInclude Include="..\..\..\..\media\base\time_source.h" />
+    <ClInclude Include="..\..\..\..\media\base\type_define.h" />
     <ClInclude Include="..\..\..\..\media\base\video_decoder_config.h" />
     <ClInclude Include="..\..\..\..\media\base\video_frame.h" />
     <ClInclude Include="..\..\..\..\media\base\playback_clock.h" />

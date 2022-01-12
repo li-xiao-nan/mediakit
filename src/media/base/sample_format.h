@@ -8,20 +8,11 @@
 
 #ifndef MEDIA_BASE_SAMPLE_FORMAT_H
 #define MEDIA_BASE_SAMPLE_FORMAT_H
-
+extern "C" {
+#include "libavutil/samplefmt.h"
+}
 namespace media {
-
-enum SampleFormat {
-  SAMPLE_FORMAT_UNKNOWN = 0,
-  SAMPLE_FORMAT_U8,
-  SAMPLE_FORMAT_S16,
-  SAMPLE_FORMAT_S32,
-  SAMPLE_FORMAT_PLANAR_S16,
-  SAMPLE_FORMAT_PLANAR_F32,
-  SAMPLE_FORMAT_PLANAR_S32,
-  SAMPLE_FORMAT_MAX = SAMPLE_FORMAT_PLANAR_S32,
-};
-
+  using SampleFormat = AVSampleFormat;
 }  // namespace media
 
 #endif
