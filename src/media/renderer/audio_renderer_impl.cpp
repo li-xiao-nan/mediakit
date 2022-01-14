@@ -144,6 +144,11 @@ void AudioRendererImpl::InitAudioRenderSink(const AudioDecoderConfig& audio_deco
     AudioRendererSink::InitCB init_cb){
     AudioParameters audio_parameters;
     audio_parameters.sample_rate_ = audio_decoder_config.sample_rate();
+    // 对音频采样数据进行了格式转换，转换后的数据格式如下：
+    // channel_out = 2
+    // sample_format = AV_SAMPLE_FMT_S16;
+    // TODO(lixiaonan): 用处于初始AudioRenderSink的音频配置信息，需要独立管理，不能依赖
+    // AudioDecoderConfig中的信息，因为解码完成后，还会对数据做一系列的转换处理
     audio_parameters.channel_count_ = audio_decoder_config.channel_count();
     audio_parameters.sample_format_ = audio_decoder_config.sample_format();
     audio_renderer_sink_->Initialize(this, init_cb,

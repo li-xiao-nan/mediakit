@@ -218,12 +218,22 @@ void AVFrameToAudioFrame(AVFrame* av_frame,
   //**********************convert the sample format **********/
   static SwrContext* swr_context_ = NULL;
   int wanted_nb_samples = av_frame->nb_samples;
+  int64_t out_ch_layout = AV_CH_LAYOUT_STEREO;
+  int out_ch_count = 2;
   if (!swr_context_) {
     swr_free(&swr_context_);
+    // out_ch_layout: SDL音频播放支持单声道/双声道播放，此处统一转换为双声道音频数据
+    // out_sample_fmt: SDL 音频最大支持16位数据类型
     swr_context_ = swr_alloc_set_opts(
-        NULL, av_codec_context->channel_layout, AV_SAMPLE_FMT_S16,
-        av_frame->sample_rate, av_codec_context->channel_layout,
-        (enum AVSampleFormat)av_frame->format, av_frame->sample_rate, 0, NULL);
+      NULL,
+      out_ch_layout,
+      AV_SAMPLE_FMT_S16,
+      av_frame->sample_rate,
+      av_codec_context->channel_layout,
+      (enum AVSampleFormat)av_frame->format,
+      av_frame->sample_rate,
+      0,
+      NULL);
     if (!swr_context_ || swr_init(swr_context_) < 0) {
       std::cout << "create the swrContext failed" << std::endl;
       return;
@@ -231,8 +241,8 @@ void AVFrameToAudioFrame(AVFrame* av_frame,
   }
   if (swr_context_) {
     const uint8_t** in = (const uint8_t**)av_frame->extended_data;
-    int outCount = wanted_nb_samples + 256;
-    int outSize = av_samples_get_buffer_size(NULL, av_frame->channels, outCount,
+    int outCount = wanted_nb_samples;
+    int outSize = av_samples_get_buffer_size(NULL, out_ch_count, outCount,
                                              AV_SAMPLE_FMT_S16, 0);
 
     uint8_t* tmpPtr = NULL;
@@ -254,7 +264,7 @@ void AVFrameToAudioFrame(AVFrame* av_frame,
     if (resLen == outCount) {
       std::cout << "WARNING: audio buffer is probably to small" << std::endl;
     }
-    int resampledDataSize = resLen * av_frame->channels *
+    int resampledDataSize = resLen * out_ch_count *
                             av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
 
     audio_frame.reset(new AudioFrame(
