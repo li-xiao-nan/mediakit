@@ -19,7 +19,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -54,11 +54,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\..\..\..\third_party\include\;$(SolutionDir)\..\..\..\third_party\ffmpeg\include\;$(SolutionDir)\..\..\..\third_party\freeglut\include\;$(SolutionDir)\..\..\..\third_party\glew\include\;$(SolutionDir)\..\..\..\;$(SolutionDir)\..\..\..\third_party\boost\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)\libs;$(SolutionDir)\..\..\..\third_party\curl\lib\;$(SolutionDir)\..\..\..\third_party\boost\lib\win\;$(SolutionDir)\..\..\..\third_party\ffmpeg\lib\win\;$(SolutionDir)\..\..\..\third_party\freeglut\lib\win\;$(SolutionDir)\..\..\..\third_party\sdl\lib\win\x86\;$(SolutionDir)\..\..\..\third_party\glew\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)\libs;$(SolutionDir)\..\..\..\third_party\curl\lib\;$(SolutionDir)\..\..\..\third_party\boost\lib\x86\debug\;$(SolutionDir)\..\..\..\third_party\ffmpeg\lib\win\;$(SolutionDir)\..\..\..\third_party\freeglut\lib\win\;$(SolutionDir)\..\..\..\third_party\sdl\x86\debug\;$(SolutionDir)\..\..\..\third_party\glew\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;mediacore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

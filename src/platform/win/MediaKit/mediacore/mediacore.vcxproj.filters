@@ -40,6 +40,9 @@
     <Filter Include="utils">
       <UniqueIdentifier>{1ef41199-2382-4ad3-bcd1-271d3c0c1c61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{9e51cf51-bcc3-4619-bfab-4aea3acae865}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\net\file_stream_provider.cpp">
@@ -140,6 +143,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\..\utils\string_utils.cpp">
       <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\..\log\log_wrapper.cc">
+      <Filter>log</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -295,6 +301,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\..\media\base\type_define.h">
       <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\log\log_wrapper.h">
+      <Filter>log</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

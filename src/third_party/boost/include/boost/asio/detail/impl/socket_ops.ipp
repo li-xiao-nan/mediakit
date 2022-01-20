@@ -2,7 +2,7 @@
 // detail/impl/socket_ops.ipp
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
+// Copyright (c) 2003-2017 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 //
 // Distributed under the Boost Software License, Version 1.0. (See accompanying
 // file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -23,6 +23,11 @@
 #include <cstring>
 #include <cerrno>
 #include <new>
+#ifdef WIN32
+#include <malloc.h>
+#else
+#include <sys/malloc.h>
+#endif
 #include <boost/asio/detail/assert.hpp>
 #include <boost/asio/detail/socket_ops.hpp>
 #include <boost/asio/error.hpp>
@@ -169,7 +174,7 @@ socket_type sync_accept(socket_type s, state_type state,
       return invalid_socket;
 
     // Wait for socket to become ready.
-    if (socket_ops::poll_read(s, 0, ec) < 0)
+    if (socket_ops::poll_read(s, 0, -1, ec) < 0)
       return invalid_socket;
   }
 }
@@ -242,8 +247,6 @@ bool non_blocking_accept(socket_type s,
     if (ec == boost::asio::error::would_block
         || ec == boost::asio::error::try_again)
     {
-      if (state & user_set_non_blocking)
-        return true;
       // Fall through to retry operation.
     }
     else if (ec == boost::asio::error::connection_aborted)
@@ -506,7 +509,7 @@ void sync_connect(socket_type s, const socket_addr_type* addr,
   }
 
   // Wait for socket to become ready.
-  if (socket_ops::poll_connect(s, ec) < 0)
+  if (socket_ops::poll_connect(s, -1, ec) < 0)
     return;
 
   // Get the error code from the connect operation.
@@ -525,6 +528,25 @@ void sync_connect(socket_type s, const socket_addr_type* addr,
 
 void complete_iocp_connect(socket_type s, boost::system::error_code& ec)
 {
+  // Map non-portable errors to their portable counterparts.
+  switch (ec.value())
+  {
+  case ERROR_CONNECTION_REFUSED:
+    ec = boost::asio::error::connection_refused;
+    break;
+  case ERROR_NETWORK_UNREACHABLE:
+    ec = boost::asio::error::network_unreachable;
+    break;
+  case ERROR_HOST_UNREACHABLE:
+    ec = boost::asio::error::host_unreachable;
+    break;
+  case ERROR_SEM_TIMEOUT:
+    ec = boost::asio::error::timed_out;
+    break;
+  default:
+    break;
+  }
+
   if (!ec)
   {
     // Need to set the SO_UPDATE_CONNECT_CONTEXT option so that getsockname
@@ -754,6 +776,8 @@ signed_size_type recv(socket_type s, buf* bufs, size_t count,
     ec = boost::asio::error::connection_reset;
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
     ec = boost::asio::error::connection_refused;
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+    ec.assign(0, ec.category());
   if (result != 0)
     return socket_error_retval;
   ec = boost::system::error_code();
@@ -809,7 +833,7 @@ size_t sync_recv(socket_type s, state_type state, buf* bufs,
       return 0;
 
     // Wait for socket to become ready.
-    if (socket_ops::poll_read(s, 0, ec) < 0)
+    if (socket_ops::poll_read(s, 0, -1, ec) < 0)
       return 0;
   }
 }
@@ -831,6 +855,10 @@ void complete_iocp_recv(state_type state,
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
   {
     ec = boost::asio::error::connection_refused;
+  }
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+  {
+    ec.assign(0, ec.category());
   }
 
   // Check for connection closed.
@@ -902,6 +930,8 @@ signed_size_type recvfrom(socket_type s, buf* bufs, size_t count,
     ec = boost::asio::error::connection_reset;
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
     ec = boost::asio::error::connection_refused;
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+    ec.assign(0, ec.category());
   if (result != 0)
     return socket_error_retval;
   ec = boost::system::error_code();
@@ -948,7 +978,7 @@ size_t sync_recvfrom(socket_type s, state_type state, buf* bufs,
       return 0;
 
     // Wait for socket to become ready.
-    if (socket_ops::poll_read(s, 0, ec) < 0)
+    if (socket_ops::poll_read(s, 0, -1, ec) < 0)
       return 0;
   }
 }
@@ -970,6 +1000,10 @@ void complete_iocp_recvfrom(
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
   {
     ec = boost::asio::error::connection_refused;
+  }
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+  {
+    ec.assign(0, ec.category());
   }
 }
 
@@ -1061,7 +1095,7 @@ size_t sync_recvmsg(socket_type s, state_type state,
       return 0;
 
     // Wait for socket to become ready.
-    if (socket_ops::poll_read(s, 0, ec) < 0)
+    if (socket_ops::poll_read(s, 0, -1, ec) < 0)
       return 0;
   }
 }
@@ -1083,6 +1117,10 @@ void complete_iocp_recvmsg(
   else if (ec.value() == ERROR_PORT_UNREACHABLE)
   {
     ec = boost::asio::error::connection_refused;
+  }
+  else if (ec.value() == WSAEMSGSIZE || ec.value() == ERROR_MORE_DATA)
+  {
+    ec.assign(0, ec.category());
   }
 }
 
@@ -1188,7 +1226,7 @@ size_t sync_send(socket_type s, state_type state, const buf* bufs,
       return 0;
 
     // Wait for socket to become ready.
-    if (socket_ops::poll_write(s, 0, ec) < 0)
+    if (socket_ops::poll_write(s, 0, -1, ec) < 0)
       return 0;
   }
 }
@@ -1312,7 +1350,7 @@ size_t sync_sendto(socket_type s, state_type state, const buf* bufs,
       return 0;
 
     // Wait for socket to become ready.
-    if (socket_ops::poll_write(s, 0, ec) < 0)
+    if (socket_ops::poll_write(s, 0, -1, ec) < 0)
       return 0;
   }
 }
@@ -1359,7 +1397,7 @@ socket_type socket(int af, int type, int protocol,
 {
   clear_last_error();
 #if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
-  socket_type s = error_wrapper(::WSASocket(af, type, protocol, 0, 0,
+  socket_type s = error_wrapper(::WSASocketW(af, type, protocol, 0, 0,
         WSA_FLAG_OVERLAPPED), ec);
   if (s == invalid_socket)
     return s;
@@ -1615,7 +1653,8 @@ int getpeername(socket_type s, socket_addr_type* addr,
     return socket_error_retval;
   }
 
-#if defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
+#if defined(BOOST_ASIO_WINDOWS) && !defined(BOOST_ASIO_WINDOWS_APP) \
+  || defined(__CYGWIN__)
   if (cached)
   {
     // Check if socket is still connected.
@@ -1636,9 +1675,11 @@ int getpeername(socket_type s, socket_addr_type* addr,
     ec = boost::system::error_code();
     return 0;
   }
-#else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
+#else // defined(BOOST_ASIO_WINDOWS) && !defined(BOOST_ASIO_WINDOWS_APP)
+      // || defined(__CYGWIN__)
   (void)cached;
-#endif // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
+#endif // defined(BOOST_ASIO_WINDOWS) && !defined(BOOST_ASIO_WINDOWS_APP)
+       // || defined(__CYGWIN__)
 
   clear_last_error();
   int result = error_wrapper(call_getpeername(
@@ -1763,7 +1804,8 @@ int select(int nfds, fd_set* readfds, fd_set* writefds,
 #endif
 }
 
-int poll_read(socket_type s, state_type state, boost::system::error_code& ec)
+int poll_read(socket_type s, state_type state,
+    int msec, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
   {
@@ -1777,10 +1819,22 @@ int poll_read(socket_type s, state_type state, boost::system::error_code& ec)
   fd_set fds;
   FD_ZERO(&fds);
   FD_SET(s, &fds);
-  timeval zero_timeout;
-  zero_timeout.tv_sec = 0;
-  zero_timeout.tv_usec = 0;
-  timeval* timeout = (state & user_set_non_blocking) ? &zero_timeout : 0;
+  timeval timeout_obj;
+  timeval* timeout;
+  if (state & user_set_non_blocking)
+  {
+    timeout_obj.tv_sec = 0;
+    timeout_obj.tv_usec = 0;
+    timeout = &timeout_obj;
+  }
+  else if (msec >= 0)
+  {
+    timeout_obj.tv_sec = msec / 1000;
+    timeout_obj.tv_usec = (msec % 1000) * 1000;
+    timeout = &timeout_obj;
+  }
+  else
+    timeout = 0;
   clear_last_error();
   int result = error_wrapper(::select(s + 1, &fds, 0, 0, timeout), ec);
 #else // defined(BOOST_ASIO_WINDOWS)
@@ -1790,7 +1844,7 @@ int poll_read(socket_type s, state_type state, boost::system::error_code& ec)
   fds.fd = s;
   fds.events = POLLIN;
   fds.revents = 0;
-  int timeout = (state & user_set_non_blocking) ? 0 : -1;
+  int timeout = (state & user_set_non_blocking) ? 0 : msec;
   clear_last_error();
   int result = error_wrapper(::poll(&fds, 1, timeout), ec);
 #endif // defined(BOOST_ASIO_WINDOWS)
@@ -1804,7 +1858,8 @@ int poll_read(socket_type s, state_type state, boost::system::error_code& ec)
   return result;
 }
 
-int poll_write(socket_type s, state_type state, boost::system::error_code& ec)
+int poll_write(socket_type s, state_type state,
+    int msec, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
   {
@@ -1818,10 +1873,22 @@ int poll_write(socket_type s, state_type state, boost::system::error_code& ec)
   fd_set fds;
   FD_ZERO(&fds);
   FD_SET(s, &fds);
-  timeval zero_timeout;
-  zero_timeout.tv_sec = 0;
-  zero_timeout.tv_usec = 0;
-  timeval* timeout = (state & user_set_non_blocking) ? &zero_timeout : 0;
+  timeval timeout_obj;
+  timeval* timeout;
+  if (state & user_set_non_blocking)
+  {
+    timeout_obj.tv_sec = 0;
+    timeout_obj.tv_usec = 0;
+    timeout = &timeout_obj;
+  }
+  else if (msec >= 0)
+  {
+    timeout_obj.tv_sec = msec / 1000;
+    timeout_obj.tv_usec = (msec % 1000) * 1000;
+    timeout = &timeout_obj;
+  }
+  else
+    timeout = 0;
   clear_last_error();
   int result = error_wrapper(::select(s + 1, 0, &fds, 0, timeout), ec);
 #else // defined(BOOST_ASIO_WINDOWS)
@@ -1831,7 +1898,7 @@ int poll_write(socket_type s, state_type state, boost::system::error_code& ec)
   fds.fd = s;
   fds.events = POLLOUT;
   fds.revents = 0;
-  int timeout = (state & user_set_non_blocking) ? 0 : -1;
+  int timeout = (state & user_set_non_blocking) ? 0 : msec;
   clear_last_error();
   int result = error_wrapper(::poll(&fds, 1, timeout), ec);
 #endif // defined(BOOST_ASIO_WINDOWS)
@@ -1845,7 +1912,61 @@ int poll_write(socket_type s, state_type state, boost::system::error_code& ec)
   return result;
 }
 
-int poll_connect(socket_type s, boost::system::error_code& ec)
+int poll_error(socket_type s, state_type state,
+    int msec, boost::system::error_code& ec)
+{
+  if (s == invalid_socket)
+  {
+    ec = boost::asio::error::bad_descriptor;
+    return socket_error_retval;
+  }
+
+#if defined(BOOST_ASIO_WINDOWS) \
+  || defined(__CYGWIN__) \
+  || defined(__SYMBIAN32__)
+  fd_set fds;
+  FD_ZERO(&fds);
+  FD_SET(s, &fds);
+  timeval timeout_obj;
+  timeval* timeout;
+  if (state & user_set_non_blocking)
+  {
+    timeout_obj.tv_sec = 0;
+    timeout_obj.tv_usec = 0;
+    timeout = &timeout_obj;
+  }
+  else if (msec >= 0)
+  {
+    timeout_obj.tv_sec = msec / 1000;
+    timeout_obj.tv_usec = (msec % 1000) * 1000;
+    timeout = &timeout_obj;
+  }
+  else
+    timeout = 0;
+  clear_last_error();
+  int result = error_wrapper(::select(s + 1, 0, 0, &fds, timeout), ec);
+#else // defined(BOOST_ASIO_WINDOWS)
+      // || defined(__CYGWIN__)
+      // || defined(__SYMBIAN32__)
+  pollfd fds;
+  fds.fd = s;
+  fds.events = POLLPRI | POLLERR | POLLHUP;
+  fds.revents = 0;
+  int timeout = (state & user_set_non_blocking) ? 0 : msec;
+  clear_last_error();
+  int result = error_wrapper(::poll(&fds, 1, timeout), ec);
+#endif // defined(BOOST_ASIO_WINDOWS)
+       // || defined(__CYGWIN__)
+       // || defined(__SYMBIAN32__)
+  if (result == 0)
+    ec = (state & user_set_non_blocking)
+      ? boost::asio::error::would_block : boost::system::error_code();
+  else if (result > 0)
+    ec = boost::system::error_code();
+  return result;
+}
+
+int poll_connect(socket_type s, int msec, boost::system::error_code& ec)
 {
   if (s == invalid_socket)
   {
@@ -1862,9 +1983,19 @@ int poll_connect(socket_type s, boost::system::error_code& ec)
   fd_set except_fds;
   FD_ZERO(&except_fds);
   FD_SET(s, &except_fds);
+  timeval timeout_obj;
+  timeval* timeout;
+  if (msec >= 0)
+  {
+    timeout_obj.tv_sec = msec / 1000;
+    timeout_obj.tv_usec = (msec % 1000) * 1000;
+    timeout = &timeout_obj;
+  }
+  else
+    timeout = 0;
   clear_last_error();
   int result = error_wrapper(::select(
-        s + 1, 0, &write_fds, &except_fds, 0), ec);
+        s + 1, 0, &write_fds, &except_fds, timeout), ec);
   if (result >= 0)
     ec = boost::system::error_code();
   return result;
@@ -1876,7 +2007,7 @@ int poll_connect(socket_type s, boost::system::error_code& ec)
   fds.events = POLLOUT;
   fds.revents = 0;
   clear_last_error();
-  int result = error_wrapper(::poll(&fds, 1, -1), ec);
+  int result = error_wrapper(::poll(&fds, 1, msec), ec);
   if (result >= 0)
     ec = boost::system::error_code();
   return result;
@@ -1965,7 +2096,8 @@ const char* inet_ntop(int af, const void* src, char* dest, size_t length,
   LPWSTR string_buffer = (LPWSTR)_alloca(length * sizeof(WCHAR));
   int result = error_wrapper(::WSAAddressToStringW(&address.base,
         address_length, 0, string_buffer, &string_length), ec);
-  ::WideCharToMultiByte(CP_ACP, 0, string_buffer, -1, dest, length, 0, 0);
+  ::WideCharToMultiByte(CP_ACP, 0, string_buffer, -1,
+      dest, static_cast<int>(length), 0, 0);
 #else
   int result = error_wrapper(::WSAAddressToStringA(
         &address.base, address_length, 0, dest, &string_length), ec);
@@ -2169,7 +2301,7 @@ int inet_pton(int af, const char* src, void* dest,
   } address;
   int address_length = sizeof(sockaddr_storage_type);
 #if defined(BOOST_NO_ANSI_APIS) || (defined(_MSC_VER) && (_MSC_VER >= 1800))
-  int num_wide_chars = strlen(src) + 1;
+  int num_wide_chars = static_cast<int>(strlen(src)) + 1;
   LPWSTR wide_buffer = (LPWSTR)_alloca(num_wide_chars * sizeof(WCHAR));
   ::MultiByteToWideChar(CP_ACP, 0, src, -1, wide_buffer, num_wide_chars);
   int result = error_wrapper(::WSAStringToAddressW(
@@ -2212,14 +2344,34 @@ int inet_pton(int af, const char* src, void* dest,
 
   return result == socket_error_retval ? -1 : 1;
 #else // defined(BOOST_ASIO_WINDOWS) || defined(__CYGWIN__)
-  int result = error_wrapper(::inet_pton(af, src, dest), ec);
+  using namespace std; // For strchr, memcpy and atoi.
+
+  // On some platforms, inet_pton fails if an address string contains a scope
+  // id. Detect and remove the scope id before passing the string to inet_pton.
+  const bool is_v6 = (af == BOOST_ASIO_OS_DEF(AF_INET6));
+  const char* if_name = is_v6 ? strchr(src, '%') : 0;
+  char src_buf[max_addr_v6_str_len + 1];
+  const char* src_ptr = src;
+  if (if_name != 0)
+  {
+    if (if_name - src > max_addr_v6_str_len)
+    {
+      ec = boost::asio::error::invalid_argument;
+      return 0;
+    }
+    memcpy(src_buf, src, if_name - src);
+    src_buf[if_name - src] = 0;
+    src_ptr = src_buf;
+  }
+
+  int result = error_wrapper(::inet_pton(af, src_ptr, dest), ec);
   if (result <= 0 && !ec)
     ec = boost::asio::error::invalid_argument;
-  if (result > 0 && af == BOOST_ASIO_OS_DEF(AF_INET6) && scope_id)
+  if (result > 0 && is_v6 && scope_id)
   {
     using namespace std; // For strchr and atoi.
     *scope_id = 0;
-    if (const char* if_name = strchr(src, '%'))
+    if (if_name != 0)
     {
       in6_addr_type* ipv6_address = static_cast<in6_addr_type*>(dest);
       bool is_link_local = ((ipv6_address->s6_addr[0] == 0xfe)
@@ -2541,7 +2693,8 @@ inline void gai_strcpy(char* target, const char* source, std::size_t max_size)
   strcpy_s(target, max_size, source);
 #else // defined(BOOST_ASIO_HAS_SECURE_RTL)
   *target = 0;
-  strncat(target, source, max_size);
+  if (max_size > 0)
+    strncat(target, source, max_size - 1);
 #endif // defined(BOOST_ASIO_HAS_SECURE_RTL)
 }
 
@@ -3194,6 +3347,37 @@ boost::system::error_code getaddrinfo(const char* host,
   return ec = translate_addrinfo_error(error);
 #else
   int error = ::getaddrinfo(host, service, &hints, result);
+#if defined(__MACH__) && defined(__APPLE__)
+  using namespace std; // For isdigit and atoi.
+  if (error == 0 && service && isdigit(static_cast<unsigned char>(service[0])))
+  {
+    u_short_type port = host_to_network_short(atoi(service));
+    for (addrinfo_type* ai = *result; ai; ai = ai->ai_next)
+    {
+      switch (ai->ai_family)
+      {
+      case BOOST_ASIO_OS_DEF(AF_INET):
+        {
+          sockaddr_in4_type* sinptr =
+            reinterpret_cast<sockaddr_in4_type*>(ai->ai_addr);
+          if (sinptr->sin_port == 0)
+            sinptr->sin_port = port;
+          break;
+        }
+      case BOOST_ASIO_OS_DEF(AF_INET6):
+        {
+          sockaddr_in6_type* sin6ptr =
+            reinterpret_cast<sockaddr_in6_type*>(ai->ai_addr);
+          if (sin6ptr->sin6_port == 0)
+            sin6ptr->sin6_port = port;
+          break;
+        }
+      default:
+        break;
+      }
+    }
+  }
+#endif
   return ec = translate_addrinfo_error(error);
 #endif
 }
@@ -3271,7 +3455,6 @@ boost::system::error_code getnameinfo(const socket_addr_type* addr,
   using namespace std; // For memcpy.
   sockaddr_storage_type tmp_addr;
   memcpy(&tmp_addr, addr, addrlen);
-  tmp_addr.ss_len = addrlen;
   addr = reinterpret_cast<socket_addr_type*>(&tmp_addr);
   clear_last_error();
   return getnameinfo_emulation(addr, addrlen,
@@ -3364,8 +3547,8 @@ u_short_type network_to_host_short(u_short_type value)
 {
 #if defined(BOOST_ASIO_WINDOWS_RUNTIME)
   unsigned char* value_p = reinterpret_cast<unsigned char*>(&value);
-  u_short_type result = (static_cast<u_long_type>(value_p[0]) << 8)
-    | static_cast<u_long_type>(value_p[1]);
+  u_short_type result = (static_cast<u_short_type>(value_p[0]) << 8)
+    | static_cast<u_short_type>(value_p[1]);
   return result;
 #else // defined(BOOST_ASIO_WINDOWS_RUNTIME)
   return ntohs(value);
@@ -3375,7 +3558,7 @@ u_short_type network_to_host_short(u_short_type value)
 u_short_type host_to_network_short(u_short_type value)
 {
 #if defined(BOOST_ASIO_WINDOWS_RUNTIME)
-  u_long_type result;
+  u_short_type result;
   unsigned char* result_p = reinterpret_cast<unsigned char*>(&result);
   result_p[0] = static_cast<unsigned char>((value >> 8) & 0xFF);
   result_p[1] = static_cast<unsigned char>(value & 0xFF);

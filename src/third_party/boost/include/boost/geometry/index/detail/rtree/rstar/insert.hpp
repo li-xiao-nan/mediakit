@@ -2,7 +2,7 @@
 //
 // R-tree R*-tree insert algorithm implementation
 //
-// Copyright (c) 2011-2014 Adam Wulkiewicz, Lodz, Poland.
+// Copyright (c) 2011-2015 Adam Wulkiewicz, Lodz, Poland.
 //
 // Use, modification and distribution is subject to the Boost Software License,
 // Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
@@ -178,14 +178,15 @@ struct level_insert_base
     typedef typename Options::parameters_type parameters_type;
 
     typedef typename Allocators::node_pointer node_pointer;
+    typedef typename Allocators::size_type size_type;
 
     inline level_insert_base(node_pointer & root,
-                             size_t & leafs_level,
+                             size_type & leafs_level,
                              Element const& element,
                              parameters_type const& parameters,
                              Translator const& translator,
                              Allocators & allocators,
-                             size_t relative_level)
+                             size_type relative_level)
         : base(root, leafs_level, element, parameters, translator, allocators, relative_level)
         , result_relative_level(0)
     {}
@@ -230,17 +231,29 @@ struct level_insert_base
     }
 
     template <typename Node>
-    inline void recalculate_aabb_if_necessary(Node &n) const
+    inline void recalculate_aabb_if_necessary(Node const& n) const
     {
         if ( !result_elements.empty() && !base::m_traverse_data.current_is_root() )
         {
             // calulate node's new box
-            base::m_traverse_data.current_element().first =
-                elements_box<Box>(rtree::elements(n).begin(), rtree::elements(n).end(), base::m_translator);
+            recalculate_aabb(n);
         }
     }
 
-    size_t result_relative_level;
+    template <typename Node>
+    inline void recalculate_aabb(Node const& n) const
+    {
+        base::m_traverse_data.current_element().first =
+            elements_box<Box>(rtree::elements(n).begin(), rtree::elements(n).end(), base::m_translator);
+    }
+
+    inline void recalculate_aabb(leaf const& n) const
+    {
+        base::m_traverse_data.current_element().first =
+            values_box<Box>(rtree::elements(n).begin(), rtree::elements(n).end(), base::m_translator);
+    }
+
+    size_type result_relative_level;
     result_elements_type result_elements;
 };
 
@@ -256,14 +269,15 @@ struct level_insert
     typedef typename Options::parameters_type parameters_type;
 
     typedef typename Allocators::node_pointer node_pointer;
+    typedef typename Allocators::size_type size_type;
 
     inline level_insert(node_pointer & root,
-                        size_t & leafs_level,
+                        size_type & leafs_level,
                         Element const& element,
                         parameters_type const& parameters,
                         Translator const& translator,
                         Allocators & allocators,
-                        size_t relative_level)
+                        size_type relative_level)
         : base(root, leafs_level, element, parameters, translator, allocators, relative_level)
     {}
 
@@ -341,14 +355,15 @@ struct level_insert<InsertIndex, Value, Value, Options, Translator, Box, Allocat
     typedef typename Options::parameters_type parameters_type;
 
     typedef typename Allocators::node_pointer node_pointer;
+    typedef typename Allocators::size_type size_type;
 
     inline level_insert(node_pointer & root,
-                        size_t & leafs_level,
+                        size_type & leafs_level,
                         Value const& v,
                         parameters_type const& parameters,
                         Translator const& translator,
                         Allocators & allocators,
-                        size_t relative_level)
+                        size_type relative_level)
         : base(root, leafs_level, v, parameters, translator, allocators, relative_level)
     {}
 
@@ -396,14 +411,15 @@ struct level_insert<0, Value, Value, Options, Translator, Box, Allocators>
     typedef typename Options::parameters_type parameters_type;
 
     typedef typename Allocators::node_pointer node_pointer;
+    typedef typename Allocators::size_type size_type;
 
     inline level_insert(node_pointer & root,
-                        size_t & leafs_level,
+                        size_type & leafs_level,
                         Value const& v,
                         parameters_type const& parameters,
                         Translator const& translator,
                         Allocators & allocators,
-                        size_t relative_level)
+                        size_type relative_level)
         : base(root, leafs_level, v, parameters, translator, allocators, relative_level)
     {}
 
@@ -453,22 +469,24 @@ class insert<Element, Value, Options, Translator, Box, Allocators, insert_reinse
     typedef typename rtree::leaf<Value, parameters_type, Box, Allocators, typename Options::node_tag>::type leaf;
 
     typedef typename Allocators::node_pointer node_pointer;
+    typedef typename Allocators::size_type size_type;
 
 public:
     inline insert(node_pointer & root,
-                  size_t & leafs_level,
+                  size_type & leafs_level,
                   Element const& element,
                   parameters_type const& parameters,
                   Translator const& translator,
                   Allocators & allocators,
-                  size_t relative_level = 0)
+                  size_type relative_level = 0)
         : m_root(root), m_leafs_level(leafs_level), m_element(element)
         , m_parameters(parameters), m_translator(translator)
         , m_relative_level(relative_level), m_allocators(allocators)
     {}
 
-    inline void operator()(internal_node & BOOST_GEOMETRY_INDEX_ASSERT_UNUSED_PARAM(n))
+    inline void operator()(internal_node & n)
     {
+        boost::ignore_unused(n);
         BOOST_GEOMETRY_INDEX_ASSERT(&n == &rtree::get<internal_node>(*m_root), "current node should be the root");
 
         // Distinguish between situation when reinserts are required and use adequate visitor, otherwise use default one
@@ -493,8 +511,9 @@ public:
         }
     }
 
-    inline void operator()(leaf & BOOST_GEOMETRY_INDEX_ASSERT_UNUSED_PARAM(n))
+    inline void operator()(leaf & n)
     {
+        boost::ignore_unused(n);
         BOOST_GEOMETRY_INDEX_ASSERT(&n == &rtree::get<leaf>(*m_root), "current node should be the root");
 
         // Distinguish between situation when reinserts are required and use adequate visitor, otherwise use default one
@@ -554,13 +573,13 @@ private:
     }
 
     node_pointer & m_root;
-    size_t & m_leafs_level;
+    size_type & m_leafs_level;
     Element const& m_element;
 
     parameters_type const& m_parameters;
     Translator const& m_translator;
 
-    size_t m_relative_level;
+    size_type m_relative_level;
 
     Allocators & m_allocators;
 };

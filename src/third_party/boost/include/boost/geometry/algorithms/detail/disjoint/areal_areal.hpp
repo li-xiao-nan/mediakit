@@ -5,8 +5,8 @@
 // Copyright (c) 2009-2014 Mateusz Loskot, London, UK.
 // Copyright (c) 2013-2014 Adam Wulkiewicz, Lodz, Poland.
 
-// This file was modified by Oracle on 2013-2014.
-// Modifications copyright (c) 2013-2014, Oracle and/or its affiliates.
+// This file was modified by Oracle on 2013-2017.
+// Modifications copyright (c) 2013-2017, Oracle and/or its affiliates.
 
 // Contributed and/or modified by Adam Wulkiewicz, on behalf of Oracle
 // Contributed and/or modified by Menelaos Karavelas, on behalf of Oracle
@@ -23,9 +23,9 @@
 
 #include <boost/geometry/core/point_type.hpp>
 
-#include <boost/geometry/algorithms/within.hpp>
+#include <boost/geometry/algorithms/covered_by.hpp>
 #include <boost/geometry/algorithms/detail/for_each_range.hpp>
-#include <boost/geometry/algorithms/point_on_surface.hpp>
+#include <boost/geometry/algorithms/detail/point_on_border.hpp>
 
 #include <boost/geometry/algorithms/detail/disjoint/linear_linear.hpp>
 
@@ -39,36 +39,75 @@ namespace detail { namespace disjoint
 {
 
 
-template<typename Geometry>
+template <typename Geometry, typename Tag = typename tag<Geometry>::type>
+struct check_each_ring_for_within_call_covered_by
+{
+    /*!
+    \tparam Strategy point_in_geometry strategy
+    */
+    template <typename Point, typename Strategy>
+    static inline bool apply(Point const& p, Geometry const& g, Strategy const& strategy)
+    {
+        return geometry::covered_by(p, g, strategy);
+    }
+};
+
+template <typename Geometry>
+struct check_each_ring_for_within_call_covered_by<Geometry, box_tag>
+{
+    template <typename Point, typename Strategy>
+    static inline bool apply(Point const& p, Geometry const& g, Strategy const& )
+    {
+        return geometry::covered_by(p, g);
+    }
+};
+
+
+/*!
+\tparam Strategy point_in_geometry strategy
+*/
+template<typename Geometry, typename Strategy>
 struct check_each_ring_for_within
 {
-    bool has_within;
+    bool not_disjoint;
     Geometry const& m_geometry;
+    Strategy const& m_strategy;
 
-    inline check_each_ring_for_within(Geometry const& g)
-        : has_within(false)
+    inline check_each_ring_for_within(Geometry const& g,
+                                      Strategy const& strategy)
+        : not_disjoint(false)
         , m_geometry(g)
+        , m_strategy(strategy)
     {}
 
     template <typename Range>
     inline void apply(Range const& range)
     {
-        if ( geometry::within(geometry::return_point_on_surface(range), m_geometry) )
-        {
-            has_within = true;
-        }
+        typename point_type<Range>::type pt;
+        not_disjoint = not_disjoint
+                || ( geometry::point_on_border(pt, range)
+                  && check_each_ring_for_within_call_covered_by
+                        <
+                            Geometry
+                        >::apply(pt, m_geometry, m_strategy) );
     }
 };
 
 
-
-template <typename FirstGeometry, typename SecondGeometry>
+/*!
+\tparam Strategy point_in_geometry strategy
+*/
+template <typename FirstGeometry, typename SecondGeometry, typename Strategy>
 inline bool rings_containing(FirstGeometry const& geometry1,
-                                 SecondGeometry const& geometry2)
+                             SecondGeometry const& geometry2,
+                             Strategy const& strategy)
 {
-    check_each_ring_for_within<FirstGeometry> checker(geometry1);
+    check_each_ring_for_within
+        <
+            FirstGeometry, Strategy
+        > checker(geometry1, strategy);
     geometry::detail::for_each_range(geometry2, checker);
-    return checker.has_within;
+    return checker.not_disjoint;
 }
 
 
@@ -76,10 +115,15 @@ inline bool rings_containing(FirstGeometry const& geometry1,
 template <typename Geometry1, typename Geometry2>
 struct general_areal
 {
-    static inline
-    bool apply(Geometry1 const& geometry1, Geometry2 const& geometry2)
+    /*!
+    \tparam Strategy relate (segments intersection) strategy
+    */
+    template <typename Strategy>
+    static inline bool apply(Geometry1 const& geometry1,
+                             Geometry2 const& geometry2,
+                             Strategy const& strategy)
     {
-        if ( ! disjoint_linear<Geometry1, Geometry2>::apply(geometry1, geometry2) )
+        if ( ! disjoint_linear<Geometry1, Geometry2>::apply(geometry1, geometry2, strategy) )
         {
             return false;
         }
@@ -87,11 +131,13 @@ struct general_areal
         // If there is no intersection of segments, they might located
         // inside each other
 
-        // We check that using a point on the surface, and see if that is inside
-        // the other geometry. And vice versa.
+        // We check that using a point on the border (external boundary),
+        // and see if that is contained in the other geometry. And vice versa.
 
-        if ( rings_containing(geometry1, geometry2)
-          || rings_containing(geometry2, geometry1) )
+        if ( rings_containing(geometry1, geometry2,
+                              strategy.template get_point_in_geometry_strategy<Geometry2, Geometry1>())
+          || rings_containing(geometry2, geometry1,
+                              strategy.template get_point_in_geometry_strategy<Geometry1, Geometry2>()) )
         {
             return false;
         }

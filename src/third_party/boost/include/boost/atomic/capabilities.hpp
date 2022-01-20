@@ -19,7 +19,7 @@
 #include <boost/atomic/detail/int_sizes.hpp>
 
 #if !defined(BOOST_ATOMIC_EMULATED)
-#include BOOST_ATOMIC_DETAIL_HEADER(boost/atomic/detail/caps_)
+#include BOOST_ATOMIC_DETAIL_BACKEND_HEADER(boost/atomic/detail/caps_)
 #endif
 
 #ifdef BOOST_HAS_PRAGMA_ONCE
@@ -142,6 +142,7 @@
 #define BOOST_ATOMIC_ADDRESS_LOCK_FREE BOOST_ATOMIC_POINTER_LOCK_FREE
 
 #ifndef BOOST_ATOMIC_BOOL_LOCK_FREE
+// We store bools in 1-byte storage in all backends
 #define BOOST_ATOMIC_BOOL_LOCK_FREE BOOST_ATOMIC_INT8_LOCK_FREE
 #endif
 

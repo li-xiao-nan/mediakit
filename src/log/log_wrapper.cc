@@ -1,0 +1,91 @@
+#include "log/log_wrapper.h"
+#include "third_party/log/spdlog/spdlog.h"
+#include "third_party/log/spdlog/async.h"
+#include "third_party/log/spdlog/async_logger.h"
+#include "third_party/log/spdlog/sinks/rotating_file_sink.h"
+
+#include <windows.h>
+
+#include "boost/assert.hpp"
+#include <string>
+#include <codecvt>
+#include <mutex>
+
+const char* kLogFileName = "mediakit.log";
+const int kMaxLogFileSize = 1024 * 1024 * 5;  // 5M
+const int kMaxLogFileCount = 5;
+const char* kLoggerName = "snail_messenger";
+
+namespace media {
+std::mutex log_init_mutex;
+std::wstring GetApplicationFileDirUtf16() {
+  TCHAR szPath[MAX_PATH];
+  ::GetModuleFileName(NULL, szPath, MAX_PATH);
+  std::wstring path(szPath);
+  std::wstring file_name;
+  if (path.find_last_of(L'/') != std::wstring::npos) {
+    file_name = path.substr(0, path.find_last_of(L'/'));
+  } else if (path.find_last_of(L'\\') != std::wstring::npos) {
+    file_name = path.substr(0, path.find_last_of(L'\\'));
+  }
+  return file_name;
+}
+
+std::string GetApplicationFileDirUtf8() {
+  std::wstring file_dir_utf16 = GetApplicationFileDirUtf16();
+  return UTF16toUTF8(file_dir_utf16);
+}
+
+std::string UTF16toUTF8(const std::wstring& str) {
+  std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> convert;
+  std::string utf8_string = convert.to_bytes(str);
+  return utf8_string;
+}
+
+void InitializeLog(){
+  std::unique_lock<std::mutex> lck(log_init_mutex);
+  static bool initialized = false;
+  if(initialized) {
+    return;
+  }
+  spdlog::drop_all();
+  std::string log_file_path = GetApplicationFileDirUtf8() + "/" + kLogFileName;
+  auto message_logger = spdlog::rotating_logger_mt<spdlog::async_factory>(
+    kLoggerName,
+    log_file_path,
+    kMaxLogFileSize,
+    kMaxLogFileCount); 
+  message_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
+  message_logger->set_level(spdlog::level::trace);
+  spdlog::register_logger(message_logger);
+  initialized =true;
+}
+
+void LogMessage(LogLevel log_level, const std::string& message) {
+  std::shared_ptr<spdlog::logger> logger = spdlog::get(kLoggerName);
+  if(logger == nullptr) {
+    InitializeLog();
+    logger = spdlog::get(kLoggerName);
+  }
+  BOOST_ASSERT_MSG(logger, "log system initialize failed");
+  switch(log_level) {
+  case LOG_LEVEL_DEBUG:
+     logger->debug(message);
+    break;
+  case LOG_LEVEL_ERROR:
+     logger->error(message);
+    break;
+  case LOG_LEVEL_INFO:
+     logger->info(message);
+    break;
+  case LOG_LEVEL_WRANING:
+     logger->warn(message);
+    break;
+  default:
+    BOOST_ASSERT_MSG(0, "unsupported log level");
+  }
+  logger->flush();
+  return;
+}
+
+} // namespace media

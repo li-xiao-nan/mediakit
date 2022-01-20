@@ -14,6 +14,8 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/audio_decoder_config.h"
 
+#include "log/log_wrapper.h"
+
 int kFFmpgeAVIOBufferSize = 1024*3;
 
 namespace media {
@@ -174,6 +176,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
 }
 
 void FFmpegDemuxer::StartBlockingTaskRunner() {
+  LogMessage(LOG_LEVEL_DEBUG, "Start blocking task runner");
   blocking_task_runner_.reset(new boost::asio::io_service());
   blocking_io_service_work_.reset(
       new boost::asio::io_service::work(*blocking_task_runner_.get()));

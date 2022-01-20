@@ -1,4 +1,4 @@
-/* Copyright 2003-2014 Joaquin M Lopez Munoz.
+/* Copyright 2003-2017 Joaquin M Lopez Munoz.
  * Distributed under the Boost Software License, Version 1.0.
  * (See accompanying file LICENSE_1_0.txt or copy at
  * http://www.boost.org/LICENSE_1_0.txt)
@@ -15,6 +15,7 @@
 
 #include <boost/config.hpp> /* keep it first to prevent nasty warns in MSVC */
 #include <algorithm>
+#include <boost/bind.hpp>
 #include <boost/call_traits.hpp>
 #include <boost/detail/no_exceptions_support.hpp>
 #include <boost/detail/workaround.hpp>
@@ -49,7 +50,6 @@
 #endif
 
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
-#include <boost/bind.hpp>
 #include <boost/multi_index/detail/rnd_index_loader.hpp>
 #endif
 
@@ -583,7 +583,8 @@ public:
     difference_type n=
       end()-make_iterator(
         random_access_index_remove<node_type>(
-          ptrs,std::bind2nd(std::equal_to<value_type>(),value)));
+          ptrs,
+          ::boost::bind(std::equal_to<value_type>(),::boost::arg<1>(),value)));
     while(n--)pop_back();
   }
 
@@ -876,6 +877,11 @@ BOOST_MULTI_INDEX_PROTECTED_IF_MEMBER_TEMPLATE_FRIENDS:
     return super::modify_rollback_(x);
   }
 
+  bool check_rollback_(node_type* x)const
+  {
+    return super::check_rollback_(x);
+  }
+
 #if !defined(BOOST_MULTI_INDEX_DISABLE_SERIALIZATION)
   /* serialization */
 
@@ -1155,7 +1161,7 @@ struct random_access
 template<typename SuperMeta,typename TagList>
 inline boost::mpl::true_* boost_foreach_is_noncopyable(
   boost::multi_index::detail::random_access_index<SuperMeta,TagList>*&,
-  boost::foreach::tag)
+  boost_foreach_argument_dependent_lookup_hack)
 {
   return 0;
 }
