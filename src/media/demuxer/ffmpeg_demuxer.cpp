@@ -86,12 +86,11 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
     // open the input file
     if ((avformat_open_input(&av_format_context_, NULL, NULL, NULL)) != 0) {
       result = false;
+      LogMessage(LOG_LEVEL_ERROR, "open video file failed");
     } else {
-      printf("OK: success open the input file\n");
+      LogMessage(LOG_LEVEL_INFO, "open video file success");
     }
-
     result = true;
-
   task_runner_->post(boost::bind(action_cb, result));
 }
 
@@ -136,7 +135,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
   max_duration = std::max(max_duration, av_format_context_->duration);
 
   start_time_ = EstimateStartTimeFromProbeAVPacketBuffer(av_format_context_);
-
+  LogMessage(LOG_LEVEL_INFO, "StreamCount:" + std::to_string(av_format_context_->nb_streams));
   for (size_t i = 0; i < av_format_context_->nb_streams; i++) {
     AVStream* stream = av_format_context_->streams[i];
     AVCodecContext* av_codec_context = stream->codec;

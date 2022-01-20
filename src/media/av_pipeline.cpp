@@ -7,6 +7,7 @@
 //
 
 #include "av_pipeline.h"
+#include "log/log_wrapper.h"
 
 #include "boost/bind.hpp"
 
@@ -91,8 +92,10 @@ AVPipeline::PipelineState AVPipeline::GetNextState() {
     case STATE_CREATE:
       return STATE_INIT_DEMUXER;
     case STATE_INIT_DEMUXER:
+      LogMessage(LOG_LEVEL_INFO, "Demuxer initialize success");
       return STATE_INIT_RENDERER;
     case STATE_INIT_RENDERER:
+      LogMessage(LOG_LEVEL_INFO, "Render initialize success");
       return STATE_PLAYING;
     case STATE_SEEKING:
       return STATE_PLAYING;

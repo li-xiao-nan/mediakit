@@ -5,12 +5,14 @@
 
 #include "net/file_stream_provider.h"
 #include "net/curl/curl_adapter.h"
+#include "log/log_wrapper.h"
 
 namespace net {
 
 //static function
 IOChannel* IOChannel::CreateIOChannel(Url url)
 {
+  LogMessage(media::LOG_LEVEL_DEBUG, "VideoURL:" + url.str());
 	IOChannel* stream = NULL;
 	if(url.protocol() == "file"){
 		string path = url.path();
@@ -19,8 +21,7 @@ IOChannel* IOChannel::CreateIOChannel(Url url)
 		}else{
 			FILE *inFp = fopen(path.c_str(),"rb");
 			if(!inFp){
-				printf("<lxn>%s(%d)-->fopen the file of %s failed\n",__FILE__,__LINE__,path.c_str());
-				printf("fopen->ERRInfo:%s\n",strerror(errno));
+        LogMessage(media::LOG_LEVEL_DEBUG,"Open file path:" + url.str() +" failed");
 				return stream;
 			}
 			stream = new FileStreamProvider(inFp);
@@ -28,6 +29,7 @@ IOChannel* IOChannel::CreateIOChannel(Url url)
 	}else if(url.protocol() == "http"){
 		stream = new CurlStreamFile(url.str(),"");
 	}
+  LogMessage(media::LOG_LEVEL_INFO, "IOChannel create Successed");
 	return stream;
 }
 

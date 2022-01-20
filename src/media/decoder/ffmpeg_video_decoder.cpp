@@ -2,6 +2,7 @@
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/renderer/renderer_impl.h"
 #include "media/base/time_source.h"
+#include "log/log_wrapper.h"
 
 namespace media {
 FFmpegVideoDecoder::FFmpegVideoDecoder(TaskRunner* task_runner)
@@ -83,6 +84,14 @@ bool FFmpegVideoDecoder::ConfigureDecoder(bool low_delay) {
     ReleaseFFmpegResource();
     return false;
   }
+  LogMessage(LOG_LEVEL_INFO, std::string("video_codec:")
+    + avcodec_get_name(av_codec_context_->codec_id)
+    + "; profile:" + av_get_profile_name(codec, av_codec_context_->profile)
+    + "; pix_fmt:" + std::to_string(av_codec_context_->pix_fmt)
+    + "; width:" + std::to_string(av_codec_context_->width)
+    + "; height:" + std::to_string(av_codec_context_->height)
+    + "; coded_width:" + std::to_string(av_codec_context_->coded_width)
+    + "; coded_height:" + std::to_string(av_codec_context_->coded_height));
   av_frame_ = av_frame_alloc();
   return true;
 }

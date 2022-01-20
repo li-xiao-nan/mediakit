@@ -9,6 +9,7 @@
 #include "ffmpeg_demuxer_stream.h"
 #include "media/demuxer/ffmpeg_demuxer.h"
 #include "media/FFmpeg/ffmpeg_common.h"
+#include "log/log_wrapper.h"
 const int kMaxQueueSize = 2<<6;
 
 namespace media {
@@ -65,10 +66,10 @@ void FFmpegDemuxerStream::Read(ReadCB read_cb) {
   if (encoded_avframe_queue_.empty()) {
 	  switch (type_) {
 	  case AUDIO:
-		  //std::cout << "[AUDIO] queue is empty" << std::endl;
+      LogMessage(LOG_LEVEL_DEBUG, "[Audio] queue is empty");
 		  break;
 	  case VIDEO:
-		  //std::cout << "[VIDEO] queue is empty" << std::endl;
+      LogMessage(LOG_LEVEL_DEBUG, "[Video] queue is empty");
 		  break;
 	  }
     read_cb_ = read_cb;
