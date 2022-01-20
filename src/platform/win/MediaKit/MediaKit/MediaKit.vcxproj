@@ -42,6 +42,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <LibraryPath>$(LibraryPath)</LibraryPath>
+    <CustomBuildAfterTargets>BuildLink</CustomBuildAfterTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -62,6 +63,21 @@
       <AdditionalLibraryDirectories>$(OutDir);$(SolutionDir)\libs;$(SolutionDir)\..\..\..\third_party\curl\lib\;$(SolutionDir)\..\..\..\third_party\boost\lib\x86\debug\;$(SolutionDir)\..\..\..\third_party\ffmpeg\lib\win\;$(SolutionDir)\..\..\..\third_party\freeglut\lib\win\;$(SolutionDir)\..\..\..\third_party\sdl\x86\debug\;$(SolutionDir)\..\..\..\third_party\glew\lib\Release\Win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;mediacore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)..\..\..\third_party\sdl\x86\$(ConfigurationName)\SDL.dll $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)..\..\..\third_party\curl\x86\$(ConfigurationName)\* $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)..\..\..\third_party\ffmpeg\x86\$(ConfigurationName)\*.dll $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)..\..\..\third_party\ffmpeg\x86\$(ConfigurationName)\*.pdb $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)..\..\..\third_party\freeglut\x86\$(ConfigurationName)\* $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)..\..\..\third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir)$(ConfigurationName)\</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>拷贝依赖文件</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
