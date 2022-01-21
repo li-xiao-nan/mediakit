@@ -69,6 +69,7 @@ void FFmpegDemuxer::NotifyDemuxerCapacityAvailable() { ReadFrameIfNeeded(); }
 
 void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
                                               ActionCB action_cb) {
+  ScopeTimeCount auto_time_count(__FUNCTION__);
   av_register_all();
 
   bool result = false;
@@ -133,6 +134,11 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
 
   AVRational av_format_context_time_base = {1, AV_TIME_BASE};
   max_duration = std::max(max_duration, av_format_context_->duration);
+  int duration_by_second = max_duration / AV_TIME_BASE;
+  LogMessage(LOG_LEVEL_INFO, 
+    "VideoDuration:" + std::to_string(duration_by_second/(60*60))
+    + ":" + std::to_string(duration_by_second/60%60)
+    + ":" + std::to_string(duration_by_second%60));
 
   start_time_ = EstimateStartTimeFromProbeAVPacketBuffer(av_format_context_);
   LogMessage(LOG_LEVEL_INFO, "StreamCount:" + std::to_string(av_format_context_->nb_streams));

@@ -28,8 +28,11 @@ IOChannel* IOChannel::CreateIOChannel(Url url)
 		}
 	}else if(url.protocol() == "http"){
 		stream = new CurlStreamFile(url.str(),"");
-	}
-  LogMessage(media::LOG_LEVEL_INFO, "IOChannel create Successed");
+	}else {
+    LogMessage(media::LOG_LEVEL_ERROR, "unsupported url or illegal url; url:" + url.str());
+    return nullptr;
+  }
+  LogMessage(media::LOG_LEVEL_INFO, "IOChannel create success");
 	return stream;
 }
 

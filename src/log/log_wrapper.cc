@@ -1,8 +1,8 @@
 #include "log/log_wrapper.h"
-#include "third_party/log/spdlog/spdlog.h"
-#include "third_party/log/spdlog/async.h"
-#include "third_party/log/spdlog/async_logger.h"
-#include "third_party/log/spdlog/sinks/rotating_file_sink.h"
+#include "spdlog/spdlog.h"
+#include "spdlog/async.h"
+#include "spdlog/async_logger.h"
+#include "spdlog/sinks/rotating_file_sink.h"
 
 #include <windows.h>
 

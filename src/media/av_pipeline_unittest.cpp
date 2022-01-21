@@ -22,6 +22,7 @@ extern "C" {
 #include "media/decoder/ffmpeg_audio_decoder.h"
 #include "net/url.h"
 #include "net/io_channel.h"
+#include "log/log_wrapper.h"
 
 void PipelineStatusCallBack(media::PipelineStatus status);
 void SeekCB(media::PipelineStatus);
@@ -184,6 +185,12 @@ int main(int argc, char* argv[]) {
   net::Url newUrl(url);
   std::shared_ptr<net::IOChannel> data_source(
       net::IOChannel::CreateIOChannel(newUrl));
+  if(data_source == nullptr) {
+    media::LogMessage(media::LOG_LEVEL_ERROR,
+      "DataSource Create Failed, Original Url:" + std::string(argv[1]));
+    return -1;
+  }
+
   // init demuxer
   demuxer.reset(new media::FFmpegDemuxer(task_runner, data_source));
 
