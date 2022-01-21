@@ -5,7 +5,7 @@
 #include <stdio.h>
 
 extern "C" {
-#include "third_party/glew/include/GL/glew.h"
+#include "GL/glew.h"
 }
 #include "GL/glut.h"
 
