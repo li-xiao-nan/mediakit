@@ -1,0 +1,319 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="base">
+      <UniqueIdentifier>{c9f9f738-3379-4cab-a15a-eb25c70cb5a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\timer">
+      <UniqueIdentifier>{0773750b-bb15-4e62-80ae-f5d43a0ddc5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="log">
+      <UniqueIdentifier>{ed629762-e1ae-4a4a-897f-942775a6aebf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="media">
+      <UniqueIdentifier>{b80184ed-845a-4944-8b3d-7e6067d6c294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="media\base">
+      <UniqueIdentifier>{ba69cc77-3ff9-4808-9623-e8f48f99ee80}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="media\decoder">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="media\demuxer">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="media\ffmpeg">
+      <UniqueIdentifier>{ffd4ba78-be87-41dc-82dd-483ef3795557}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="media\sound">
+      <UniqueIdentifier>{e938086b-8640-4ad9-a1fb-f49ed0e41207}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="media\renderer">
+      <UniqueIdentifier>{22e3740c-2391-4751-8274-949d30e3c008}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="media\sound\sdl">
+      <UniqueIdentifier>{9935b45e-3705-4dd8-b8c4-7913f8c442a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net">
+      <UniqueIdentifier>{c4e2a04c-98ec-44eb-b134-917cb73f7e12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{01481187-7caa-4e0c-966f-80f818b60c6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="net\curl">
+      <UniqueIdentifier>{ebb87b44-400f-42b5-846b-0da7d6af9312}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\base\base_type.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\ImageType.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\snail_exception.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\SnailConfig.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\timer\ClockTime.h">
+      <Filter>base\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\timer\scheduler_timer.h">
+      <Filter>base\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\timer\SnailSleep.h">
+      <Filter>base\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\timer\SystemClock.h">
+      <Filter>base\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\timer\VirtualClock.h">
+      <Filter>base\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\timer\wall_clock_timer.h">
+      <Filter>base\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\log\log_wrapper.h">
+      <Filter>log</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\av_pipeline.h">
+      <Filter>media</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\audio_decoder_config.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\audio_frame.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\audio_parameters.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\channel_layout.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\pipeline_status.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\playback_clock.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\sample_format.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\time_source.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\type_define.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\video_decoder_config.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\base\video_frame.h">
+      <Filter>media\base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\decoder\audio_decoder.h">
+      <Filter>media\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\decoder\audio_frame_stream.h">
+      <Filter>media\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\decoder\ffmpeg_audio_decoder.h">
+      <Filter>media\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\decoder\ffmpeg_video_decoder.h">
+      <Filter>media\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\decoder\video_decoder.h">
+      <Filter>media\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\decoder\video_frame_stream.h">
+      <Filter>media\decoder</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\demuxer\demuxer.h">
+      <Filter>media\demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\demuxer\demuxer_stream.h">
+      <Filter>media\demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\demuxer\demuxer_stream_provider.h">
+      <Filter>media\demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\demuxer\ffmpeg_demuxer.h">
+      <Filter>media\demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\demuxer\ffmpeg_demuxer_stream.h">
+      <Filter>media\demuxer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\FFmpeg\ffmpeg_common.h">
+      <Filter>media\ffmpeg</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\renderer\audio_renderer.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\renderer\audio_renderer_impl.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\renderer\audio_renderer_sink.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\renderer\renderer.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\renderer\renderer_impl.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\renderer\sdl_audio_renderer_sink.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\renderer\video_renderer.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\renderer\video_renderer_impl.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\sound\AuxStream.h">
+      <Filter>media\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\sound\InputStream.h">
+      <Filter>media\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\sound\SoundHandler.h">
+      <Filter>media\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\sound\sdl\SoundHandlerSDL.h">
+      <Filter>media\sound\sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\net\file_stream_provider.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="src\net\io_channel.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="src\net\url.h">
+      <Filter>net</Filter>
+    </ClInclude>
+    <ClInclude Include="src\net\curl\curl_adapter.h">
+      <Filter>net\curl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\utils\string_utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\base\ImageType.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\timer\ClockTime.cpp">
+      <Filter>base\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\timer\scheduler_timer.cpp">
+      <Filter>base\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\timer\SystemClock.cpp">
+      <Filter>base\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\timer\wall_clock_timer.cpp">
+      <Filter>base\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\log\log_wrapper.cc">
+      <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\av_pipeline.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\av_pipeline_unittest.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\base\audio_decoder_config.cpp">
+      <Filter>media\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\base\audio_frame.cpp">
+      <Filter>media\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\base\playback_clock.cpp">
+      <Filter>media\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\base\video_decoder_config.cpp">
+      <Filter>media\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\base\video_frame.cpp">
+      <Filter>media\base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\decoder\audio_frame_stream.cpp">
+      <Filter>media\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\decoder\ffmpeg_audio_decoder.cpp">
+      <Filter>media\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\decoder\ffmpeg_video_decoder.cpp">
+      <Filter>media\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\decoder\video_frame_stream.cpp">
+      <Filter>media\decoder</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\demuxer\demuxer.cpp">
+      <Filter>media\demuxer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\demuxer\demuxer_stream.cpp">
+      <Filter>media\demuxer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\demuxer\ffmpeg_demuxer.cpp">
+      <Filter>media\demuxer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\demuxer\ffmpeg_demuxer_stream.cpp">
+      <Filter>media\demuxer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\FFmpeg\ffmpeg_common.cpp">
+      <Filter>media\ffmpeg</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\renderer\audio_renderer_impl.cpp">
+      <Filter>media\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\renderer\audio_renderer_sink.cpp">
+      <Filter>media\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\renderer\renderer_impl.cpp">
+      <Filter>media\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\renderer\sdl_audio_renderer_sink.cpp">
+      <Filter>media\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\renderer\video_renderer_impl.cpp">
+      <Filter>media\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\sound\AuxStream.cpp">
+      <Filter>media\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\sound\SoundHandler.cpp">
+      <Filter>media\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\sound\sdl\SoundHandlerSDL.cpp">
+      <Filter>media\sound\sdl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\file_stream_provider.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\io_channel.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\url.cpp">
+      <Filter>net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\net\curl\curl_adapter.cpp">
+      <Filter>net\curl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\utils\string_utils.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\media\av_pipeline_unittest.gyp">
+      <Filter>media</Filter>
+    </None>
+  </ItemGroup>
+</Project>

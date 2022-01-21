@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>15.0</VCProjectVersion>
+    <ProjectGuid>{8EC77D75-22B8-45D3-A4DE-CFAF2F0FF911}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\;$(SolutionDir)third_party\boost\include\;$(SolutionDir)third_party\curl\include\;$(SolutionDir)third_party\ffmpeg\include\;$(SolutionDir)third_party\freeglut\include\;$(SolutionDir)third_party\glew\include\;$(SolutionDir)third_party\log\;$(SolutionDir)third_party\sdl\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)third_party\curl\lib;$(SolutionDir)third_party\boost\lib\x86\$(Configuration);$(SolutionDir)third_party\ffmpeg\lib\win\;$(SolutionDir)third_party\freeglut\lib\win\;$(SolutionDir)third_party\sdl\x86\$(Configuration)\;$(SolutionDir)third_party\glew\lib\$(Configuration)\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)third_party\sdl\x86\$(ConfigurationName)\SDL.dll $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\curl\x86\$(ConfigurationName)\* $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\ffmpeg\x86\$(ConfigurationName)\*.dll $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\ffmpeg\x86\$(ConfigurationName)\*.pdb $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\freeglut\x86\$(ConfigurationName)\* $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir)$(ConfigurationName)\</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Link>
+      <TargetMachine>MachineX86</TargetMachine>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="src\base\base_type.h" />
+    <ClInclude Include="src\base\ImageType.h" />
+    <ClInclude Include="src\base\SnailConfig.h" />
+    <ClInclude Include="src\base\snail_exception.h" />
+    <ClInclude Include="src\base\timer\ClockTime.h" />
+    <ClInclude Include="src\base\timer\scheduler_timer.h" />
+    <ClInclude Include="src\base\timer\SnailSleep.h" />
+    <ClInclude Include="src\base\timer\SystemClock.h" />
+    <ClInclude Include="src\base\timer\VirtualClock.h" />
+    <ClInclude Include="src\base\timer\wall_clock_timer.h" />
+    <ClInclude Include="src\log\log_wrapper.h" />
+    <ClInclude Include="src\media\av_pipeline.h" />
+    <ClInclude Include="src\media\base\audio_decoder_config.h" />
+    <ClInclude Include="src\media\base\audio_frame.h" />
+    <ClInclude Include="src\media\base\audio_parameters.h" />
+    <ClInclude Include="src\media\base\channel_layout.h" />
+    <ClInclude Include="src\media\base\pipeline_status.h" />
+    <ClInclude Include="src\media\base\playback_clock.h" />
+    <ClInclude Include="src\media\base\sample_format.h" />
+    <ClInclude Include="src\media\base\time_source.h" />
+    <ClInclude Include="src\media\base\type_define.h" />
+    <ClInclude Include="src\media\base\video_decoder_config.h" />
+    <ClInclude Include="src\media\base\video_frame.h" />
+    <ClInclude Include="src\media\decoder\audio_decoder.h" />
+    <ClInclude Include="src\media\decoder\audio_frame_stream.h" />
+    <ClInclude Include="src\media\decoder\ffmpeg_audio_decoder.h" />
+    <ClInclude Include="src\media\decoder\ffmpeg_video_decoder.h" />
+    <ClInclude Include="src\media\decoder\video_decoder.h" />
+    <ClInclude Include="src\media\decoder\video_frame_stream.h" />
+    <ClInclude Include="src\media\demuxer\demuxer.h" />
+    <ClInclude Include="src\media\demuxer\demuxer_stream.h" />
+    <ClInclude Include="src\media\demuxer\demuxer_stream_provider.h" />
+    <ClInclude Include="src\media\demuxer\ffmpeg_demuxer.h" />
+    <ClInclude Include="src\media\demuxer\ffmpeg_demuxer_stream.h" />
+    <ClInclude Include="src\media\FFmpeg\ffmpeg_common.h" />
+    <ClInclude Include="src\media\renderer\audio_renderer.h" />
+    <ClInclude Include="src\media\renderer\audio_renderer_impl.h" />
+    <ClInclude Include="src\media\renderer\audio_renderer_sink.h" />
+    <ClInclude Include="src\media\renderer\renderer.h" />
+    <ClInclude Include="src\media\renderer\renderer_impl.h" />
+    <ClInclude Include="src\media\renderer\sdl_audio_renderer_sink.h" />
+    <ClInclude Include="src\media\renderer\video_renderer.h" />
+    <ClInclude Include="src\media\renderer\video_renderer_impl.h" />
+    <ClInclude Include="src\media\sound\AuxStream.h" />
+    <ClInclude Include="src\media\sound\InputStream.h" />
+    <ClInclude Include="src\media\sound\sdl\SoundHandlerSDL.h" />
+    <ClInclude Include="src\media\sound\SoundHandler.h" />
+    <ClInclude Include="src\net\curl\curl_adapter.h" />
+    <ClInclude Include="src\net\file_stream_provider.h" />
+    <ClInclude Include="src\net\io_channel.h" />
+    <ClInclude Include="src\net\url.h" />
+    <ClInclude Include="src\utils\string_utils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\base\ImageType.cpp">
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="src\base\timer\ClockTime.cpp" />
+    <ClCompile Include="src\base\timer\scheduler_timer.cpp" />
+    <ClCompile Include="src\base\timer\SystemClock.cpp" />
+    <ClCompile Include="src\base\timer\wall_clock_timer.cpp" />
+    <ClCompile Include="src\log\log_wrapper.cc" />
+    <ClCompile Include="src\media\av_pipeline.cpp" />
+    <ClCompile Include="src\media\av_pipeline_unittest.cpp" />
+    <ClCompile Include="src\media\base\audio_decoder_config.cpp" />
+    <ClCompile Include="src\media\base\audio_frame.cpp" />
+    <ClCompile Include="src\media\base\playback_clock.cpp" />
+    <ClCompile Include="src\media\base\video_decoder_config.cpp" />
+    <ClCompile Include="src\media\base\video_frame.cpp" />
+    <ClCompile Include="src\media\decoder\audio_frame_stream.cpp" />
+    <ClCompile Include="src\media\decoder\ffmpeg_audio_decoder.cpp" />
+    <ClCompile Include="src\media\decoder\ffmpeg_video_decoder.cpp" />
+    <ClCompile Include="src\media\decoder\video_frame_stream.cpp" />
+    <ClCompile Include="src\media\demuxer\demuxer.cpp" />
+    <ClCompile Include="src\media\demuxer\demuxer_stream.cpp" />
+    <ClCompile Include="src\media\demuxer\ffmpeg_demuxer.cpp" />
+    <ClCompile Include="src\media\demuxer\ffmpeg_demuxer_stream.cpp" />
+    <ClCompile Include="src\media\FFmpeg\ffmpeg_common.cpp" />
+    <ClCompile Include="src\media\renderer\audio_renderer_impl.cpp" />
+    <ClCompile Include="src\media\renderer\audio_renderer_sink.cpp" />
+    <ClCompile Include="src\media\renderer\renderer_impl.cpp" />
+    <ClCompile Include="src\media\renderer\sdl_audio_renderer_sink.cpp" />
+    <ClCompile Include="src\media\renderer\video_renderer_impl.cpp" />
+    <ClCompile Include="src\media\sound\AuxStream.cpp" />
+    <ClCompile Include="src\media\sound\sdl\SoundHandlerSDL.cpp" />
+    <ClCompile Include="src\media\sound\SoundHandler.cpp" />
+    <ClCompile Include="src\net\curl\curl_adapter.cpp" />
+    <ClCompile Include="src\net\file_stream_provider.cpp" />
+    <ClCompile Include="src\net\io_channel.cpp" />
+    <ClCompile Include="src\net\url.cpp" />
+    <ClCompile Include="src\utils\string_utils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\media\av_pipeline_unittest.gyp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
