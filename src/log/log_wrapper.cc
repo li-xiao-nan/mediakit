@@ -10,6 +10,7 @@
 #include <string>
 #include <codecvt>
 #include <mutex>
+#include <boost/filesystem.hpp>
 
 const char* kLogFileName = "mediakit.log";
 const int kMaxLogFileSize = 1024 * 1024 * 5;  // 5M
@@ -49,7 +50,15 @@ void InitializeLog(){
     return;
   }
   spdlog::drop_all();
-  std::string log_file_path = GetApplicationFileDirUtf8() + "/" + kLogFileName;
+  std::string log_file_dir = GetApplicationFileDirUtf8() + "/log/";
+  if(!boost::filesystem::is_directory(log_file_dir)) {
+    bool result =  boost::filesystem::create_directory(log_file_dir);
+    if(!result) {
+      BOOST_ASSERT_MSG(0, "Create directory fiale");
+      return;
+    }
+  }
+  std::string log_file_path = log_file_dir + kLogFileName;
   auto message_logger = spdlog::rotating_logger_mt<spdlog::async_factory>(
     kLoggerName,
     log_file_path,

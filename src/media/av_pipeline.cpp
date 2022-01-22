@@ -48,6 +48,10 @@ void AVPipeline::Seek(int64_t timestamp, PipelineStatusCB seek_cb) {
   task_runner_->post(task);
 }
 
+int64_t AVPipeline::GetPlaybackTime() {
+    return renderer_->GetPlaybackTime();
+}
+
 void AVPipeline::SeekAction(int64_t timestamp, PipelineStatusCB seek_cb) {
   assert(seek_cb);
   assert(demuxer_.get());
