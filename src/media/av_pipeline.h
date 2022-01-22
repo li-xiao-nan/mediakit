@@ -40,6 +40,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
              PipelineStatusCB seek_cb, VideoRenderer::PaintCB paint_cb);
   void Stop();
   void Seek(int64_t timestamp, PipelineStatusCB seek_cb);
+  int64_t GetPlaybackTime();
 
  private:
   void StartAction();

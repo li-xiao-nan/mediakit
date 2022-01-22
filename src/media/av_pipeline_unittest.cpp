@@ -33,6 +33,7 @@ std::shared_ptr<media::Renderer> renderer;
 std::vector<media::VideoDecoder*> vector_video_decoder;
 std::queue<std::shared_ptr<media::VideoFrame> > queue_video_frame;
 boost::mutex queue_mutex;
+media::AVPipeline* av_pipeline = nullptr;
 
 void GlobalPaintCallBack(std::shared_ptr<media::VideoFrame> video_frame) {
   boost::mutex::scoped_lock lock(queue_mutex);
@@ -80,8 +81,6 @@ void InitRenderer(boost::asio::io_service* task_runner) {
 void StartDemux() {
   int64_t start_time = demuxer->GetStartTime();
   int64_t duration = demuxer->GetDuration();
-  printf("************Media Infomation**************\n");
-  printf("StartTime:%lld\n duration:%lld\n", start_time, duration);
   demuxer->ShowMediaConfigInfo();
   demuxer->Seek(demuxer->GetStartTime(), &SeekCB);
 }
@@ -140,6 +139,7 @@ void zcb() {
 }
 
 void ExitApp(){
+  media::LogMessage(media::LOG_LEVEL_INFO, "Playback Time:" + std::to_string(av_pipeline->GetPlaybackTime()));
   exit(0);
 }
 
@@ -197,6 +197,7 @@ int main(int argc, char* argv[]) {
   InitRenderer(task_runner);
 
   media::AVPipeline pipeline(task_runner);
+  av_pipeline = &pipeline;
   pipeline.Start(demuxer, renderer, boost::bind(&PipelineStatusCallBack, _1),
                  boost::bind(&SeekCB, _1),
                  boost::bind(&GlobalPaintCallBack, _1));
@@ -214,6 +215,7 @@ int main(int argc, char* argv[]) {
   glutKeyboardFunc(keyboard);
   glutIdleFunc(display);
   glutMainLoop();
+  media::LogMessage(media::LOG_LEVEL_INFO, "Playback Time:" + std::to_string(pipeline.GetPlaybackTime()));
   return 0;
 }
 #ifdef USE_YUV

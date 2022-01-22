@@ -59,6 +59,9 @@ void RendererImpl::SetPlaybackRate(float rate) {
 void RendererImpl::SetVolume(float volume) {
 }
 
+int64_t RendererImpl::GetPlaybackTime() {
+  return GetCurrentTime();
+}
 void RendererImpl::InitializeAudioRenderer() {
   audio_renderer_->Initialize(
       demuxer_stream_provider_->GetDemuxerStream(DemuxerStream::AUDIO),

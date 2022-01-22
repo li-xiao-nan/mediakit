@@ -13,6 +13,7 @@ class Renderer {
                           PipelineStatusCB init_cb, PipelineStatusCB status_cb,
                           VideoRenderer::PaintCB paint_cb) = 0;
   virtual void StartPlayingFrom(int64_t time_offset) = 0;
+  virtual int64_t GetPlaybackTime() = 0;
   virtual void SetPlaybackRate(float rate) = 0;
   virtual void SetVolume(float volume) = 0;
 };

@@ -35,6 +35,7 @@ class RendererImpl : public Renderer {
   virtual void StartPlayingFrom(int64_t time_offset);
   virtual void SetPlaybackRate(float rate);
   virtual void SetVolume(float volume);
+  virtual int64_t GetPlaybackTime();
 
  private:
   enum State {
