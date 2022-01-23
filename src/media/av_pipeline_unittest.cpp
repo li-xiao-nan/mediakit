@@ -23,6 +23,7 @@ extern "C" {
 #include "net/url.h"
 #include "net/io_channel.h"
 #include "log/log_wrapper.h"
+#include "log/watch_movie_state_recoder.h"
 
 void PipelineStatusCallBack(media::PipelineStatus status);
 void SeekCB(media::PipelineStatus);
@@ -34,6 +35,8 @@ std::vector<media::VideoDecoder*> vector_video_decoder;
 std::queue<std::shared_ptr<media::VideoFrame> > queue_video_frame;
 boost::mutex queue_mutex;
 media::AVPipeline* av_pipeline = nullptr;
+media::WatchMovieStateRecoder file_view_record;
+std::string movie_name;
 
 void GlobalPaintCallBack(std::shared_ptr<media::VideoFrame> video_frame) {
   boost::mutex::scoped_lock lock(queue_mutex);
@@ -140,6 +143,8 @@ void zcb() {
 
 void ExitApp(){
   media::LogMessage(media::LOG_LEVEL_INFO, "Playback Time:" + std::to_string(av_pipeline->GetPlaybackTime()));
+  file_view_record.RecordFilmViewProgress(movie_name, av_pipeline->GetPlaybackTime());
+  file_view_record.WriteToLocalFile();
   exit(0);
 }
 
@@ -170,6 +175,10 @@ int videoW, videoH;
 GLuint vsID, fsID, pID;
 bool hasInitTex;
 int main(int argc, char* argv[]) {
+  file_view_record.Initialize();
+  int64_t x1_timestamp = file_view_record.GetFilmViewProgress("x1");
+  file_view_record.RecordFilmViewProgress("x2", 10304104);
+  file_view_record.WriteToLocalFile();
   // pipeline initliazie
   // init task_runner
   task_runner = new boost::asio::io_service();
@@ -181,6 +190,7 @@ int main(int argc, char* argv[]) {
       std::cout << "you need input video file!" << std::endl;
       exit(0);
   }
+  movie_name = media::GetMovieNameUtf8(argv[1]);
   std::string url(argv[1]);
   net::Url newUrl(url);
   std::shared_ptr<net::IOChannel> data_source(

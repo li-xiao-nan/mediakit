@@ -45,6 +45,12 @@
     <Filter Include="net\curl">
       <UniqueIdentifier>{ebb87b44-400f-42b5-846b-0da7d6af9312}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base\jsoncpp">
+      <UniqueIdentifier>{5648e018-665e-4544-a50b-41882772618f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="base\jsoncpp\json">
+      <UniqueIdentifier>{e74840f1-2135-456a-b798-b83da41994d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h">
@@ -203,6 +209,15 @@
     <ClInclude Include="src\utils\string_utils.h">
       <Filter>utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\jsoncpp\json\json.h">
+      <Filter>base\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\jsoncpp\json\json-forwards.h">
+      <Filter>base\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="src\log\watch_movie_state_recoder.h">
+      <Filter>log</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -309,6 +324,12 @@
     </ClCompile>
     <ClCompile Include="src\utils\string_utils.cpp">
       <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\jsoncpp\jsoncpp.cpp">
+      <Filter>base\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="src\log\watch_movie_state_recoder.cpp">
+      <Filter>log</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -77,7 +77,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)src\;$(SolutionDir)third_party\boost\include\;$(SolutionDir)third_party\curl\include\;$(SolutionDir)third_party\ffmpeg\include\;$(SolutionDir)third_party\freeglut\include\;$(SolutionDir)third_party\glew\include\;$(SolutionDir)third_party\log\;$(SolutionDir)third_party\sdl\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\base\jsoncpp\;$(SolutionDir)src\;$(SolutionDir)third_party\boost\include\;$(SolutionDir)third_party\curl\include\;$(SolutionDir)third_party\ffmpeg\include\;$(SolutionDir)third_party\freeglut\include\;$(SolutionDir)third_party\glew\include\;$(SolutionDir)third_party\log\;$(SolutionDir)third_party\sdl\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -114,6 +114,8 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h" />
     <ClInclude Include="src\base\ImageType.h" />
+    <ClInclude Include="src\base\jsoncpp\json\json-forwards.h" />
+    <ClInclude Include="src\base\jsoncpp\json\json.h" />
     <ClInclude Include="src\base\SnailConfig.h" />
     <ClInclude Include="src\base\snail_exception.h" />
     <ClInclude Include="src\base\timer\ClockTime.h" />
@@ -123,6 +125,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\base\timer\VirtualClock.h" />
     <ClInclude Include="src\base\timer\wall_clock_timer.h" />
     <ClInclude Include="src\log\log_wrapper.h" />
+    <ClInclude Include="src\log\watch_movie_state_recoder.h" />
     <ClInclude Include="src\media\av_pipeline.h" />
     <ClInclude Include="src\media\base\audio_decoder_config.h" />
     <ClInclude Include="src\media\base\audio_frame.h" />
@@ -169,11 +172,13 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\base\ImageType.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="src\base\jsoncpp\jsoncpp.cpp" />
     <ClCompile Include="src\base\timer\ClockTime.cpp" />
     <ClCompile Include="src\base\timer\scheduler_timer.cpp" />
     <ClCompile Include="src\base\timer\SystemClock.cpp" />
     <ClCompile Include="src\base\timer\wall_clock_timer.cpp" />
     <ClCompile Include="src\log\log_wrapper.cc" />
+    <ClCompile Include="src\log\watch_movie_state_recoder.cpp" />
     <ClCompile Include="src\media\av_pipeline.cpp" />
     <ClCompile Include="src\media\av_pipeline_unittest.cpp" />
     <ClCompile Include="src\media\base\audio_decoder_config.cpp" />

@@ -9,7 +9,7 @@
 支持音视频的编辑
 
 1. 工程构建
-- Visual studio版本：VS2013
-- 工程目录：src\platform\win\MediaKit\MediaKit.sln
-2. 应用启动
-- MediaKit.exe "视频文件全路径"
+- Visual studio版本：VS2017
+- 工程目录：(your_root_dir)/mediakit.sln
+1. 应用启动
+- mediakit.exe "video file full path"

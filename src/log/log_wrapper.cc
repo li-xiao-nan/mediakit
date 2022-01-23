@@ -97,4 +97,32 @@ void LogMessage(LogLevel log_level, const std::string& message) {
   return;
 }
 
+std::string AnsiToUtf8(const std::string& str) {
+  int len = MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, NULL, 0);
+  wchar_t* w_str = new wchar_t[len + 1];
+  memset(w_str, 0, len + 1);
+  MultiByteToWideChar(CP_ACP, 0, str.c_str(), -1, w_str, len);
+  len = WideCharToMultiByte(CP_UTF8, 0, w_str, -1, NULL, 0, NULL, NULL);
+  char* u_str = new char[len + 1];
+  memset(u_str, 0, len + 1);
+  WideCharToMultiByte(CP_UTF8, 0, w_str, -1, u_str, len, NULL, NULL);
+  std::string ret = u_str;
+  if (w_str)
+    delete[] w_str;
+  if (u_str)
+    delete[] u_str;
+  return ret;
+}
+
+std::string GetMovieNameUtf8(const std::string& movie_file_path) {
+    std::string movie_name;
+    if (movie_file_path.find_last_of('/') != std::wstring::npos) {
+      movie_name = 
+        movie_file_path.substr(movie_file_path.find_last_of(L'/') + 1);
+    } else if (movie_file_path.find_last_of(L'\\') != std::wstring::npos) {
+      movie_name = 
+        movie_file_path.substr(movie_file_path.find_last_of('\\') + 1);
+    }
+    return AnsiToUtf8(movie_name);
+  }
 } // namespace media
