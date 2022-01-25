@@ -13,39 +13,36 @@
 #include "media/ffmpeg/ffmpeg_common.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/audio_decoder_config.h"
-
+#include "base/message_loop_thread_manager.h"
 #include "log/log_wrapper.h"
 
 int kFFmpgeAVIOBufferSize = 1024*3;
 
 namespace media {
 
-FFmpegDemuxer::FFmpegDemuxer(TaskRunner* task_runner,
-                             std::shared_ptr<net::IOChannel> data_source)
+FFmpegDemuxer::FFmpegDemuxer(std::shared_ptr<net::IOChannel> data_source)
     : demux_complete_(false),
       data_source_complete(false),
       pending_seek_(false),
-      duration_(0),
-      task_runner_(task_runner) {
+      duration_(0){
   data_source_ = data_source;
 }
 
 FFmpegDemuxer::~FFmpegDemuxer() {}
 
 void FFmpegDemuxer::Initialize(PipelineStatusCB status_cb) {
-  StartBlockingTaskRunner();
   ActionCB action_cb = boost::bind(&FFmpegDemuxer::OnOpenAVFormatContextDone,
                                    this, status_cb, _1);
-  blocking_task_runner_->post(boost::bind(
-      &FFmpegDemuxer::OpenAVFormatContextAction, this, status_cb, action_cb));
+  PostTask(TID_DEMUXER,(boost::bind(
+      &FFmpegDemuxer::OpenAVFormatContextAction, this, status_cb, action_cb)));
 }
 
 void FFmpegDemuxer::Seek(int64_t timestamp, PipelineStatusCB status_cb) {
 	return;
   ActionCB action_cb =
       boost::bind(&FFmpegDemuxer::OnSeekDone, this, status_cb, _1);
-  blocking_task_runner_->post(boost::bind(&FFmpegDemuxer::SeekAction, this,
-                                          timestamp, status_cb, action_cb));
+  PostTask(TID_DEMUXER, (boost::bind(&FFmpegDemuxer::SeekAction, this,
+                                          timestamp, status_cb, action_cb)));
 }
 
 void FFmpegDemuxer::Stop() {}
@@ -92,7 +89,7 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
       LogMessage(LOG_LEVEL_INFO, "open video file success");
     }
     result = true;
-  task_runner_->post(boost::bind(action_cb, result));
+    PostTask(TID_DECODE, boost::bind(action_cb, result));
 }
 
 void FFmpegDemuxer::OnOpenAVFormatContextDone(PipelineStatusCB status_cb,
@@ -100,8 +97,8 @@ void FFmpegDemuxer::OnOpenAVFormatContextDone(PipelineStatusCB status_cb,
   if (result) {
     ActionCB action_cb =
         boost::bind(&FFmpegDemuxer::OnFindStreamInfoDone, this, status_cb, _1);
-    blocking_task_runner_->post(boost::bind(
-        &FFmpegDemuxer::FindStreamInfoAction, this, status_cb, action_cb));
+    PostTask(TID_DEMUXER, (boost::bind(
+        &FFmpegDemuxer::FindStreamInfoAction, this, status_cb, action_cb)));
   } else {
     status_cb(DEMUXER_OPEN_CONTEXT_FAILED);
   }
@@ -119,7 +116,7 @@ void FFmpegDemuxer::FindStreamInfoAction(PipelineStatusCB status_cb,
     printf("OK: success find the streams information\n");
   }
 
-  task_runner_->post(boost::bind(action_cb, result));
+  PostTask(TID_DECODE, boost::bind(action_cb, result));
 }
 
 void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
@@ -134,7 +131,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
 
   AVRational av_format_context_time_base = {1, AV_TIME_BASE};
   max_duration = std::max(max_duration, av_format_context_->duration);
-  int duration_by_second = max_duration / AV_TIME_BASE;
+  int64_t duration_by_second = max_duration / AV_TIME_BASE;
   LogMessage(LOG_LEVEL_INFO, 
     "VideoDuration:" + std::to_string(duration_by_second/(60*60))
     + ":" + std::to_string(duration_by_second/60%60)
@@ -180,24 +177,13 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
   status_cb(PIPELINE_OK);
 }
 
-void FFmpegDemuxer::StartBlockingTaskRunner() {
-  LogMessage(LOG_LEVEL_DEBUG, "Start blocking task runner");
-  blocking_task_runner_.reset(new boost::asio::io_service());
-  blocking_io_service_work_.reset(
-      new boost::asio::io_service::work(*blocking_task_runner_.get()));
-  blocking_thread.reset(new boost::thread(
-      boost::bind(&boost::asio::io_service::run, blocking_task_runner_.get())));
-}
-
-void FFmpegDemuxer::StopBlockingTaskRunner() {}
-// blocking thread
 void FFmpegDemuxer::SeekAction(int64_t timestamp, PipelineStatusCB state_cb,
                                ActionCB action_cb) {
   AVRational av_time_base = {1, AV_TIME_BASE};
   int ret = av_seek_frame(av_format_context_, -1,
                           ConvertToTimeBase(timestamp, av_time_base),
                           AVSEEK_FLAG_BACKWARD);
-  task_runner_->post(boost::bind(action_cb, (ret >= 0 ? true : false)));
+  PostTask(TID_DECODE, boost::bind(action_cb, (ret >= 0 ? true : false)));
 }
 
 void FFmpegDemuxer::OnSeekDone(PipelineStatusCB status_cb, bool result) {
@@ -226,7 +212,7 @@ void FFmpegDemuxer::ReadFrameIfNeeded() {
       boost::bind(&FFmpegDemuxer::OnReadFrameDone, this, encoded_avframe, _1);
   AsyncTask task = boost::bind(&FFmpegDemuxer::ReadFrameAction, this,
                                encoded_avframe, action_cb);
-  blocking_task_runner_->post(task);
+  PostTask(TID_DEMUXER, task);
 }
 
 void FFmpegDemuxer::ReadFrameAction(
@@ -236,7 +222,7 @@ void FFmpegDemuxer::ReadFrameAction(
     std::cout << "av_read_frame failed" << std::endl;
   }
 
-  task_runner_->post(boost::bind(action_cb, result));
+  PostTask(TID_DECODE, boost::bind(action_cb, result));
 }
 
 void FFmpegDemuxer::OnReadFrameDone(

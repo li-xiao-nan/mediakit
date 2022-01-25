@@ -3,9 +3,7 @@
 #include "log/log_wrapper.h"
 
 namespace media {
-FFmpegAudioDecoder::FFmpegAudioDecoder(TaskRunner* task_runner)
-    : task_runner_(task_runner) {
-}
+FFmpegAudioDecoder::FFmpegAudioDecoder(){}
 void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                     InitCB init_cb,
                                     OutputCB output_cb) {

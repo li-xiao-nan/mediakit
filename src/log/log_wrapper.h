@@ -25,7 +25,7 @@ namespace media {
           std::chrono::system_clock::now()).time_since_epoch().count();
     }
     ~ScopeTimeCount() {
-      int cast_time = std::chrono::time_point_cast<std::chrono::milliseconds>(
+      int64_t cast_time = std::chrono::time_point_cast<std::chrono::milliseconds>(
                           std::chrono::system_clock::now())
                           .time_since_epoch()
                           .count() - start_timestamp_;
@@ -34,7 +34,7 @@ namespace media {
     }
   private:
     std::string time_count_object_name_;
-    int start_timestamp_;
+    int64_t start_timestamp_;
   };
 }
 

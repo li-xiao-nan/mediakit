@@ -24,11 +24,11 @@ extern "C" {
 #include "net/io_channel.h"
 #include "log/log_wrapper.h"
 #include "log/watch_movie_state_recoder.h"
+#include "base/message_loop_thread_manager.h"
 
 void PipelineStatusCallBack(media::PipelineStatus status);
 void SeekCB(media::PipelineStatus);
 
-boost::asio::io_service* task_runner;
 std::shared_ptr<media::Demuxer> demuxer;
 std::shared_ptr<media::Renderer> renderer;
 std::vector<media::VideoDecoder*> vector_video_decoder;
@@ -63,22 +63,22 @@ std::shared_ptr<media::VideoFrame> GlobalReadVideoFrame() {
   return video_frame;
 }
 
-void InitRenderer(boost::asio::io_service* task_runner) {
+void InitRenderer() {
   media::VideoDecoder* video_decoder =
-      new media::FFmpegVideoDecoder(task_runner);
+      new media::FFmpegVideoDecoder();
   vector_video_decoder.push_back(video_decoder);
 
   media::AudioDecoder* audio_decoder =
-      new media::FFmpegAudioDecoder(task_runner);
+      new media::FFmpegAudioDecoder();
   std::vector<media::AudioDecoder*> vector_audio_decoder;
   vector_audio_decoder.push_back(audio_decoder);
 
   std::shared_ptr<media::VideoRenderer> video_renderer(
-      new media::VideoRendererImpl(task_runner, vector_video_decoder));
+      new media::VideoRendererImpl(vector_video_decoder));
   std::shared_ptr<media::AudioRenderer> audio_renderer(
-      new media::AudioRendererImpl(task_runner, vector_audio_decoder));
+      new media::AudioRendererImpl(vector_audio_decoder));
   renderer.reset(
-      new media::RendererImpl(task_runner, audio_renderer, video_renderer));
+      new media::RendererImpl(audio_renderer, video_renderer));
 }
 
 void StartDemux() {
@@ -179,11 +179,6 @@ int main(int argc, char* argv[]) {
   int64_t x1_timestamp = file_view_record.GetFilmViewProgress("x1");
   file_view_record.RecordFilmViewProgress("x2", 10304104);
   file_view_record.WriteToLocalFile();
-  // pipeline initliazie
-  // init task_runner
-  task_runner = new boost::asio::io_service();
-  boost::asio::io_service::work io_service_work(*task_runner);
-  boost::thread thread(boost::bind(&boost::asio::io_service::run, task_runner));
 
   // init datasoruce
   if (argc < 2){
@@ -202,11 +197,11 @@ int main(int argc, char* argv[]) {
   }
 
   // init demuxer
-  demuxer.reset(new media::FFmpegDemuxer(task_runner, data_source));
+  demuxer.reset(new media::FFmpegDemuxer(data_source));
 
-  InitRenderer(task_runner);
+  InitRenderer();
 
-  media::AVPipeline pipeline(task_runner);
+  media::AVPipeline pipeline;
   av_pipeline = &pipeline;
   pipeline.Start(demuxer, renderer, boost::bind(&PipelineStatusCallBack, _1),
                  boost::bind(&SeekCB, _1),

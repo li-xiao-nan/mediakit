@@ -24,8 +24,7 @@ class FFmpegDemuxer : public Demuxer {
  public:
   typedef boost::function<void(bool)> ActionCB;
 
-  FFmpegDemuxer(TaskRunner* task_runner,
-                std::shared_ptr<net::IOChannel> data_source);
+  FFmpegDemuxer(std::shared_ptr<net::IOChannel> data_source);
   ~FFmpegDemuxer();
 
   // demuxer implementation
@@ -44,8 +43,6 @@ class FFmpegDemuxer : public Demuxer {
   void NotifyDemuxerCapacityAvailable();
 
  private:
-  void StartBlockingTaskRunner();
-  void StopBlockingTaskRunner();
   // ffmpeg callback function
   static int FFmpegReadPacketCB(void* opaque,
                                 unsigned char* buffer,
@@ -89,10 +86,6 @@ class FFmpegDemuxer : public Demuxer {
   unsigned char* av_io_buffer_;
   AVIOContext* av_io_context_;
   AVFormatContext* av_format_context_;
-  TaskRunner* task_runner_;
-  boost::scoped_ptr<TaskRunner> blocking_task_runner_;
-  boost::scoped_ptr<boost::thread> blocking_thread;
-  boost::scoped_ptr<boost::asio::io_service::work> blocking_io_service_work_;
 };
 
 }  // namespace media

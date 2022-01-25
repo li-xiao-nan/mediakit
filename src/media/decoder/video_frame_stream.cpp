@@ -5,9 +5,7 @@
 #include "media/demuxer/demuxer_stream.h"
 
 namespace media {
-VideoFrameStream::VideoFrameStream(TaskRunner* task_runner,
-                                   const VecVideoDecoders& vec_video_decoders)
-    : task_runner_(task_runner) {
+VideoFrameStream::VideoFrameStream(const VecVideoDecoders& vec_video_decoders){
   for (size_t i = 0; i < vec_video_decoders.size(); i++) {
     vec_video_decoders_.push_back(vec_video_decoders[i]);
   }

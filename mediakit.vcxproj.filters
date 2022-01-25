@@ -218,6 +218,12 @@
     <ClInclude Include="src\log\watch_movie_state_recoder.h">
       <Filter>log</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\message_loop_thread.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\base\message_loop_thread_manager.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -330,6 +336,12 @@
     </ClCompile>
     <ClCompile Include="src\log\watch_movie_state_recoder.cpp">
       <Filter>log</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\message_loop_thread.cc">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\message_loop_thread_manager.cc">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,7 @@ static const int kMaxDecodeThreads = 16;
 
 class FFmpegVideoDecoder : public VideoDecoder {
  public:
-  FFmpegVideoDecoder(TaskRunner* task_runner);
+  FFmpegVideoDecoder();
   virtual ~FFmpegVideoDecoder();
 
   virtual void Initialize(const VideoDecoderConfig& config, InitCB init_cb,
@@ -42,7 +42,6 @@ class FFmpegVideoDecoder : public VideoDecoder {
   int64_t GetPlaybackTime();
 
   AVCodecContext* av_codec_context_;
-  TaskRunner* task_runner_;
   OutputCB output_cb_;
   VideoDecoderConfig config_;
   DecoderState state_;

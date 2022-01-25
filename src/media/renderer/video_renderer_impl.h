@@ -13,7 +13,6 @@ namespace media {
 class VideoRendererImpl : public VideoRenderer {
  public:
   VideoRendererImpl(
-      TaskRunner* task_runner_,
       const VideoFrameStream::VecVideoDecoders& vec_video_decoders);
 
   // VideoRenderer impl
@@ -55,7 +54,6 @@ class VideoRendererImpl : public VideoRenderer {
   PipelineStatusCB init_cb_;
   PipelineStatusCB status_cb_;
   DemuxerStream* demuxer_stream_;
-  TaskRunner* task_runner_;
   boost::mutex ready_frames_lock_;
   boost::condition frame_available_;
   std::queue<std::shared_ptr<VideoFrame> > pending_paint_frames_;

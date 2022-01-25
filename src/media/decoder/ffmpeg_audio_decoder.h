@@ -8,7 +8,7 @@
 namespace media {
 class FFmpegAudioDecoder : public AudioDecoder {
  public:
-  FFmpegAudioDecoder(TaskRunner* task_runner);
+  FFmpegAudioDecoder();
   virtual void Initialize(const AudioDecoderConfig& config,
                           InitCB init_cb,
                           OutputCB output_cb) override;
@@ -28,7 +28,6 @@ class FFmpegAudioDecoder : public AudioDecoder {
   void FFmpegDecode(const std::shared_ptr<EncodedAVFrame>, DecodeCB decode_cb);
 
   AVCodecContext* av_codec_context_;
-  TaskRunner* task_runner_;
   OutputCB output_cb_;
   AudioDecoderConfig config_;
   DecoderState state_;

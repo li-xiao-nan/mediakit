@@ -19,7 +19,6 @@ class AudioRendererImpl : public AudioRenderer,
                           public AudioRendererSink::RenderCallback {
  public:
   AudioRendererImpl(
-      TaskRunner* task_runner,
       const AudioFrameStream::VecAudioDecoders& vec_audio_decoders);
   virtual void Initialize(DemuxerStream* demuxer_stream,
                           PipelineStatusCB init_cb,
@@ -62,7 +61,6 @@ class AudioRendererImpl : public AudioRenderer,
   PipelineStatusCB init_cb_;
   PipelineStatusCB status_cb_;
   GetTimeCB get_time_cb_;
-  TaskRunner* task_runner_;
 };
 }
 #endif

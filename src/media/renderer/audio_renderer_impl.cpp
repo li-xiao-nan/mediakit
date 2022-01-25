@@ -6,12 +6,10 @@ namespace media {
 int kMaxTimeDelta = 100; //ms
 
 AudioRendererImpl::AudioRendererImpl(
-    TaskRunner* task_runner,
     const AudioFrameStream::VecAudioDecoders& vec_audio_decoders)
     : state_(STATE_UNINITIALIZED) {
-  task_runner_ = task_runner;
   pending_read_ = false;
-  audio_frame_stream_ = new AudioFrameStream(task_runner, vec_audio_decoders);
+  audio_frame_stream_ = new AudioFrameStream(vec_audio_decoders);
   audio_renderer_sink_ = new SdlAudioRendererSink();
 }
 

@@ -1,18 +1,17 @@
 #include "video_renderer_impl.h"
 #include "media/decoder/video_frame_stream.h"
+#include "base/message_loop_thread_manager.h"
 
 namespace media {
 const int kMaxPendingPaintFrameCount = 2<<2;
 const int kMaxTimeDelta = 100;  // ms
 
 VideoRendererImpl::VideoRendererImpl(
-    TaskRunner* task_runner,
     const VideoFrameStream::VecVideoDecoders& vec_video_decoders)
     : pending_paint_(false),
       state_(STATE_UNINITIALIZED),
-      task_runner_(task_runner),
       video_frame_stream_(
-          new VideoFrameStream(task_runner, vec_video_decoders)),
+          new VideoFrameStream(vec_video_decoders)),
           droped_frame_count_(0) {
 }
 
@@ -29,7 +28,7 @@ void VideoRendererImpl::Initialize(DemuxerStream* demuxer_stream,
 
   AsyncTask initialize_task =
       boost::bind(&VideoRendererImpl::InitializeAction, this);
-  task_runner_->post(initialize_task);
+  PostTask(TID_DECODE,initialize_task);
 }
 
 void VideoRendererImpl::InitializeAction() {
@@ -145,7 +144,7 @@ void VideoRendererImpl::OnReadFrameDone(
 void VideoRendererImpl::ReadFrameIfNeeded() {
   if (pending_paint_frames_.size() >= kMaxPendingPaintFrameCount)
     return;
-  task_runner_->post(boost::bind(&VideoRendererImpl::ReadFrame, this));
+  PostTask(TID_DECODE, boost::bind(&VideoRendererImpl::ReadFrame, this));
 }
 
 void VideoRendererImpl::ReadFrame() {

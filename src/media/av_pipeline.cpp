@@ -7,13 +7,13 @@
 //
 
 #include "av_pipeline.h"
-#include "log/log_wrapper.h"
-
 #include "boost/bind.hpp"
 
+#include "log/log_wrapper.h"
+#include "base/message_loop_thread_manager.h"
+
 namespace media {
-AVPipeline::AVPipeline(TaskRunner* task_runner)
-    : task_runner_(task_runner), state_(STATE_CREATE) {}
+AVPipeline::AVPipeline() : state_(STATE_CREATE) {}
 
 void AVPipeline::Start(std::shared_ptr<Demuxer> demuxer,
                        std::shared_ptr<Renderer> renderer,
@@ -24,7 +24,7 @@ void AVPipeline::Start(std::shared_ptr<Demuxer> demuxer,
   error_cb_ = error_cb;
   seek_cb_ = seek_cb;
   paint_cb_ = paint_cb;
-  task_runner_->post(boost::bind(&AVPipeline::StartAction, this));
+  PostTask(TID_DECODE, boost::bind(&AVPipeline::StartAction, this));
 }
 
 void AVPipeline::StartAction() { StateTransitAction(PIPELINE_OK); }
@@ -44,8 +44,7 @@ void AVPipeline::Stop() {}
 void AVPipeline::Seek(int64_t timestamp, PipelineStatusCB seek_cb) {
   AsyncTask task =
       boost::bind(&AVPipeline::SeekAction, this, timestamp, seek_cb);
-  assert(task_runner_ != NULL);
-  task_runner_->post(task);
+  PostTask(TID_DECODE, task);
 }
 
 int64_t AVPipeline::GetPlaybackTime() {
@@ -63,7 +62,7 @@ void AVPipeline::SeekAction(int64_t timestamp, PipelineStatusCB seek_cb) {
       boost::bind(&AVPipeline::StateTransitAction, this, _1);
   AsyncTask task =
       boost::bind(&Demuxer::Seek, demuxer_.get(), timestamp, seek_complete_cb);
-  task_runner_->post(task);
+  PostTask(TID_DECODE, task);
 }
 
 void AVPipeline::StateTransitAction(PipelineStatus status) {

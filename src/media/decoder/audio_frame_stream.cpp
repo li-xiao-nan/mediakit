@@ -1,10 +1,9 @@
 #include "media/decoder/audio_frame_stream.h"
 #include "media/demuxer/demuxer_stream.h"
+#include "base/message_loop_thread_manager.h"
 
 namespace media {
-AudioFrameStream::AudioFrameStream(TaskRunner* task_runner,
-                                   const VecAudioDecoders& decoders)
-    : task_runner_(task_runner) {
+AudioFrameStream::AudioFrameStream(const VecAudioDecoders& decoders) {
   for (size_t i = 0; i < decoders.size(); i++) {
     vec_decoders_.push_back(decoders[i]);
   }
@@ -38,7 +37,7 @@ void AudioFrameStream::Read(ReadCB read_cb) {
   }
 
   read_cb_ = read_cb;
-  task_runner_->post(boost::bind(&AudioFrameStream::DecodeFrameIfNeeded, this));
+  PostTask(TID_DECODE, boost::bind(&AudioFrameStream::DecodeFrameIfNeeded, this));
 }
 
 void AudioFrameStream::DecoderOutputCB(

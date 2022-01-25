@@ -24,8 +24,7 @@ class RendererImpl : public Renderer {
  public:
   static std::shared_ptr<TimeSource> GetPlaybackClock(int Id);
 
-  RendererImpl(TaskRunner* task_runner,
-               std::shared_ptr<AudioRenderer> audio_renderer,
+  RendererImpl(std::shared_ptr<AudioRenderer> audio_renderer,
                std::shared_ptr<VideoRenderer> video_renderer);
   ~RendererImpl();
   virtual void Initialize(DemuxerStreamProvider* demuxer_stream_provider,
@@ -60,7 +59,6 @@ class RendererImpl : public Renderer {
 
   static std::map<int, std::shared_ptr<TimeSource>> playback_clock_map_;
 
-  TaskRunner* task_runner_;
   VideoRenderer::PaintCB paint_cb_;
   PipelineStatusCB init_cb_;
   PipelineStatusCB status_cb_;

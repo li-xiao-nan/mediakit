@@ -17,11 +17,9 @@ std::shared_ptr<TimeSource> RendererImpl::GetPlaybackClock(int pipelineId){
   return iter->second;
 }
 
-RendererImpl::RendererImpl(TaskRunner* task_runner,
-                           std::shared_ptr<AudioRenderer> audio_renderer,
+RendererImpl::RendererImpl(std::shared_ptr<AudioRenderer> audio_renderer,
                            std::shared_ptr<VideoRenderer> video_renderer)
-    : task_runner_(task_runner),
-      state_(STATE_UNINITIALIZED),
+    : state_(STATE_UNINITIALIZED),
       playback_clock_(new PlaybackClock()),
       audio_renderer_(audio_renderer),
       video_renderer_(video_renderer) {

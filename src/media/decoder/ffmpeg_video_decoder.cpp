@@ -5,9 +5,8 @@
 #include "log/log_wrapper.h"
 
 namespace media {
-FFmpegVideoDecoder::FFmpegVideoDecoder(TaskRunner* task_runner)
-    : task_runner_(task_runner),
-      av_codec_context_(NULL),
+FFmpegVideoDecoder::FFmpegVideoDecoder()
+    : av_codec_context_(NULL),
       state_(STATE_UNINITIALIZED) {}
 
 FFmpegVideoDecoder::~FFmpegVideoDecoder() { av_frame_free(&av_frame_); }

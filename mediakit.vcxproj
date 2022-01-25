@@ -116,6 +116,8 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\base\ImageType.h" />
     <ClInclude Include="src\base\jsoncpp\json\json-forwards.h" />
     <ClInclude Include="src\base\jsoncpp\json\json.h" />
+    <ClInclude Include="src\base\message_loop_thread.h" />
+    <ClInclude Include="src\base\message_loop_thread_manager.h" />
     <ClInclude Include="src\base\SnailConfig.h" />
     <ClInclude Include="src\base\snail_exception.h" />
     <ClInclude Include="src\base\timer\ClockTime.h" />
@@ -173,6 +175,8 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ClCompile Include="src\base\jsoncpp\jsoncpp.cpp" />
+    <ClCompile Include="src\base\message_loop_thread.cc" />
+    <ClCompile Include="src\base\message_loop_thread_manager.cc" />
     <ClCompile Include="src\base\timer\ClockTime.cpp" />
     <ClCompile Include="src\base\timer\scheduler_timer.cpp" />
     <ClCompile Include="src\base\timer\SystemClock.cpp" />

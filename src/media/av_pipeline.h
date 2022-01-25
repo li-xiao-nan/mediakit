@@ -34,7 +34,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
     STATE_ERROR
   };
 
-  AVPipeline(TaskRunner* task_runner);
+  AVPipeline();
   void Start(std::shared_ptr<Demuxer> demuxer,
              std::shared_ptr<Renderer> renderer, PipelineStatusCB error_cb,
              PipelineStatusCB seek_cb, VideoRenderer::PaintCB paint_cb);
@@ -55,7 +55,6 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
   bool pending_seek;
   PipelineState state_;
   VideoRenderer::PaintCB paint_cb_;
-  TaskRunner* task_runner_;
   std::shared_ptr<Demuxer> demuxer_;
   std::shared_ptr<Renderer> renderer_;
   PipelineStatusCB error_cb_;

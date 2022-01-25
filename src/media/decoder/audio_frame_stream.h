@@ -32,7 +32,7 @@ class AudioFrameStream {
   typedef boost::function<void(Status status, std::shared_ptr<AudioFrame>)>
       ReadCB;
 
-  AudioFrameStream(TaskRunner* task_runner, const VecAudioDecoders& decoders);
+  AudioFrameStream(const VecAudioDecoders& decoders);
   ~AudioFrameStream();
   void Initialize(DemuxerStream* stream, InitCB init_cb);
   void Read(ReadCB read_cb);
@@ -67,7 +67,6 @@ class AudioFrameStream {
   VecAudioDecoders vec_decoders_;
   AudioDecoder* decoder_;
   DemuxerStream* demuxer_stream_;
-  TaskRunner* task_runner_;
   std::deque<std::shared_ptr<AudioFrame> > frame_queue_;
 };
 

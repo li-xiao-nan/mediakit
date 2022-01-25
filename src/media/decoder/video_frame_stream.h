@@ -32,7 +32,7 @@ class VideoFrameStream {
   typedef boost::function<void(Status status, std::shared_ptr<VideoFrame>)>
       ReadCB;
 
-  VideoFrameStream(TaskRunner* task_runner, const VecVideoDecoders& decoders);
+  VideoFrameStream(const VecVideoDecoders& decoders);
   ~VideoFrameStream();
   void Initialize(DemuxerStream* stream, InitCB init_cb);
   void Read(ReadCB read_cb);
