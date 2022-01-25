@@ -34,10 +34,12 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
     STATE_ERROR
   };
 
-  AVPipeline();
-  void Start(std::shared_ptr<Demuxer> demuxer,
-             std::shared_ptr<Renderer> renderer, PipelineStatusCB error_cb,
-             PipelineStatusCB seek_cb, VideoRenderer::PaintCB paint_cb);
+  AVPipeline(std::shared_ptr<Demuxer> demuxer,
+             std::shared_ptr<Renderer> renderer,
+             PipelineStatusCB error_cb,
+             PipelineStatusCB seek_cb,
+             VideoRenderer::PaintCB paint_cb);
+  void Start();
   void Stop();
   void Seek(int64_t timestamp, PipelineStatusCB seek_cb);
   int64_t GetPlaybackTime();

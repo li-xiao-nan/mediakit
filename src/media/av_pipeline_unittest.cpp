@@ -25,16 +25,11 @@ extern "C" {
 #include "log/log_wrapper.h"
 #include "log/watch_movie_state_recoder.h"
 #include "base/message_loop_thread_manager.h"
+#include "av_pipeline_factory.h"
 
-void PipelineStatusCallBack(media::PipelineStatus status);
-void SeekCB(media::PipelineStatus);
-
-std::shared_ptr<media::Demuxer> demuxer;
-std::shared_ptr<media::Renderer> renderer;
-std::vector<media::VideoDecoder*> vector_video_decoder;
+std::unique_ptr<media::AVPipeline> av_pipeline = nullptr;
 std::queue<std::shared_ptr<media::VideoFrame> > queue_video_frame;
 boost::mutex queue_mutex;
-media::AVPipeline* av_pipeline = nullptr;
 media::WatchMovieStateRecoder file_view_record;
 std::string movie_name;
 
@@ -43,14 +38,6 @@ void GlobalPaintCallBack(std::shared_ptr<media::VideoFrame> video_frame) {
   queue_video_frame.push(video_frame);
 }
 
-std::wstring toWString(int64_t value){
-  std::wostringstream wstream;
-  wstream << value;
-  return wstream.str();
-}
-
-void LogDecodeInfo(std::shared_ptr<media::VideoFrame> frame){
-}
 
 std::shared_ptr<media::VideoFrame> GlobalReadVideoFrame() {
   boost::mutex::scoped_lock lock(queue_mutex);
@@ -59,72 +46,10 @@ std::shared_ptr<media::VideoFrame> GlobalReadVideoFrame() {
     return video_frame;
   video_frame = queue_video_frame.front();
   queue_video_frame.pop();
-  LogDecodeInfo(video_frame);
   return video_frame;
 }
 
-void InitRenderer() {
-  media::VideoDecoder* video_decoder =
-      new media::FFmpegVideoDecoder();
-  vector_video_decoder.push_back(video_decoder);
-
-  media::AudioDecoder* audio_decoder =
-      new media::FFmpegAudioDecoder();
-  std::vector<media::AudioDecoder*> vector_audio_decoder;
-  vector_audio_decoder.push_back(audio_decoder);
-
-  std::shared_ptr<media::VideoRenderer> video_renderer(
-      new media::VideoRendererImpl(vector_video_decoder));
-  std::shared_ptr<media::AudioRenderer> audio_renderer(
-      new media::AudioRendererImpl(vector_audio_decoder));
-  renderer.reset(
-      new media::RendererImpl(audio_renderer, video_renderer));
-}
-
-void StartDemux() {
-  int64_t start_time = demuxer->GetStartTime();
-  int64_t duration = demuxer->GetDuration();
-  demuxer->ShowMediaConfigInfo();
-  demuxer->Seek(demuxer->GetStartTime(), &SeekCB);
-}
-
-void SeekCB(media::PipelineStatus status) {
-  switch (status) {
-    case media::PIPELINE_ERROR_SEEK_FAILED:
-      std::cout << "seek failed" << std::endl;
-      break;
-    case media::PIPELINE_OK:
-      std::cout << "seek success" << std::endl;
-      break;
-  }
-}
-
-void PipelineStatusCallBack(media::PipelineStatus status) {
-  switch (status) {
-    case media::PIPELINE_OK:
-      std::cout << "pipeline_ok" << std::endl;
-      StartDemux();
-      break;
-    case media::PIPELINE_ERROR_SEEK_FAILED:
-      std::cout << "occur error: PIPELINE_ERROR_SEEK_FAILED" << std::endl;
-      break;
-    case media::DEMUXER_OPEN_CONTEXT_FAILED:
-      std::cout << "occur error: DEMUXER_OPEN_CONTEXT_FAILED" << std::endl;
-      break;
-    case media::DEMUXER_FIND_STREAM_INFO_FAILED:
-      std::cout << "occur error: DEMUXER_OPEN_CONTEXT_FAILED" << std::endl;
-      break;
-    default:
-      std::cout << "unknown error" << std::endl;
-  }
-}
-
-void PaintCallBack(std::shared_ptr<media::VideoFrame> video_frame) {
-  std::cout << __FUNCTION__ << std::endl;
-}
-
 #define USE_YUV
-
 void init();
 void setShader();
 void display();
@@ -148,15 +73,11 @@ void ExitApp(){
   exit(0);
 }
 
-void seek();
-void pauseCB();
 void keyboard(unsigned char key, int x, int y) {
   switch (key) {
     case 's':
-      seek();
       break;
     case 'p':
-      pauseCB();
       break;
     case 'z':
       zcb();
@@ -180,32 +101,13 @@ int main(int argc, char* argv[]) {
   file_view_record.RecordFilmViewProgress("x2", 10304104);
   file_view_record.WriteToLocalFile();
 
-  // init datasoruce
   if (argc < 2){
       std::cout << "you need input video file!" << std::endl;
       exit(0);
   }
   movie_name = media::GetMovieNameUtf8(argv[1]);
-  std::string url(argv[1]);
-  net::Url newUrl(url);
-  std::shared_ptr<net::IOChannel> data_source(
-      net::IOChannel::CreateIOChannel(newUrl));
-  if(data_source == nullptr) {
-    media::LogMessage(media::LOG_LEVEL_ERROR,
-      "DataSource Create Failed, Original Url:" + std::string(argv[1]));
-    return -1;
-  }
-
-  // init demuxer
-  demuxer.reset(new media::FFmpegDemuxer(data_source));
-
-  InitRenderer();
-
-  media::AVPipeline pipeline;
-  av_pipeline = &pipeline;
-  pipeline.Start(demuxer, renderer, boost::bind(&PipelineStatusCallBack, _1),
-                 boost::bind(&SeekCB, _1),
-                 boost::bind(&GlobalPaintCallBack, _1));
+  av_pipeline = MakeAVPipeLine(argv[1], boost::bind(GlobalPaintCallBack, _1));
+  av_pipeline->Start();
 
   // glut initialize
   glutInit(&argc, argv);
@@ -220,7 +122,7 @@ int main(int argc, char* argv[]) {
   glutKeyboardFunc(keyboard);
   glutIdleFunc(display);
   glutMainLoop();
-  media::LogMessage(media::LOG_LEVEL_INFO, "Playback Time:" + std::to_string(pipeline.GetPlaybackTime()));
+  media::LogMessage(media::LOG_LEVEL_INFO, "Playback Time:" + std::to_string(av_pipeline->GetPlaybackTime()));
   return 0;
 }
 #ifdef USE_YUV
@@ -383,9 +285,6 @@ void updateTexture(std::shared_ptr<media::VideoFrame> image) {
   }
 }
 
-void seek() {
-}
-
 const char* vsSrc =
     "void main() \
   { gl_Position = ftransform();\
@@ -487,12 +386,4 @@ void setShader() {
   examProgramInfoLog(pID);
 
   glUseProgram(pID);
-}
-void pauseCB() {
-  static bool pauseFlag = 0;
-  if (pauseFlag) {
-    pauseFlag = 0;
-  } else {
-    pauseFlag = 1;
-  }
 }

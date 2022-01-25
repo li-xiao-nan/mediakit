@@ -13,17 +13,19 @@
 #include "base/message_loop_thread_manager.h"
 
 namespace media {
-AVPipeline::AVPipeline() : state_(STATE_CREATE) {}
+AVPipeline::AVPipeline(std::shared_ptr<Demuxer> demuxer,
+  std::shared_ptr<Renderer> renderer,
+  PipelineStatusCB error_cb,
+  PipelineStatusCB seek_cb,
+  VideoRenderer::PaintCB paint_cb)
+  : state_(STATE_CREATE)
+  , demuxer_(demuxer)
+  , renderer_(renderer)
+  , error_cb_(error_cb)
+  , seek_cb_(seek_cb)
+  , paint_cb_(paint_cb){}
 
-void AVPipeline::Start(std::shared_ptr<Demuxer> demuxer,
-                       std::shared_ptr<Renderer> renderer,
-                       PipelineStatusCB error_cb, PipelineStatusCB seek_cb,
-                       VideoRenderer::PaintCB paint_cb) {
-  demuxer_ = demuxer;
-  renderer_ = renderer;
-  error_cb_ = error_cb;
-  seek_cb_ = seek_cb;
-  paint_cb_ = paint_cb;
+void AVPipeline::Start() {
   PostTask(TID_DECODE, boost::bind(&AVPipeline::StartAction, this));
 }
 

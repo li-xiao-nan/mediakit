@@ -224,6 +224,9 @@
     <ClInclude Include="src\base\message_loop_thread_manager.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="src\media\av_pipeline_factory.h">
+      <Filter>media</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -342,6 +345,9 @@
     </ClCompile>
     <ClCompile Include="src\base\message_loop_thread_manager.cc">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\av_pipeline_factory.cc">
+      <Filter>media</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
