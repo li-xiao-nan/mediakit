@@ -23,7 +23,11 @@
 
 namespace MediaCore {
 
-WallClockTimer::WallClockTimer() : start_timestamp_(0), is_ticking_(false) {}
+WallClockTimer::WallClockTimer() :
+  start_timestamp_(0)
+  ,is_ticking_(false)
+  ,pause_state_interval_(0)
+  ,is_pausing_(false){}
 
 void WallClockTimer::Start() {
   start_timestamp_ = getTicks();
@@ -37,7 +41,22 @@ void WallClockTimer::Restart() { Start(); }
 int64_t WallClockTimer::Elapsed() const {
   int64_t current_timestamp = getTicks();
   if (!is_ticking_ || current_timestamp <= start_timestamp_) return 0;
-  return current_timestamp - start_timestamp_;
+  return current_timestamp - start_timestamp_ - pause_state_interval_;
+}
+
+void WallClockTimer::Pause() {
+  if(is_pausing_) {
+    Resume();
+    return;
+  } else {
+  pause_timestamp_ = getTicks();
+  is_pausing_ = true;
+  }
+}
+void WallClockTimer::Resume() {
+  if(!is_pausing_) return;
+  pause_state_interval_ += getTicks() - pause_timestamp_;
+  is_pausing_ = false;
 }
 
 }  // namespace

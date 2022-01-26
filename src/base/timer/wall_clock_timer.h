@@ -32,10 +32,15 @@ class WallClockTimer {
   void Start();
   void Stop();
   void Restart();
+  void Pause();
+  void Resume();
 
  private:
   int64_t start_timestamp_;
+  int64_t pause_timestamp_;
+  int64_t pause_state_interval_;
   bool is_ticking_;
+  bool is_pausing_;
 };
 
 }  // namespace
