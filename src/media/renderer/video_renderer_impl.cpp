@@ -1,6 +1,7 @@
 #include "video_renderer_impl.h"
 #include "media/decoder/video_frame_stream.h"
 #include "base/message_loop_thread_manager.h"
+#include "log/log_wrapper.h"
 
 namespace media {
 const int kMaxPendingPaintFrameCount = 2<<2;
@@ -9,6 +10,7 @@ const int kMaxTimeDelta = 100;  // ms
 VideoRendererImpl::VideoRendererImpl(
     const VideoFrameStream::VecVideoDecoders& vec_video_decoders)
     : pending_paint_(false),
+      pause_state_(false),
       state_(STATE_UNINITIALIZED),
       video_frame_stream_(
           new VideoFrameStream(vec_video_decoders)),
@@ -73,13 +75,45 @@ void LogDecodeInfo(std::shared_ptr<VideoFrame> frame){
   log_item += L" Pop:" + toWString(frame->_timeRecoder._popupTime);
   log_item += L" Render:" + frame->_timeRecoder._renderResult;
 }
+
+void VideoRendererImpl::Pause() {
+  if(pause_state_) return;
+  pause_state_ = true;
+}
+
+void VideoRendererImpl::Resume() {
+  EndPauseState();
+}
+
+void VideoRendererImpl::EnterPauseStateIfNeeded() {
+  if(pause_state_ == false){
+    return;
+  }
+  LogMessage(LOG_LEVEL_INFO, "VideoRenderer enter into pause state");
+  std::unique_lock<std::mutex> lock(mutex_for_pause_);
+  condition_variable_for_puase_.wait(lock);
+}
+
+void VideoRendererImpl::EndPauseState() {
+  if(pause_state_ == true){
+    std::unique_lock<std::mutex> lock(mutex_for_pause_);
+    condition_variable_for_puase_.notify_all();
+    pause_state_ = false;
+  }else {
+    // do nothing
+  }
+  return;
+}
 void VideoRendererImpl::ThreadMain() {
   for (;;) {
+    EnterPauseStateIfNeeded();
     boost::mutex::scoped_lock lock(ready_frames_lock_);
     int64_t beg_time = get_time_cb_();
     if (pending_paint_frames_.empty()) {
       ReadFrameIfNeeded();
       int64_t begin_wait_timestamp = get_time_cb_();
+      LogMessage(LOG_LEVEL_DEBUG, "video decoded frame is empty, begin wait");
+      ScopeTimeCount ScopeTimeCount("Wait decode time:");
       frame_available_.wait(lock);
     }
 

@@ -46,7 +46,6 @@ int64_t WallClockTimer::Elapsed() const {
 
 void WallClockTimer::Pause() {
   if(is_pausing_) {
-    Resume();
     return;
   } else {
   pause_timestamp_ = getTicks();

@@ -17,6 +17,7 @@ class SdlAudioRendererSink : public AudioRendererSink {
                           const AudioParameters& parameters) override;
   virtual void Start() override;
   virtual void Pause() override;
+  virtual void Resume() override;
   virtual void Stop() override;
 
  private:
@@ -26,6 +27,7 @@ class SdlAudioRendererSink : public AudioRendererSink {
   void InitializeSDLAudio();
 
   bool is_playing;
+  bool pause_state_;
   InitCB init_cb_;
   SDL_AudioSpec sdl_audio_spec_;
   AudioParameters audio_parameters_;

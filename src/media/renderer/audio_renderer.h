@@ -17,6 +17,8 @@ class AudioRenderer {
   virtual void StartPlayingFrom(int64_t offset) = 0;
   virtual void SetPlaybackRate(float rate) = 0;
   virtual void SetVolume(float volume) = 0;
+  virtual void Pause() = 0;
+  virtual void Resume() = 0;
 };
 }  // namespace media
 #endif

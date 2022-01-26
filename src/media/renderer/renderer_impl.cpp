@@ -2,6 +2,7 @@
 
 #include "boost/bind.hpp"
 #include "media/base/playback_clock.h" 
+#include "log/log_wrapper.h"
 
 namespace media {
 
@@ -55,6 +56,21 @@ void RendererImpl::SetPlaybackRate(float rate) {
 }
 
 void RendererImpl::SetVolume(float volume) {
+}
+
+void RendererImpl::Pause() {
+  playback_clock_->Pause();
+  audio_renderer_->Pause();
+  video_renderer_->Pause();
+  LogMessage(LOG_LEVEL_DEBUG, "[Pause]CurrentMediaTime:" + std::to_string(GetCurrentTime()));
+}
+
+void RendererImpl::Resume() {
+  playback_clock_->Resume();
+  LogMessage(LOG_LEVEL_DEBUG, "[Resume]CurrentMediaTime:" + std::to_string(GetCurrentTime()));
+  audio_renderer_->Resume();
+  video_renderer_->Resume();
+
 }
 
 int64_t RendererImpl::GetPlaybackTime() {

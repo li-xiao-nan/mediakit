@@ -8,8 +8,7 @@ namespace media {
 const int kSDLMinAudioBufferSize = 512;
 const int kSDLAudioMaxCallbacksPerSec = 30;
 
-SdlAudioRendererSink::SdlAudioRendererSink() {
-}
+SdlAudioRendererSink::SdlAudioRendererSink() : pause_state_(false) {}
 SdlAudioRendererSink::~SdlAudioRendererSink() {
 }
 void SdlAudioRendererSink::Initialize(RenderCallback* render_callback,
@@ -24,7 +23,18 @@ void SdlAudioRendererSink::Start() {
   SDL_PauseAudio(0);
 }
 void SdlAudioRendererSink::Pause() {
-  SDL_PauseAudio(1);
+  if(pause_state_) { 
+    return;
+  } else {
+    SDL_PauseAudio(1);
+    pause_state_ = true;
+  }
+  return;
+}
+
+void SdlAudioRendererSink::Resume() {
+  SDL_PauseAudio(0);
+  pause_state_ = false;
 }
 void SdlAudioRendererSink::Stop() {
   SDL_PauseAudio(1);

@@ -1,6 +1,8 @@
 #ifndef MEDIA_RENDERER_VIDEO_RENDERER_IMPL_H
 #define MEDIA_RENDERER_VIDEO_RENDERER_IMPL_H
 
+#include <mutex>
+#include <condition_variable>
 #include "boost/thread/thread.hpp"
 #include "boost/thread/condition.hpp"
 #include "boost/scoped_ptr.hpp"
@@ -21,6 +23,8 @@ class VideoRendererImpl : public VideoRenderer {
                           PaintCB paint_cb, GetTimeCB get_time_cb) override;
   virtual void StartPlayingFrom(int64_t offset) override;
   virtual void SetPlaybackRate(float rate) override;
+  virtual void Pause() override;
+  virtual void Resume() override;
 
  private:
   enum State {
@@ -45,6 +49,8 @@ class VideoRendererImpl : public VideoRenderer {
   void ReadFrameIfNeeded();
   FrameOperation DetermineNextFrameOperation(int64_t current_time,
                                              int64_t next_frame_pts);
+  void EnterPauseStateIfNeeded();
+  void EndPauseState();
 
   bool pending_paint_;
   State state_;
@@ -60,6 +66,9 @@ class VideoRendererImpl : public VideoRenderer {
   boost::scoped_ptr<VideoFrameStream> video_frame_stream_;
   boost::scoped_ptr<boost::thread> video_frame_paint_thread_;
   int64_t droped_frame_count_;
+  std::mutex mutex_for_pause_;
+  std::condition_variable condition_variable_for_puase_;
+  bool pause_state_;
 };
 }  // namespace media
 #endif

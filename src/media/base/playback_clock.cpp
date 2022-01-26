@@ -34,4 +34,12 @@ int64_t PlaybackClock::GetCurrentMediaTime() {
   return current_media_time_;
 }
 
+void PlaybackClock::Pause() {
+  wall_clock_timer_.Pause();
+}
+
+void PlaybackClock::Resume() {
+  wall_clock_timer_.Resume();
+}
+
 }  // namespace media

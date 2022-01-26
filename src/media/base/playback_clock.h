@@ -9,11 +9,13 @@ namespace media {
 class PlaybackClock : public TimeSource {
  public:
   PlaybackClock();
-  virtual void StartTicking();
-  virtual void StopTicking();
-  virtual void SetPlaybackRate(float rate);
-  virtual void SetStartTime(int64_t start_time);
-  virtual int64_t GetCurrentMediaTime();
+  virtual void StartTicking() override;
+  virtual void StopTicking() override;
+  virtual void SetPlaybackRate(float rate) override;
+  virtual void SetStartTime(int64_t start_time) override;
+  virtual int64_t GetCurrentMediaTime() override;
+  virtual void Pause() override;
+  virtual void Resume() override;
 
  private:
   bool is_ticking_;

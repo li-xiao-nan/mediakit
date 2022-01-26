@@ -30,11 +30,13 @@ class RendererImpl : public Renderer {
   virtual void Initialize(DemuxerStreamProvider* demuxer_stream_provider,
                           PipelineStatusCB init_cb,
                           PipelineStatusCB status_cb,
-                          VideoRenderer::PaintCB paint_cb);
-  virtual void StartPlayingFrom(int64_t time_offset);
-  virtual void SetPlaybackRate(float rate);
-  virtual void SetVolume(float volume);
-  virtual int64_t GetPlaybackTime();
+                          VideoRenderer::PaintCB paint_cb) override;
+  virtual void StartPlayingFrom(int64_t time_offset) override;
+  virtual void SetPlaybackRate(float rate) override;
+  virtual void SetVolume(float volume) override;
+  virtual int64_t GetPlaybackTime() override;
+  virtual void Pause() override;
+  virtual void Resume() override;
 
  private:
   enum State {

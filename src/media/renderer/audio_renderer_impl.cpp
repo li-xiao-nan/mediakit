@@ -49,6 +49,14 @@ void AudioRendererImpl::InitAudioRendererFlow(bool result) {
   }
 }
 
+void AudioRendererImpl::Pause() {
+  audio_renderer_sink_->Pause();
+}
+
+void AudioRendererImpl::Resume() {
+  audio_renderer_sink_->Resume();
+}
+
 AudioRendererImpl::State AudioRendererImpl::GetNextState() {
   switch (state_) {
     case STATE_UNINITIALIZED:

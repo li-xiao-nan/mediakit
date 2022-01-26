@@ -73,11 +73,19 @@ void ExitApp(){
   exit(0);
 }
 
+bool pause_state = false;
 void keyboard(unsigned char key, int x, int y) {
   switch (key) {
     case 's':
       break;
     case 'p':
+      if(pause_state == false) {
+        av_pipeline->Pause();
+        pause_state = true;
+      } else {
+        av_pipeline->Resume();
+        pause_state = false;
+      }
       break;
     case 'z':
       zcb();

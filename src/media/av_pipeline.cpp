@@ -43,6 +43,14 @@ void AVPipeline::InitializeRenderer(PipelineStatusCB done_cb) {
 
 void AVPipeline::Stop() {}
 
+void AVPipeline::Pause() {
+  renderer_->Pause();
+}
+
+void AVPipeline::Resume() {
+  renderer_->Resume();
+}
+
 void AVPipeline::Seek(int64_t timestamp, PipelineStatusCB seek_cb) {
   AsyncTask task =
       boost::bind(&AVPipeline::SeekAction, this, timestamp, seek_cb);
