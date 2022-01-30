@@ -34,11 +34,13 @@ class WallClockTimer {
   void Restart();
   void Pause();
   void Resume();
+  void Seek(int64_t);
 
  private:
   int64_t start_timestamp_;
   int64_t pause_timestamp_;
   int64_t pause_state_interval_;
+  int64_t seek_timestamp_interval_;
   bool is_ticking_;
   bool is_pausing_;
 };

@@ -3,13 +3,20 @@
 
 #include <stdint.h>
 #include <iostream>
+#include "log/log_wrapper.h"
 
 namespace media {
 class VideoFrame {
  public:
      class TimeRecoder{
      public:
-        
+        void LogTimeRecorder() {
+          LogMessage(LOG_LEVEL_INFO, std::string("FFmpegVideoDecoder::Decode; ") + 
+            "FrameNo:" + std::to_string(_frameNo)
+            + " decodeExpendTime:" + std::to_string(_decodeExpendTime)
+            + " addQueueTime:" + std::to_string(_addQueueTime)
+            + " pst:" + std::to_string(_pst));
+        }
      public:
          int _frameNo;
          int _decodeExpendTime;

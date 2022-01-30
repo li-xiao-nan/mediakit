@@ -13,6 +13,8 @@ class Demuxer : public DemuxerStreamProvider {
   virtual void Initialize(PipelineStatusCB status_cb) = 0;
   virtual void Seek(int64_t timestamp, PipelineStatusCB status_cb) = 0;
   virtual void Stop() = 0;
+  virtual void Pause() = 0;
+  virtual void Resume() = 0;
   virtual int64_t GetStartTime() = 0;
   virtual int64_t GetDuration() = 0;
   virtual int64_t GetTimelineOffset() = 0;

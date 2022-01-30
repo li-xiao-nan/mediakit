@@ -1,5 +1,6 @@
 #include "audio_renderer_impl.h"
 #include "media/renderer/sdl_audio_renderer_sink.h"
+#include "log/log_wrapper.h"
 
 namespace media {
 
@@ -57,6 +58,13 @@ void AudioRendererImpl::Resume() {
   audio_renderer_sink_->Resume();
 }
 
+void AudioRendererImpl::ClearAVFrameBuffer() {
+  std::queue<std::shared_ptr<AudioFrame> > empty_01;
+  std::swap(empty_01, ready_audio_frames_);
+  std::queue<std::shared_ptr<AudioFrame> > empty_02;
+  std::swap(empty_02, pending_paint_frames_);
+  audio_frame_stream_->ClearBuffer();
+}
 AudioRendererImpl::State AudioRendererImpl::GetNextState() {
   switch (state_) {
     case STATE_UNINITIALIZED:
@@ -141,6 +149,8 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
     int64_t time_delta = current_time - next_frame_pts;
     if (time_delta < kMaxTimeDelta) {
       pending_paint_frames_.push(next_audio_frame);
+    } else {
+      LogMessage(LOG_LEVEL_DEBUG, "[Audio][DropFrame] pts:" + std::to_string(next_frame_pts));
     }
     ready_audio_frames_.pop();
   }

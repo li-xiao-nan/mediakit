@@ -19,6 +19,7 @@ class AudioRenderer {
   virtual void SetVolume(float volume) = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
+  virtual void ClearAVFrameBuffer() = 0;
 };
 }  // namespace media
 #endif

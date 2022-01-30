@@ -42,4 +42,7 @@ void PlaybackClock::Resume() {
   wall_clock_timer_.Resume();
 }
 
+void PlaybackClock::Seek(int64_t timestamp_ms) {
+  wall_clock_timer_.Seek(timestamp_ms);
+}
 }  // namespace media

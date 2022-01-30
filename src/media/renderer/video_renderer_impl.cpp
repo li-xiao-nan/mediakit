@@ -68,12 +68,12 @@ std::wstring toWString(int64_t value){
 
 void LogDecodeInfo(std::shared_ptr<VideoFrame> frame){
 
-  std::wstring log_item = L"FNO." + toWString(frame->_timeRecoder._frameNo);
-  log_item += L" dst:" + toWString(frame->_timeRecoder._decodeExpendTime);
-  log_item += L" Add:" + toWString(frame->_timeRecoder._popupTime);
-  log_item += L" Pst:" + toWString(frame->_timeRecoder._pst);
-  log_item += L" Pop:" + toWString(frame->_timeRecoder._popupTime);
-  log_item += L" Render:" + frame->_timeRecoder._renderResult;
+  std::string log_item = "frameNo:" + std::to_string(frame->_timeRecoder._frameNo);
+  log_item += " decodeExpendTime:" + std::to_string(frame->_timeRecoder._decodeExpendTime);
+  log_item += " addQueueTime:" + std::to_string(frame->_timeRecoder._addQueueTime);
+  log_item += " pts:" + std::to_string(frame->_timeRecoder._pst);
+  log_item += " Pop:" + std::to_string(frame->_timeRecoder._popupTime);
+  LogMessage(LOG_LEVEL_INFO, log_item);
 }
 
 void VideoRendererImpl::Pause() {
@@ -82,9 +82,16 @@ void VideoRendererImpl::Pause() {
 }
 
 void VideoRendererImpl::Resume() {
+  LogMessage(LOG_LEVEL_DEBUG, "pending_paint_frames_" + std::to_string(pending_paint_frames_.size()));
+  video_frame_stream_->ShowState();
   EndPauseState();
 }
 
+void VideoRendererImpl::ClearAVFrameBuffer() {
+  std::queue<std::shared_ptr<VideoFrame> > empty;
+  std::swap(empty, pending_paint_frames_);
+  video_frame_stream_->ClearBuffer();
+}
 void VideoRendererImpl::EnterPauseStateIfNeeded() {
   if(pause_state_ == false){
     return;
@@ -157,6 +164,9 @@ VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
   if (time_delta <= kMaxTimeDelta) {
     return OPERATION_PAINT_IMMEDIATELY;
   } else {
+    LogMessage(LOG_LEVEL_ERROR, "DetermineNextFrameOperation: current_time:"
+      + std::to_string(current_time)
+      + "; next_frame_pts:" + std::to_string(next_frame_pts));
     return OPERATION_DROP_FRAME;
   }
 }
@@ -181,6 +191,7 @@ void VideoRendererImpl::ReadFrameIfNeeded() {
   PostTask(TID_DECODE, boost::bind(&VideoRendererImpl::ReadFrame, this));
 }
 
+// decode thread
 void VideoRendererImpl::ReadFrame() {
   video_frame_stream_->Read(
       boost::bind(&VideoRendererImpl::OnReadFrameDone, this, _1, _2));

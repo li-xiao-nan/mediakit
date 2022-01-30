@@ -70,7 +70,14 @@ void RendererImpl::Resume() {
   LogMessage(LOG_LEVEL_DEBUG, "[Resume]CurrentMediaTime:" + std::to_string(GetCurrentTime()));
   audio_renderer_->Resume();
   video_renderer_->Resume();
+  return;
+}
 
+void RendererImpl::Seek(int64_t timestamp_ms) {
+  playback_clock_->Seek(timestamp_ms);
+  audio_renderer_->ClearAVFrameBuffer();
+  video_renderer_->ClearAVFrameBuffer();
+  return;
 }
 
 int64_t RendererImpl::GetPlaybackTime() {

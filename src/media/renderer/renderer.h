@@ -18,6 +18,8 @@ class Renderer {
   virtual void SetVolume(float volume) = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
+  // 时间单位：秒
+  virtual void Seek(int64_t) = 0;
 };
 }  // namespace media
 

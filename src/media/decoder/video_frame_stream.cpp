@@ -27,6 +27,7 @@ void VideoFrameStream::Initialize(DemuxerStream* stream, InitCB init_cb) {
       boost::bind(&VideoFrameStream::DecoderOutputCB, this, _1));
 }
 
+// decode thread
 void VideoFrameStream::Read(ReadCB read_cb) {
   std::shared_ptr<VideoFrame> video_frame = ReadReadyVideoFrameLocked();
   if (video_frame.get()) {
@@ -84,6 +85,7 @@ std::shared_ptr<VideoFrame> VideoFrameStream::ReadReadyVideoFrameNoLocked() {
   return video_frame;
 }
 
+// decode thread
 std::shared_ptr<VideoFrame> VideoFrameStream::ReadReadyVideoFrameLocked() {
   boost::mutex::scoped_lock lock(video_frame_queue_mutex);
   std::shared_ptr<VideoFrame> video_frame;
@@ -94,6 +96,7 @@ std::shared_ptr<VideoFrame> VideoFrameStream::ReadReadyVideoFrameLocked() {
   return video_frame;
 }
 
+// decode thread
 void VideoFrameStream::ReadFromDemuxerStream() {
   demuxer_stream_->Read(
       boost::bind(&VideoFrameStream::OnReadFromDemuxerStreamDone, this, _1));
@@ -116,6 +119,7 @@ void VideoFrameStream::DecoderOutputCB(
   video_frame_queue_.push_back(video_frame);
 }
 
+// decode thread
 void VideoFrameStream::DecodeFrameIfNeeded() {
   if (!CanDecodeMore())
     return;
@@ -125,6 +129,15 @@ void VideoFrameStream::DecodeFrameIfNeeded() {
 bool VideoFrameStream::CanDecodeMore() {
   return (video_frame_queue_.size() < kMaxVideoFrameQueueSize) &&
          (state_ == STATE_NORMAL);
+}
+
+void VideoFrameStream::ClearBuffer() {
+  std::deque<std::shared_ptr<VideoFrame> > empty;
+  std::swap(empty, video_frame_queue_);
+}
+
+void VideoFrameStream::ShowState() {
+  LogMessage(LOG_LEVEL_DEBUG, "video_frame_queue_:" + std::to_string(video_frame_queue_.size()));
 }
 
 }  // namespace media

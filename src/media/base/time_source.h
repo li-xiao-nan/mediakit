@@ -14,6 +14,7 @@ class TimeSource {
   virtual int64_t GetCurrentMediaTime() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
+  virtual void Seek(int64_t timestamp_ms) = 0;
 };
 }  // namespace media
 #endif

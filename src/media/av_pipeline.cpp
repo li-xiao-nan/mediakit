@@ -45,15 +45,19 @@ void AVPipeline::Stop() {}
 
 void AVPipeline::Pause() {
   renderer_->Pause();
+  demuxer_->Pause();
 }
 
 void AVPipeline::Resume() {
   renderer_->Resume();
+  demuxer_->Resume();
 }
 
-void AVPipeline::Seek(int64_t timestamp, PipelineStatusCB seek_cb) {
+void AVPipeline::Seek(int64_t timestamp_ms) {
+  // 暂停音视频播放状态
+  Pause();
   AsyncTask task =
-      boost::bind(&AVPipeline::SeekAction, this, timestamp, seek_cb);
+      boost::bind(&AVPipeline::SeekAction, this, timestamp_ms);
   PostTask(TID_DECODE, task);
 }
 
@@ -61,18 +65,17 @@ int64_t AVPipeline::GetPlaybackTime() {
     return renderer_->GetPlaybackTime();
 }
 
-void AVPipeline::SeekAction(int64_t timestamp, PipelineStatusCB seek_cb) {
-  assert(seek_cb);
+void AVPipeline::SeekAction(int64_t timestamp_ms) {
   assert(demuxer_.get());
-
-  seek_cb_ = seek_cb;
   pending_seek = true;
   state_ = STATE_SEEKING;
+  renderer_->Seek(timestamp_ms);
+
   PipelineStatusCB seek_complete_cb =
       boost::bind(&AVPipeline::StateTransitAction, this, _1);
   AsyncTask task =
-      boost::bind(&Demuxer::Seek, demuxer_.get(), timestamp, seek_complete_cb);
-  PostTask(TID_DECODE, task);
+      boost::bind(&Demuxer::Seek, demuxer_.get(), timestamp_ms, seek_complete_cb);
+  PostTask(TID_DEMUXER, task);
 }
 
 void AVPipeline::StateTransitAction(PipelineStatus status) {
@@ -94,7 +97,9 @@ void AVPipeline::StateTransitAction(PipelineStatus status) {
     case STATE_PLAYING:
       renderer_->StartPlayingFrom(demuxer_->GetStartTime());
       break;
-    case STATE_SEEKING:
+    case STATE_SEEK_COMPLETED:
+      Resume();
+      state_ = STATE_PLAYING;
       // do nothing
       break;
   }
@@ -111,7 +116,7 @@ AVPipeline::PipelineState AVPipeline::GetNextState() {
       LogMessage(LOG_LEVEL_INFO, "Render initialize success");
       return STATE_PLAYING;
     case STATE_SEEKING:
-      return STATE_PLAYING;
+      return STATE_SEEK_COMPLETED;
     default:
       assert(NULL);
   }

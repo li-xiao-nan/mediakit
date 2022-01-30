@@ -21,6 +21,7 @@ class VideoRenderer {
   virtual void SetPlaybackRate(float rate) = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;
+  virtual void ClearAVFrameBuffer() = 0;
 };
 }  // namespace media
 #endif

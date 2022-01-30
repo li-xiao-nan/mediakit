@@ -28,6 +28,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
     STATE_INIT_DEMUXER,
     STATE_INIT_RENDERER,
     STATE_SEEKING,
+    STATE_SEEK_COMPLETED,
     STATE_PLAYING,
     STATE_STOPING,
     STATE_STOPPED,
@@ -43,7 +44,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
   void Stop();
   void Pause();
   void Resume();
-  void Seek(int64_t timestamp, PipelineStatusCB seek_cb);
+  void Seek(int64_t timestamp_ts);
   int64_t GetPlaybackTime();
 
  private:
@@ -51,7 +52,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
   void InitializeDemuxer(PipelineStatusCB done_cb);
   void InitializeRenderer(PipelineStatusCB done_cb);
   void FiltersStatusCB(PipelineStatus filters_status);
-  void SeekAction(int64_t timestamp, PipelineStatusCB seek_cb);
+  void SeekAction(int64_t timestamp);
   void StateTransitAction(PipelineStatus status);
   PipelineState GetNextState();
   void SetState(PipelineState state);

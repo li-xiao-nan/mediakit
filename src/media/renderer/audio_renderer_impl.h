@@ -29,6 +29,7 @@ class AudioRendererImpl : public AudioRenderer,
   virtual void SetVolume(float volume) override;
   virtual void Pause() override;
   virtual void Resume() override;
+  virtual void ClearAVFrameBuffer() override;
 
   //
   virtual void Render(uint8_t* data, int data_size);

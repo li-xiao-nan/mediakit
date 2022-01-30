@@ -64,7 +64,7 @@ void InitializeLog(){
     log_file_path,
     kMaxLogFileSize,
     kMaxLogFileCount); 
-  message_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] %v");
+  message_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
   message_logger->set_level(spdlog::level::trace);
   spdlog::register_logger(message_logger);
   initialized =true;

@@ -37,6 +37,7 @@ class FFmpegDemuxerStream : public DemuxerStream {
   virtual const AudioDecoderConfig& audio_decoder_config() const override;
   virtual void set_audio_decoder_config(
       const AudioDecoderConfig& audio_decoder_config) override;
+  virtual void ClearEncodedAVFrameBuffer() override;
 
   bool HasAvailableCapacity();
   int stream_index() { return stream_index_; }
@@ -54,8 +55,8 @@ class FFmpegDemuxerStream : public DemuxerStream {
   ReadCB read_cb_;
   AudioDecoderConfig audio_decoder_config_;
   VideoDecoderConfig video_decoder_config_;
-  FFmpegDemuxer* demuxer_;
-  std::queue<std::shared_ptr<EncodedAVFrame> > encoded_avframe_queue_;
+  FFmpegDemuxer* demuxer_;std::queue<std::shared_ptr<EncodedAVFrame> >
+   encoded_avframe_queue_;
 };
 
 }  // namespace media

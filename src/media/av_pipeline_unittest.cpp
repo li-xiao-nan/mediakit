@@ -77,6 +77,7 @@ bool pause_state = false;
 void keyboard(unsigned char key, int x, int y) {
   switch (key) {
     case 's':
+      av_pipeline->Seek(60*20*1000 + av_pipeline->GetPlaybackTime());
       break;
     case 'p':
       if(pause_state == false) {

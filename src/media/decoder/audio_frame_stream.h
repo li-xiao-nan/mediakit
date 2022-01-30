@@ -36,6 +36,7 @@ class AudioFrameStream {
   ~AudioFrameStream();
   void Initialize(DemuxerStream* stream, InitCB init_cb);
   void Read(ReadCB read_cb);
+  void ClearBuffer();
 
  private:
   enum State {

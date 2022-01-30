@@ -134,4 +134,9 @@ std::shared_ptr<AudioFrame> AudioFrameStream::ReadReadyFrameNoLocked() {
   return audio_frame;
 }
 
+void AudioFrameStream::ClearBuffer() {
+  std::deque<std::shared_ptr<AudioFrame> > empty;
+  std::swap(empty, frame_queue_);
+}
+
 }  // namespace media

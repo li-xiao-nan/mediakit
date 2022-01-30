@@ -37,6 +37,7 @@ class RendererImpl : public Renderer {
   virtual int64_t GetPlaybackTime() override;
   virtual void Pause() override;
   virtual void Resume() override;
+  virtual void Seek(int64_t) override;
 
  private:
   enum State {

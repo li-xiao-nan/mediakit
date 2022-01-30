@@ -16,6 +16,7 @@ class PlaybackClock : public TimeSource {
   virtual int64_t GetCurrentMediaTime() override;
   virtual void Pause() override;
   virtual void Resume() override;
+  virtual void Seek(int64_t timestamp_ms) override;
 
  private:
   bool is_ticking_;

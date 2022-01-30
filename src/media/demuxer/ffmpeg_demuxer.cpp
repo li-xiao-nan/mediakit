@@ -24,7 +24,8 @@ FFmpegDemuxer::FFmpegDemuxer(std::shared_ptr<net::IOChannel> data_source)
     : demux_complete_(false),
       data_source_complete(false),
       pending_seek_(false),
-      duration_(0){
+      duration_(0),
+      pause_state_(false){
   data_source_ = data_source;
 }
 
@@ -38,11 +39,11 @@ void FFmpegDemuxer::Initialize(PipelineStatusCB status_cb) {
 }
 
 void FFmpegDemuxer::Seek(int64_t timestamp, PipelineStatusCB status_cb) {
-	return;
   ActionCB action_cb =
       boost::bind(&FFmpegDemuxer::OnSeekDone, this, status_cb, _1);
   PostTask(TID_DEMUXER, (boost::bind(&FFmpegDemuxer::SeekAction, this,
                                           timestamp, status_cb, action_cb)));
+  return;
 }
 
 void FFmpegDemuxer::Stop() {}
@@ -62,7 +63,10 @@ DemuxerStream* FFmpegDemuxer::GetDemuxerStream(DemuxerStream::Type type) {
   return NULL;
 }
 
-void FFmpegDemuxer::NotifyDemuxerCapacityAvailable() { ReadFrameIfNeeded(); }
+// decode thread
+void FFmpegDemuxer::NotifyDemuxerCapacityAvailable() { 
+  ReadFrameIfNeeded(); 
+}
 
 void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
                                               ActionCB action_cb) {
@@ -79,7 +83,7 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
     av_io_context_->seekable = 0;
     av_io_context_->write_flag = false;
     // Enable fast, but inaccurate seeks for MP3.
-    av_format_context_->flags |= AVFMT_FLAG_FAST_SEEK;
+    av_format_context_->flags; //|= AVFMT_FLAG_FAST_SEEK;
     av_format_context_->pb = av_io_context_;
     // open the input file
     if ((avformat_open_input(&av_format_context_, NULL, NULL, NULL)) != 0) {
@@ -149,7 +153,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
               GetDemuxerStream(DemuxerStream::VIDEO));
 
       if (video_demuxer_stream) continue;
-
+      video_stream_index_ = i;
       SetVideoStreamTimeBase(stream->time_base);
       video_demuxer_stream = new FFmpegDemuxerStream(this, stream);
       VideoDecoderConfig video_decoder_config;
@@ -162,7 +166,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
           static_cast<FFmpegDemuxerStream*>(
               GetDemuxerStream(DemuxerStream::AUDIO));
       if (audio_demuxer_stream) continue;
-
+      audio_stream_index_ = i;
       SetAudioStreamTimeBase(stream->time_base);
       audio_demuxer_stream = new FFmpegDemuxerStream(this, stream);
       AudioDecoderConfig audio_decoder_config;
@@ -177,12 +181,17 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
   status_cb(PIPELINE_OK);
 }
 
-void FFmpegDemuxer::SeekAction(int64_t timestamp, PipelineStatusCB state_cb,
+void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
                                ActionCB action_cb) {
-  AVRational av_time_base = {1, AV_TIME_BASE};
-  int ret = av_seek_frame(av_format_context_, -1,
-                          ConvertToTimeBase(timestamp, av_time_base),
-                          AVSEEK_FLAG_BACKWARD);
+  ScopeTimeCount("SeekAction");
+  int ret = 
+    av_seek_frame(av_format_context_, -1, timestamp_ms * 1000, AVSEEK_FLAG_BACKWARD);
+  for(auto key : streams_) {
+      key->ClearEncodedAVFrameBuffer();
+  }
+  avformat_flush(av_format_context_);
+  avio_flush(av_format_context_->pb);
+  //DropBufferedDataTest(timestamp_ms);
   PostTask(TID_DECODE, boost::bind(action_cb, (ret >= 0 ? true : false)));
 }
 
@@ -193,11 +202,14 @@ void FFmpegDemuxer::OnSeekDone(PipelineStatusCB status_cb, bool result) {
     status_cb(PIPELINE_ERROR_SEEK_FAILED);
     return;
   }
-
-  ReadFrameIfNeeded();
 }
 
+// decode thread
 void FFmpegDemuxer::ReadFrameIfNeeded() {
+  if(pause_state_) {
+    LogMessage(LOG_LEVEL_INFO, "FFmpegDemuxer::ReadFrameIfNeeded, paused");
+    return;
+  }
   FFmpegDemuxerStream* video_stream =
       static_cast<FFmpegDemuxerStream*>(GetDemuxerStream(DemuxerStream::VIDEO));
   FFmpegDemuxerStream* audio_stream =
@@ -215,16 +227,17 @@ void FFmpegDemuxer::ReadFrameIfNeeded() {
   PostTask(TID_DEMUXER, task);
 }
 
+// demux thread
 void FFmpegDemuxer::ReadFrameAction(
     std::shared_ptr<EncodedAVFrame> encoded_avframe, ActionCB action_cb) {
   bool result = !av_read_frame(av_format_context_, encoded_avframe.get());
   if (!result) {
-    std::cout << "av_read_frame failed" << std::endl;
+    LogMessage(LOG_LEVEL_ERROR, "av_read_frame failed");
   }
-
   PostTask(TID_DECODE, boost::bind(action_cb, result));
 }
 
+// decode thread
 void FFmpegDemuxer::OnReadFrameDone(
     std::shared_ptr<EncodedAVFrame> encoded_avframe, bool result) {
   FFmpegDemuxerStream* video_stream =
@@ -264,7 +277,8 @@ long FFmpegDemuxer::SeekCB(long offset, int whence) {
   } else {
     return 0;
   }
-  return data_source_->tell();
+  long result = data_source_->tell();
+  return result;
 }
 int FFmpegDemuxer::FFmpegReadPacketCB(void* opaque, unsigned char* buffer,
                                       int buffer_size) {
@@ -306,5 +320,13 @@ void FFmpegDemuxer::ShowMediaConfigInfo() {
   for (size_t i = 0; i < streams_.size(); i++) {
     streams_[i]->ShowConfigInfo();
   }
+}
+
+void FFmpegDemuxer::Pause() {
+  pause_state_ = true;
+}
+
+void FFmpegDemuxer::Resume() {
+  pause_state_ = false;
 }
 }  // namespace media
