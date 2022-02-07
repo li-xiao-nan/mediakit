@@ -23,7 +23,9 @@ AVPipeline::AVPipeline(std::shared_ptr<Demuxer> demuxer,
   , renderer_(renderer)
   , error_cb_(error_cb)
   , seek_cb_(seek_cb)
-  , paint_cb_(paint_cb){}
+  , paint_cb_(paint_cb){
+  demuxer_->SetDelegate(this);
+}
 
 void AVPipeline::Start() {
   PostTask(TID_DECODE, boost::bind(&AVPipeline::StartAction, this));
@@ -63,6 +65,13 @@ void AVPipeline::Seek(int64_t timestamp_ms) {
 
 int64_t AVPipeline::GetPlaybackTime() {
     return renderer_->GetPlaybackTime();
+}
+
+void AVPipeline::OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) {
+  renderer_->UpdateAlignSeekTimestamp(seek_timestamp);
+  LogMessage(LOG_LEVEL_INFO, "OnUpdateAlignedSeekTimestamp :"
+    + std::to_string(seek_timestamp)
+    + "; CurrentTimestamp:" + std::to_string(GetPlaybackTime()));
 }
 
 void AVPipeline::SeekAction(int64_t timestamp_ms) {

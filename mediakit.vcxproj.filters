@@ -227,6 +227,9 @@
     <ClInclude Include="src\media\av_pipeline_factory.h">
       <Filter>media</Filter>
     </ClInclude>
+    <ClInclude Include="src\media\demuxer\demuxer_delegate.h">
+      <Filter>media\demuxer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "demuxer_stream_provider.h"
 #include "media/base/pipeline_status.h"
+#include "media/demuxer/demuxer_delegate.h"
 
 namespace media {
 class Demuxer : public DemuxerStreamProvider {
@@ -19,6 +20,7 @@ class Demuxer : public DemuxerStreamProvider {
   virtual int64_t GetDuration() = 0;
   virtual int64_t GetTimelineOffset() = 0;
   virtual void ShowMediaConfigInfo() = 0;
+  virtual void SetDelegate(DemuxerDelegate* demuxer_delegate) = 0;
 };
 
 }  // namespace media

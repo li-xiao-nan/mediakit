@@ -25,7 +25,8 @@ FFmpegDemuxer::FFmpegDemuxer(std::shared_ptr<net::IOChannel> data_source)
       data_source_complete(false),
       pending_seek_(false),
       duration_(0),
-      pause_state_(false){
+      pause_state_(false),
+      demuxer_delegate_(nullptr){
   data_source_ = data_source;
 }
 
@@ -181,6 +182,10 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
   status_cb(PIPELINE_OK);
 }
 
+void FFmpegDemuxer::SetDelegate(DemuxerDelegate* delegate) {
+  demuxer_delegate_ = delegate;
+}
+
 void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
                                ActionCB action_cb) {
   ScopeTimeCount("SeekAction");
@@ -191,8 +196,24 @@ void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
   }
   avformat_flush(av_format_context_);
   avio_flush(av_format_context_->pb);
+  AfterSeekReadFirstPacket();
   //DropBufferedDataTest(timestamp_ms);
   PostTask(TID_DECODE, boost::bind(action_cb, (ret >= 0 ? true : false)));
+}
+
+void FFmpegDemuxer::AfterSeekReadFirstPacket() {
+  std::shared_ptr<EncodedAVFrame> encoded_avframe(new AVPacket());
+  bool result = !av_read_frame(av_format_context_, encoded_avframe.get());
+  if (!result) {
+    LogMessage(LOG_LEVEL_ERROR, "av_read_frame failed");
+    return;
+  }
+  int64_t seek_result_pts = encoded_avframe->pts;
+  if(demuxer_delegate_) {
+    demuxer_delegate_->OnUpdateAlignedSeekTimestamp(seek_result_pts);
+  }
+  PostTask(TID_DECODE, 
+    boost::bind(&FFmpegDemuxer::OnReadFrameDone, this, encoded_avframe, true));
 }
 
 void FFmpegDemuxer::OnSeekDone(PipelineStatusCB status_cb, bool result) {

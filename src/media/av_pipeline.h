@@ -18,10 +18,12 @@
 #include "media/demuxer/demuxer.h"
 #include "media/renderer/renderer.h"
 #include "media/renderer/video_renderer.h"
+#include "media/demuxer/demuxer_delegate.h"
 
 namespace media {
 
-class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
+class AVPipeline : public boost::enable_shared_from_this<AVPipeline>, 
+  public DemuxerDelegate{
  public:
   enum PipelineState {
     STATE_CREATE,
@@ -46,7 +48,8 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline> {
   void Resume();
   void Seek(int64_t timestamp_ts);
   int64_t GetPlaybackTime();
-
+  
+  void OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) override;
  private:
   void StartAction();
   void InitializeDemuxer(PipelineStatusCB done_cb);

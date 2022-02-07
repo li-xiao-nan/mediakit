@@ -26,10 +26,11 @@ namespace MediaCore {
 
 WallClockTimer::WallClockTimer() :
   start_timestamp_(0)
+  , pause_timestamp_(0)
+  , seek_timestamp_interval_(0)
+  , pause_state_interval_(0)
   ,is_ticking_(false)
-  ,pause_state_interval_(0)
-  ,is_pausing_(false)
-  ,seek_timestamp_interval_(0){}
+  ,is_pausing_(false){}
 
 void WallClockTimer::Start() {
   start_timestamp_ = getTicks();
@@ -45,10 +46,9 @@ int64_t WallClockTimer::Elapsed() const {
   if (!is_ticking_ || current_timestamp <= start_timestamp_) return 0;
   int64_t elapsed =  
     current_timestamp - start_timestamp_ - pause_state_interval_;
-  if(seek_timestamp_interval_ > 0) {
-      elapsed += seek_timestamp_interval_;
-  } else {
-    elapsed -= seek_timestamp_interval_;
+  elapsed += seek_timestamp_interval_;
+  if(pause_timestamp_ != 0) {
+    elapsed -= (current_timestamp - pause_timestamp_);
   }
   return elapsed;
 }
@@ -64,10 +64,16 @@ void WallClockTimer::Pause() {
 void WallClockTimer::Resume() {
   if(!is_pausing_) return;
   pause_state_interval_ += getTicks() - pause_timestamp_;
+  pause_timestamp_ = 0;
   is_pausing_ = false;
 }
 
 void WallClockTimer::Seek(int64_t seek_timestamp) {
+  media::LogMessage(
+      media::LOG_LEVEL_DEBUG,
+      "seek_timestamp_interval_:" + std::to_string(seek_timestamp_interval_) +
+          "pause_state_interval_" + std::to_string(pause_state_interval_) +
+          "start_timestamp_" + std::to_string(start_timestamp_));
   seek_timestamp_interval_ += seek_timestamp - Elapsed();
   LogMessage(media::LOG_LEVEL_DEBUG, "seek_timestamp_interval_:" + std::to_string(seek_timestamp_interval_));
 }

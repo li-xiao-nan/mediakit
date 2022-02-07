@@ -20,6 +20,7 @@ class Renderer {
   virtual void Resume() = 0;
   // 时间单位：秒
   virtual void Seek(int64_t) = 0;
+  virtual void UpdateAlignSeekTimestamp(int64_t) = 0;
 };
 }  // namespace media
 

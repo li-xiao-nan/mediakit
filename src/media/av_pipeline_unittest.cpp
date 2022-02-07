@@ -226,6 +226,7 @@ void init(void) {
   glEnable(GL_TEXTURE_2D);
 }
 void display(void) {
+  if(pause_state) return;
   glClear(GL_COLOR_BUFFER_BIT);
   glColor3f(1.0, 1.0, 1.0);
   std::shared_ptr<media::VideoFrame> videoFrame = GlobalReadVideoFrame();

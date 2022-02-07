@@ -37,7 +37,8 @@ class FFmpegDemuxer : public Demuxer {
   virtual int64_t GetTimelineOffset() override;
   virtual void ShowMediaConfigInfo() override;
   virtual void Pause() override;
-  virtual void Resume() override; 
+  virtual void Resume() override;
+  virtual void SetDelegate(DemuxerDelegate* delegate) override;
 
   // DemuxerStreamProvier implementation
   virtual DemuxerStream* GetDemuxerStream(DemuxerStream::Type type) override;
@@ -70,11 +71,11 @@ class FFmpegDemuxer : public Demuxer {
   
   void ReadFrameAction(std::shared_ptr<EncodedAVFrame> encoded_avframe,
                        ActionCB action_cb);
+  void AfterSeekReadFirstPacket();
   void OnReadFrameDone(std::shared_ptr<EncodedAVFrame> encoded_avframe,
                        bool result);
 
   int64_t EstimateStartTimeFromProbeAVPacketBuffer(AVFormatContext* av_format_context);
-  void DropBufferedDataTest(int64_t);
  private:
   typedef std::vector<FFmpegDemuxerStream*> DemuxerStreamVector;
 
@@ -91,6 +92,7 @@ class FFmpegDemuxer : public Demuxer {
   int audio_stream_index_;
   int video_stream_index_;
   bool pause_state_;
+  DemuxerDelegate* demuxer_delegate_;
 };
 
 }  // namespace media

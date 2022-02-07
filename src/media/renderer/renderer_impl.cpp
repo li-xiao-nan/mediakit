@@ -73,8 +73,11 @@ void RendererImpl::Resume() {
   return;
 }
 
+void RendererImpl::UpdateAlignSeekTimestamp(int64_t timestamp) {
+  playback_clock_->Seek(timestamp);
+}
+
 void RendererImpl::Seek(int64_t timestamp_ms) {
-  playback_clock_->Seek(timestamp_ms);
   audio_renderer_->ClearAVFrameBuffer();
   video_renderer_->ClearAVFrameBuffer();
   return;

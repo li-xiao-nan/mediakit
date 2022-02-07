@@ -148,6 +148,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\media\decoder\video_decoder.h" />
     <ClInclude Include="src\media\decoder\video_frame_stream.h" />
     <ClInclude Include="src\media\demuxer\demuxer.h" />
+    <ClInclude Include="src\media\demuxer\demuxer_delegate.h" />
     <ClInclude Include="src\media\demuxer\demuxer_stream.h" />
     <ClInclude Include="src\media\demuxer\demuxer_stream_provider.h" />
     <ClInclude Include="src\media\demuxer\ffmpeg_demuxer.h" />
