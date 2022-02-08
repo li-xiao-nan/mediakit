@@ -12,7 +12,7 @@ namespace net {
 //static function
 IOChannel* IOChannel::CreateIOChannel(Url url)
 {
-  LogMessage(media::LOG_LEVEL_DEBUG, "VideoURL:" + url.str());
+  LOGGING(media::LOG_LEVEL_DEBUG) << "VideoURL:" << url.str();
 	IOChannel* stream = NULL;
 	if(url.protocol() == "file"){
 		string path = url.path();
@@ -21,7 +21,7 @@ IOChannel* IOChannel::CreateIOChannel(Url url)
 		}else{
 			FILE *inFp = fopen(path.c_str(),"rb");
 			if(!inFp){
-        LogMessage(media::LOG_LEVEL_DEBUG,"Open file path:" + url.str() +" failed");
+        LOGGING(media::LOG_LEVEL_DEBUG) << "Open file path:" << url.str() << " failed";
 				return stream;
 			}
 			stream = new FileStreamProvider(inFp);
@@ -29,10 +29,10 @@ IOChannel* IOChannel::CreateIOChannel(Url url)
 	}else if(url.protocol() == "http"){
 		stream = new CurlStreamFile(url.str(),"");
 	}else {
-    LogMessage(media::LOG_LEVEL_ERROR, "unsupported url or illegal url; url:" + url.str());
+    LOGGING(media::LOG_LEVEL_ERROR) << "unsupported url or illegal url; url:"<< url.str();
     return nullptr;
   }
-  LogMessage(media::LOG_LEVEL_INFO, "IOChannel create success");
+  LOGGING(media::LOG_LEVEL_INFO) << "IOChannel create success";
 	return stream;
 }
 

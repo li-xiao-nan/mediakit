@@ -67,7 +67,7 @@ void zcb() {
 }
 
 void ExitApp(){
-  media::LogMessage(media::LOG_LEVEL_INFO, "Playback Time:" + std::to_string(av_pipeline->GetPlaybackTime()));
+  LOGGING(media::LOG_LEVEL_INFO) << "Playback Time:" << av_pipeline->GetPlaybackTime();
   file_view_record.RecordFilmViewProgress(movie_name, av_pipeline->GetPlaybackTime());
   file_view_record.WriteToLocalFile();
   exit(0);
@@ -131,7 +131,7 @@ int main(int argc, char* argv[]) {
   glutKeyboardFunc(keyboard);
   glutIdleFunc(display);
   glutMainLoop();
-  media::LogMessage(media::LOG_LEVEL_INFO, "Playback Time:" + std::to_string(av_pipeline->GetPlaybackTime()));
+  LOGGING(media::LOG_LEVEL_INFO) << "Playback Time:" << std::to_string(av_pipeline->GetPlaybackTime());
   return 0;
 }
 #ifdef USE_YUV

@@ -11,11 +11,9 @@ class VideoFrame {
      class TimeRecoder{
      public:
         void LogTimeRecorder() {
-          LogMessage(LOG_LEVEL_INFO, std::string("FFmpegVideoDecoder::Decode; ") + 
-            "FrameNo:" + std::to_string(_frameNo)
-            + " decodeExpendTime:" + std::to_string(_decodeExpendTime)
-            + " addQueueTime:" + std::to_string(_addQueueTime)
-            + " pst:" + std::to_string(_pst));
+          LOGGING(LOG_LEVEL_INFO) << "FFmpegVideoDecoder::Decode; FrameNo:"
+            << _frameNo << " decodeExpendTime:" << _decodeExpendTime
+            << " addQueueTime:" << _addQueueTime << " pts:" << _pst;
         }
      public:
          int _frameNo;

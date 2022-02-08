@@ -2,7 +2,7 @@
 //  ffmpeg_common.cpp
 //  mediacore
 //
-//  Created by 李楠 on 15/8/31.
+//  Created by lixiaonan on 15/8/31.
 //
 //
 #include <memory.h>

@@ -69,13 +69,12 @@ void WallClockTimer::Resume() {
 }
 
 void WallClockTimer::Seek(int64_t seek_timestamp) {
-  media::LogMessage(
-      media::LOG_LEVEL_DEBUG,
-      "seek_timestamp_interval_:" + std::to_string(seek_timestamp_interval_) +
-          "pause_state_interval_" + std::to_string(pause_state_interval_) +
-          "start_timestamp_" + std::to_string(start_timestamp_));
+  LOGGING(media::LOG_LEVEL_DEBUG) << "seek_timestamp_interval_: "
+    << seek_timestamp_interval_ << ";pause_state_interval_: "
+    << pause_state_interval_ << ";start_timestamp_: " << start_timestamp_;
   seek_timestamp_interval_ += seek_timestamp - Elapsed();
-  LogMessage(media::LOG_LEVEL_DEBUG, "seek_timestamp_interval_:" + std::to_string(seek_timestamp_interval_));
+  LOGGING(media::LOG_LEVEL_DEBUG) << 
+    "seek_timestamp_interval_:" << seek_timestamp_interval_;
 }
 
 }  // namespace

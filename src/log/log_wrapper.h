@@ -18,25 +18,6 @@ namespace media {
   std::string GetMovieNameUtf8(const std::string& movie_file_path);
   
   void LogMessage(LogLevel log_level, const std::string& message);
-  class ScopeTimeCount {
-  public:
-    ScopeTimeCount(const std::string func_name):
-      time_count_object_name_(func_name) {
-      start_timestamp_ = std::chrono::time_point_cast<std::chrono::milliseconds>(
-          std::chrono::system_clock::now()).time_since_epoch().count();
-    }
-    ~ScopeTimeCount() {
-      int64_t cast_time = std::chrono::time_point_cast<std::chrono::milliseconds>(
-                          std::chrono::system_clock::now())
-                          .time_since_epoch()
-                          .count() - start_timestamp_;
-      LogMessage(LOG_LEVEL_DEBUG,
-        time_count_object_name_ + "cast:" + std::to_string(cast_time) + " ms.");
-    }
-  private:
-    std::string time_count_object_name_;
-    int64_t start_timestamp_;
-  };
 
   class FormatLogMessage{
   public:
@@ -50,7 +31,33 @@ namespace media {
   };
 
 #define LOGGING(severity) media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, severity).stream()
-}
+
+  class ScopeTimeCount {
+   public:
+    ScopeTimeCount(const std::string func_name)
+        : time_count_object_name_(func_name) {
+      start_timestamp_ =
+          std::chrono::time_point_cast<std::chrono::milliseconds>(
+              std::chrono::system_clock::now())
+              .time_since_epoch()
+              .count();
+    }
+    ~ScopeTimeCount() {
+      int64_t cast_time =
+          std::chrono::time_point_cast<std::chrono::milliseconds>(
+              std::chrono::system_clock::now())
+              .time_since_epoch()
+              .count() -
+          start_timestamp_;
+      LOGGING(LOG_LEVEL_DEBUG)
+          << time_count_object_name_ << "cast: " << cast_time << " ms.";
+    }
+
+   private:
+    std::string time_count_object_name_;
+    int64_t start_timestamp_;
+  };
+  }
 
 
 #endif // #ifndef LOG_LOG_WRAPPER_H

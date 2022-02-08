@@ -73,7 +73,7 @@ void LogDecodeInfo(std::shared_ptr<VideoFrame> frame){
   log_item += " addQueueTime:" + std::to_string(frame->_timeRecoder._addQueueTime);
   log_item += " pts:" + std::to_string(frame->_timeRecoder._pst);
   log_item += " Pop:" + std::to_string(frame->_timeRecoder._popupTime);
-  LogMessage(LOG_LEVEL_INFO, log_item);
+  LOGGING(LOG_LEVEL_INFO) << log_item;
 }
 
 void VideoRendererImpl::Pause() {
@@ -82,7 +82,7 @@ void VideoRendererImpl::Pause() {
 }
 
 void VideoRendererImpl::Resume() {
-  LogMessage(LOG_LEVEL_DEBUG, "pending_paint_frames_" + std::to_string(pending_paint_frames_.size()));
+  LOGGING(LOG_LEVEL_DEBUG) << "pending_paint_frames_" << pending_paint_frames_.size();
   video_frame_stream_->ShowState();
   EndPauseState();
 }
@@ -96,7 +96,7 @@ void VideoRendererImpl::EnterPauseStateIfNeeded() {
   if(pause_state_ == false){
     return;
   }
-  LogMessage(LOG_LEVEL_INFO, "VideoRenderer enter into pause state");
+  LOGGING(LOG_LEVEL_INFO) << "VideoRenderer enter into pause state";
   std::unique_lock<std::mutex> lock(mutex_for_pause_);
   condition_variable_for_puase_.wait(lock);
 }
@@ -119,7 +119,7 @@ void VideoRendererImpl::ThreadMain() {
     if (pending_paint_frames_.empty()) {
       ReadFrameIfNeeded();
       int64_t begin_wait_timestamp = get_time_cb_();
-      LogMessage(LOG_LEVEL_DEBUG, "video decoded frame is empty, begin wait");
+      LOGGING(LOG_LEVEL_DEBUG) << "video decoded frame is empty, begin wait";
       ScopeTimeCount ScopeTimeCount("Wait decode time:");
       frame_available_.wait(lock);
     }
@@ -164,9 +164,8 @@ VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
   if (time_delta <= kMaxTimeDelta) {
     return OPERATION_PAINT_IMMEDIATELY;
   } else {
-    LogMessage(LOG_LEVEL_ERROR, "DetermineNextFrameOperation: current_time:"
-      + std::to_string(current_time)
-      + "; next_frame_pts:" + std::to_string(next_frame_pts));
+    LOGGING(LOG_LEVEL_ERROR) << "DetermineNextFrameOperation: current_time:"
+      << current_time << "; next_frame_pts:" << next_frame_pts;
     return OPERATION_DROP_FRAME;
   }
 }

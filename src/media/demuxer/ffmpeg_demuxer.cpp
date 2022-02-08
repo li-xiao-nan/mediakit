@@ -89,9 +89,9 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
     // open the input file
     if ((avformat_open_input(&av_format_context_, NULL, NULL, NULL)) != 0) {
       result = false;
-      LogMessage(LOG_LEVEL_ERROR, "open video file failed");
+      LOGGING(LOG_LEVEL_ERROR) << "open video file failed";
     } else {
-      LogMessage(LOG_LEVEL_INFO, "open video file success");
+      LOGGING(LOG_LEVEL_INFO) << "open video file success";
     }
     result = true;
     PostTask(TID_DECODE, boost::bind(action_cb, result));
@@ -137,13 +137,12 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
   AVRational av_format_context_time_base = {1, AV_TIME_BASE};
   max_duration = std::max(max_duration, av_format_context_->duration);
   int64_t duration_by_second = max_duration / AV_TIME_BASE;
-  LogMessage(LOG_LEVEL_INFO, 
-    "VideoDuration:" + std::to_string(duration_by_second/(60*60))
-    + ":" + std::to_string(duration_by_second/60%60)
-    + ":" + std::to_string(duration_by_second%60));
+  LOGGING(LOG_LEVEL_INFO) << "VideoDuration:" << (duration_by_second/(60*60))
+    << ":" << (duration_by_second/60%60)
+    << ":" << duration_by_second%60;
 
   start_time_ = EstimateStartTimeFromProbeAVPacketBuffer(av_format_context_);
-  LogMessage(LOG_LEVEL_INFO, "StreamCount:" + std::to_string(av_format_context_->nb_streams));
+  LOGGING(LOG_LEVEL_INFO) << "StreamCount:" << av_format_context_->nb_streams;
   for (size_t i = 0; i < av_format_context_->nb_streams; i++) {
     AVStream* stream = av_format_context_->streams[i];
     AVCodecContext* av_codec_context = stream->codec;
@@ -205,7 +204,7 @@ void FFmpegDemuxer::AfterSeekReadFirstPacket() {
   std::shared_ptr<EncodedAVFrame> encoded_avframe(new AVPacket());
   bool result = !av_read_frame(av_format_context_, encoded_avframe.get());
   if (!result) {
-    LogMessage(LOG_LEVEL_ERROR, "av_read_frame failed");
+    LOGGING(LOG_LEVEL_ERROR) << "av_read_frame failed";
     return;
   }
   int64_t seek_result_pts = encoded_avframe->pts;
@@ -228,7 +227,7 @@ void FFmpegDemuxer::OnSeekDone(PipelineStatusCB status_cb, bool result) {
 // decode thread
 void FFmpegDemuxer::ReadFrameIfNeeded() {
   if(pause_state_) {
-    LogMessage(LOG_LEVEL_INFO, "FFmpegDemuxer::ReadFrameIfNeeded, paused");
+    LOGGING(LOG_LEVEL_INFO) << "FFmpegDemuxer::ReadFrameIfNeeded, paused";
     return;
   }
   FFmpegDemuxerStream* video_stream =
@@ -253,7 +252,7 @@ void FFmpegDemuxer::ReadFrameAction(
     std::shared_ptr<EncodedAVFrame> encoded_avframe, ActionCB action_cb) {
   bool result = !av_read_frame(av_format_context_, encoded_avframe.get());
   if (!result) {
-    LogMessage(LOG_LEVEL_ERROR, "av_read_frame failed");
+    LOGGING(LOG_LEVEL_ERROR) <<  "av_read_frame failed";
   }
   PostTask(TID_DECODE, boost::bind(action_cb, result));
 }

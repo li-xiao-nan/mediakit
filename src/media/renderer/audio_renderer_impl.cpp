@@ -96,8 +96,10 @@ void AudioRendererImpl::Render(uint8_t* data, int data_size) {
 	pre_timestamp = new_timestamp - pre_timestamp;
   memset(data, 0, data_size);
   ReadReadyFrameLocked();
-  if (pending_paint_frames_.empty())
+  if (pending_paint_frames_.empty()) {
+    LOGGING(LOG_LEVEL_ERROR) << "pending paint frames empty";
     return;
+  }
   int size = pending_paint_frames_.size();
   int needed_data_size = data_size;
   int buffer_cursor = 0;
@@ -150,7 +152,7 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
     if (time_delta < kMaxTimeDelta) {
       pending_paint_frames_.push(next_audio_frame);
     } else {
-      LogMessage(LOG_LEVEL_DEBUG, "[Audio][DropFrame] pts:" + std::to_string(next_frame_pts));
+      LOGGING(LOG_LEVEL_DEBUG) << "[Audio][DropFrame] pts:" << next_frame_pts;
     }
     ready_audio_frames_.pop();
   }

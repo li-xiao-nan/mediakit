@@ -2,7 +2,7 @@
 //  av_pipeline.cpp
 //  mediacore
 //
-//  Created by 李楠 on 15/8/28.
+//  Created by lixiaonan on 15/8/28.
 //
 //
 
@@ -56,7 +56,7 @@ void AVPipeline::Resume() {
 }
 
 void AVPipeline::Seek(int64_t timestamp_ms) {
-  // 暂停音视频播放状态
+  // pause play
   Pause();
   AsyncTask task =
       boost::bind(&AVPipeline::SeekAction, this, timestamp_ms);
@@ -69,9 +69,8 @@ int64_t AVPipeline::GetPlaybackTime() {
 
 void AVPipeline::OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) {
   renderer_->UpdateAlignSeekTimestamp(seek_timestamp);
-  LogMessage(LOG_LEVEL_INFO, "OnUpdateAlignedSeekTimestamp :"
-    + std::to_string(seek_timestamp)
-    + "; CurrentTimestamp:" + std::to_string(GetPlaybackTime()));
+  LOGGING(LOG_LEVEL_INFO) << "OnUpdateAlignedSeekTimestamp :"
+     << seek_timestamp << "; CurrentTimestamp:" << GetPlaybackTime();
 }
 
 void AVPipeline::SeekAction(int64_t timestamp_ms) {
@@ -119,10 +118,10 @@ AVPipeline::PipelineState AVPipeline::GetNextState() {
     case STATE_CREATE:
       return STATE_INIT_DEMUXER;
     case STATE_INIT_DEMUXER:
-      LogMessage(LOG_LEVEL_INFO, "Demuxer initialize success");
+      LOGGING(LOG_LEVEL_INFO)<< "Demuxer initialize success";
       return STATE_INIT_RENDERER;
     case STATE_INIT_RENDERER:
-      LogMessage(LOG_LEVEL_INFO, "Render initialize success");
+      LOGGING(LOG_LEVEL_INFO) << "Render initialize success";
       return STATE_PLAYING;
     case STATE_SEEKING:
       return STATE_SEEK_COMPLETED;

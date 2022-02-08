@@ -34,12 +34,12 @@ bool FFmpegAudioDecoder::ConfigureDecoder() {
   }
   char channel_layout_desc[100] = {0};
   av_get_channel_layout_string(channel_layout_desc, 100, 0, av_codec_context_->channel_layout);
-  LogMessage(LOG_LEVEL_INFO, std::string("audio_codec:") 
-    + avcodec_get_name(av_codec_context_->codec_id)
-    + "; sample_format:" + av_get_sample_fmt_name(av_codec_context_->sample_fmt)
-    + "; sample_rate:" + std::to_string(av_codec_context_->sample_rate)
-    + "; channel:" + std::to_string(av_codec_context_->channels)
-    + "; channel_layout:" + channel_layout_desc);
+  LOGGING(LOG_LEVEL_INFO) << std::string("audio_codec:")
+    << avcodec_get_name(av_codec_context_->codec_id)
+    << "; sample_format:" << av_get_sample_fmt_name(av_codec_context_->sample_fmt)
+    << "; sample_rate:" << av_codec_context_->sample_rate
+    << "; channel:" + av_codec_context_->channels
+    << "; channel_layout:" << channel_layout_desc;
   av_frame_ = av_frame_alloc();
   std::cout << "configure audio decoder success!" << std::endl;
   return true;

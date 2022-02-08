@@ -68,10 +68,10 @@ void FFmpegDemuxerStream::Read(ReadCB read_cb) {
   if (encoded_avframe_queue_.empty()) {
 	  switch (type_) {
 	  case AUDIO:
-      LogMessage(LOG_LEVEL_DEBUG, "[Audio][EncodedAVFrame] queue is empty");
+      LOGGING(LOG_LEVEL_DEBUG) << "[Audio][EncodedAVFrame] queue is empty";
 		  break;
 	  case VIDEO:
-      LogMessage(LOG_LEVEL_DEBUG, "[Video][EncodedAVFrame] queue is empty");
+      LOGGING(LOG_LEVEL_DEBUG) << "[Video][EncodedAVFrame] queue is empty";
 		  break;
 	  }
     read_cb_ = read_cb;

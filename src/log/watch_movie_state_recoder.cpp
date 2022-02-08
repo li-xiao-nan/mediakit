@@ -15,7 +15,7 @@ void WatchMovieStateRecoder::Initialize() {
   record_info_file_path_ = app_dir + kRecordeFileDir + kRecordeFileName;
   
   if(!boost::filesystem::exists(record_info_file_path_)) {
-    LogMessage(LOG_LEVEL_ERROR, "Recode info file isn't exist, path:" + record_info_file_path_);
+    LOGGING(LOG_LEVEL_ERROR) << "Recode info file isn't exist, path:" << record_info_file_path_;
     return;
   }
 
@@ -28,8 +28,8 @@ void WatchMovieStateRecoder::Initialize() {
   ifs_recoder_file.close();
   
   if(!extract_result) {
-    LogMessage(LOG_LEVEL_ERROR, 
-      "read&parser film view recode info failed; error info:" + error_content);
+    LOGGING(LOG_LEVEL_ERROR) <<
+      "read&parser film view recode info failed; error info:" << error_content;
     return;
   }
   initialized = true;

@@ -13,16 +13,16 @@ VideoFrame::VideoFrame(int w, int h, enum Format format)
       _data = new unsigned char[_w * _h * 3];
       if (!_data) {
         // throw exception("new the image data buffer failed");
-        LogMessage(LOG_LEVEL_ERROR, "[RGB]VideoFrame:_data new operator failed; w:"
-          + std::to_string(_w) + "; h:" + std::to_string(h));
+        LOGGING(LOG_LEVEL_ERROR) << "[RGB]VideoFrame:_data new operator failed; w:"
+          << _w << "; h:" << h;
       }
       break;
     case ARGB:
       _data = new unsigned char[_w * _h * sizeof(unsigned char) * 4];
       if (!_data) {
         // throw exception("new the image data buffer failed");
-        LogMessage(LOG_LEVEL_ERROR, "[ARGB]VideoFrame:_data new operator failed; w:"
-          + std::to_string(_w) + "; h:" + std::to_string(h));
+        LOGGING(LOG_LEVEL_ERROR) << "[ARGB]VideoFrame:_data new operator failed; w:"
+          << _w << "; h:" << h;
       }
       break;
     case YUV:
@@ -34,15 +34,15 @@ VideoFrame::VideoFrame(int w, int h, enum Format format)
       _yuvLineCnt[2] = h >> 1;
       _yuvData[0] = (unsigned char*)malloc(_yuvStride[0] * _yuvLineCnt[0]);
       if(!_yuvData[0]) {
-        LogMessage(LOG_LEVEL_ERROR, "_yuvData[0] malloc failed, size:" + std::to_string(_yuvStride[0] * _yuvLineCnt[0]));
+        LOGGING(LOG_LEVEL_ERROR) << "_yuvData[0] malloc failed, size:" << (_yuvStride[0] * _yuvLineCnt[0]);
       }
       _yuvData[1] = (unsigned char*)malloc(_yuvStride[1] * _yuvLineCnt[1]);
       if (!_yuvData[1]) {
-        LogMessage(LOG_LEVEL_ERROR, "_yuvData[1] malloc failed, size:" + std::to_string(_yuvStride[1] * _yuvLineCnt[1]));
+        LOGGING(LOG_LEVEL_ERROR) << "_yuvData[1] malloc failed, size:" << _yuvStride[1] * _yuvLineCnt[1];
       }
       _yuvData[2] = (unsigned char*)malloc(_yuvStride[2] * _yuvLineCnt[2]);
       if (!_yuvData[2]) {
-        LogMessage(LOG_LEVEL_ERROR, "_yuvData[2] malloc failed, size:" + std::to_string(_yuvStride[2] * _yuvLineCnt[2]));
+        LOGGING(LOG_LEVEL_ERROR) << "_yuvData[2] malloc failed, size:" << (_yuvStride[2] * _yuvLineCnt[2]);
       }
       /*	_yuvData  = (unsigned
        * char*)malloc(_yuvStrid[0]*_yuvLineCnt[0]+_yuvStride[1]*_yuvLineCnt[1]+_yuvStride[2]*_yuvLineCnt[2]);*/

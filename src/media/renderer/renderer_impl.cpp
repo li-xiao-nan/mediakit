@@ -62,12 +62,12 @@ void RendererImpl::Pause() {
   playback_clock_->Pause();
   audio_renderer_->Pause();
   video_renderer_->Pause();
-  LogMessage(LOG_LEVEL_DEBUG, "[Pause]CurrentMediaTime:" + std::to_string(GetCurrentTime()));
+  LOGGING(LOG_LEVEL_DEBUG) << "CurrentMediaTime:" << GetCurrentTime();
 }
 
 void RendererImpl::Resume() {
   playback_clock_->Resume();
-  LogMessage(LOG_LEVEL_DEBUG, "[Resume]CurrentMediaTime:" + std::to_string(GetCurrentTime()));
+  LOGGING(LOG_LEVEL_DEBUG) << "CurrentMediaTime:" << GetCurrentTime();
   audio_renderer_->Resume();
   video_renderer_->Resume();
   return;

@@ -45,8 +45,8 @@ std::unique_ptr<AVPipeline> MakeAVPipeLine(const std::string& url,
   std::shared_ptr<net::IOChannel> data_source(
       net::IOChannel::CreateIOChannel(net::Url(url)));
   if (data_source == nullptr) {
-    media::LogMessage(media::LOG_LEVEL_ERROR,
-                      "DataSource Create Failed, Original Url:" + url);
+    LOGGING(media::LOG_LEVEL_ERROR) << 
+                      "DataSource Create Failed, Original Url:" << url;
     return nullptr;
   }
   std::shared_ptr<media::Demuxer> demuxer =

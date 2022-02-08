@@ -137,7 +137,7 @@ void VideoFrameStream::ClearBuffer() {
 }
 
 void VideoFrameStream::ShowState() {
-  LogMessage(LOG_LEVEL_DEBUG, "video_frame_queue_:" + std::to_string(video_frame_queue_.size()));
+  LOGGING(LOG_LEVEL_DEBUG) << "video_frame_queue_:" << video_frame_queue_.size();
 }
 
 }  // namespace media
