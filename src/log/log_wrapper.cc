@@ -125,4 +125,25 @@ std::string GetMovieNameUtf8(const std::string& movie_file_path) {
     }
     return AnsiToUtf8(movie_name);
   }
+
+FormatLogMessage::FormatLogMessage(const char* file,
+  const char* function_name,
+  int line, LogLevel log_level): log_level_(log_level) {
+    std::string file_name(file);
+    auto last_slash_pos = file_name.find_last_of("\\/");
+    if (last_slash_pos != std::string::npos) {
+      file_name = file_name.substr(last_slash_pos + 1);
+    }
+  format_out_string_stream_<<
+    "["<<file_name<<"("<<line<<")"<<"]"<<" ["<< function_name <<"] ";
+}
+
+FormatLogMessage::~FormatLogMessage(){
+  LogMessage(log_level_, format_out_string_stream_.str());
+}
+
+std::ostream& FormatLogMessage::stream() {
+  return format_out_string_stream_;
+}
+
 } // namespace media

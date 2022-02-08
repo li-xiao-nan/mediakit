@@ -1,5 +1,6 @@
 #ifndef LOG_LOG_WRAPPER_H
 #define LOG_LOG_WRAPPER_H
+#include <sstream>
 #include <string>
 #include <chrono>
 namespace media {
@@ -36,6 +37,19 @@ namespace media {
     std::string time_count_object_name_;
     int64_t start_timestamp_;
   };
+
+  class FormatLogMessage{
+  public:
+    FormatLogMessage(const char* file,
+      const char* function_name, int line, LogLevel log_level);
+    ~FormatLogMessage();
+    std::ostream& stream();
+  private:
+    LogLevel log_level_;
+    std::ostringstream format_out_string_stream_;
+  };
+
+#define LOGGING(severity) media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, severity).stream()
 }
 
 
