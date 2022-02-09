@@ -37,6 +37,8 @@ class VideoFrameStream {
   void Initialize(DemuxerStream* stream, InitCB init_cb);
   void Read(ReadCB read_cb);
   void ClearBuffer();
+  void ShowStateInfo();
+
   void ShowState();
 
  private:

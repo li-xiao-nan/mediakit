@@ -134,6 +134,12 @@ bool VideoFrameStream::CanDecodeMore() {
 void VideoFrameStream::ClearBuffer() {
   std::deque<std::shared_ptr<VideoFrame> > empty;
   std::swap(empty, video_frame_queue_);
+  demuxer_stream_->ClearEncodedAVFrameBuffer();
+}
+
+void VideoFrameStream::ShowStateInfo() {
+  LOGGING(LOG_LEVEL_DEBUG)<<"video_frame_queue_"<< video_frame_queue_.size();
+  demuxer_stream_->ShowStateInfo();
 }
 
 void VideoFrameStream::ShowState() {

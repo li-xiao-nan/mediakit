@@ -127,4 +127,9 @@ void FFmpegDemuxerStream::ClearEncodedAVFrameBuffer() {
   std::queue<std::shared_ptr<EncodedAVFrame> > empty;
   std::swap(empty, encoded_avframe_queue_);
 }
+
+void FFmpegDemuxerStream::ShowStateInfo() {
+  LOGGING(LOG_LEVEL_DEBUG) << "encoded_avframe_queue_:"
+    << encoded_avframe_queue_.size();
+}
 }  // namespace media

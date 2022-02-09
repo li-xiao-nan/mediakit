@@ -73,6 +73,12 @@ void RendererImpl::Resume() {
   return;
 }
 
+void RendererImpl::ShowStateInfo() {
+  LOGGING(LOG_LEVEL_DEBUG) << "CurrentMediaTime:" << GetCurrentTime();
+  audio_renderer_->ShowStateInfo();
+  video_renderer_->ShowStateInfo();
+}
+
 void RendererImpl::UpdateAlignSeekTimestamp(int64_t timestamp) {
   playback_clock_->Seek(timestamp);
 }

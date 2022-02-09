@@ -39,6 +39,7 @@ class RendererImpl : public Renderer {
   virtual void Resume() override;
   virtual void Seek(int64_t) override;
   virtual void UpdateAlignSeekTimestamp(int64_t timestamp) override;
+  virtual void ShowStateInfo() override;
 
  private:
   enum State {

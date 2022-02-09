@@ -65,6 +65,9 @@ void InitializeLog(){
     kMaxLogFileSize,
     kMaxLogFileCount); 
   message_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v");
+  // 来设置当前的日志等级，所有的等级如下（从大到小）
+  // critical(致命错误) err(错误) warn(警告) info(信息) debug(调试) trace(跟踪)
+  // 最后显示出来的信息只会是你指定等级及其左边的等级日志
   message_logger->set_level(spdlog::level::trace);
   spdlog::register_logger(message_logger);
   initialized =true;
@@ -134,8 +137,15 @@ FormatLogMessage::FormatLogMessage(const char* file,
     if (last_slash_pos != std::string::npos) {
       file_name = file_name.substr(last_slash_pos + 1);
     }
+
+    std::string only_function_name(function_name);
+    auto last_colon_pos = only_function_name.find_last_of("::");
+    if(last_colon_pos != std::string::npos) {
+      only_function_name = only_function_name.substr(last_colon_pos + 1);
+    }
+
   format_out_string_stream_<<
-    "["<<file_name<<"("<<line<<")"<<"]"<<" ["<< function_name <<"] ";
+    "["<<file_name<<"("<<line<<")"<<"]"<<" ["<< only_function_name <<"] ";
 }
 
 FormatLogMessage::~FormatLogMessage(){

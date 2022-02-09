@@ -26,6 +26,7 @@ class VideoRendererImpl : public VideoRenderer {
   virtual void Pause() override;
   virtual void Resume() override;
   virtual void ClearAVFrameBuffer() override;
+  virtual void ShowStateInfo() override;
 
  private:
   enum State {

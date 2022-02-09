@@ -38,6 +38,7 @@ class FFmpegDemuxerStream : public DemuxerStream {
   virtual void set_audio_decoder_config(
       const AudioDecoderConfig& audio_decoder_config) override;
   virtual void ClearEncodedAVFrameBuffer() override;
+  virtual void ShowStateInfo() override;
 
   bool HasAvailableCapacity();
   int stream_index() { return stream_index_; }

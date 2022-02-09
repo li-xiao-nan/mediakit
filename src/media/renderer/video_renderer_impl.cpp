@@ -92,6 +92,11 @@ void VideoRendererImpl::ClearAVFrameBuffer() {
   std::swap(empty, pending_paint_frames_);
   video_frame_stream_->ClearBuffer();
 }
+
+void VideoRendererImpl::ShowStateInfo() {
+  LOGGING(LOG_LEVEL_DEBUG)<<"pending_paint_frames_:"<< pending_paint_frames_.size();
+}
+
 void VideoRendererImpl::EnterPauseStateIfNeeded() {
   if(pause_state_ == false){
     return;

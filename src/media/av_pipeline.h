@@ -59,6 +59,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   void StateTransitAction(PipelineStatus status);
   PipelineState GetNextState();
   void SetState(PipelineState state);
+  void ShowStateInfo();
 
   bool pending_seek;
   PipelineState state_;

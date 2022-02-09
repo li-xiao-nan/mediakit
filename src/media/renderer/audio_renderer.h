@@ -20,6 +20,7 @@ class AudioRenderer {
   virtual void Pause() = 0;
   virtual void Resume() = 0;
   virtual void ClearAVFrameBuffer() = 0;
+  virtual void ShowStateInfo() = 0;
 };
 }  // namespace media
 #endif

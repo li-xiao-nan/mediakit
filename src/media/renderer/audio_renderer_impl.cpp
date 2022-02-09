@@ -65,6 +65,13 @@ void AudioRendererImpl::ClearAVFrameBuffer() {
   std::swap(empty_02, pending_paint_frames_);
   audio_frame_stream_->ClearBuffer();
 }
+
+void AudioRendererImpl::ShowStateInfo() {
+  LOGGING(LOG_LEVEL_DEBUG) << "ready_audio_frames_:" << ready_audio_frames_.size()
+    << "pending_paint_frames_:" << ready_audio_frames_.size();
+  demuxer_stream_->ShowStateInfo();
+}
+
 AudioRendererImpl::State AudioRendererImpl::GetNextState() {
   switch (state_) {
     case STATE_UNINITIALIZED:

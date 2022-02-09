@@ -63,16 +63,6 @@ void AVPipeline::Seek(int64_t timestamp_ms) {
   PostTask(TID_DECODE, task);
 }
 
-int64_t AVPipeline::GetPlaybackTime() {
-    return renderer_->GetPlaybackTime();
-}
-
-void AVPipeline::OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) {
-  renderer_->UpdateAlignSeekTimestamp(seek_timestamp);
-  LOGGING(LOG_LEVEL_INFO) << "OnUpdateAlignedSeekTimestamp :"
-     << seek_timestamp << "; CurrentTimestamp:" << GetPlaybackTime();
-}
-
 void AVPipeline::SeekAction(int64_t timestamp_ms) {
   assert(demuxer_.get());
   pending_seek = true;
@@ -81,9 +71,20 @@ void AVPipeline::SeekAction(int64_t timestamp_ms) {
 
   PipelineStatusCB seek_complete_cb =
       boost::bind(&AVPipeline::StateTransitAction, this, _1);
-  AsyncTask task =
-      boost::bind(&Demuxer::Seek, demuxer_.get(), timestamp_ms, seek_complete_cb);
+  AsyncTask task = boost::bind(&Demuxer::Seek, demuxer_.get(), timestamp_ms,
+                               seek_complete_cb);
   PostTask(TID_DEMUXER, task);
+}
+
+int64_t AVPipeline::GetPlaybackTime() {
+    return renderer_->GetPlaybackTime();
+}
+
+void AVPipeline::OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) {
+  renderer_->UpdateAlignSeekTimestamp(seek_timestamp);
+  LOGGING(LOG_LEVEL_INFO) << "OnUpdateAlignedSeekTimestamp :"
+     << seek_timestamp << "; CurrentTimestamp:" << GetPlaybackTime();
+  ShowStateInfo();
 }
 
 void AVPipeline::StateTransitAction(PipelineStatus status) {
@@ -134,6 +135,10 @@ void AVPipeline::SetState(AVPipeline::PipelineState state) { state_ = state; }
 
 void AVPipeline::FiltersStatusCB(PipelineStatus filters_status) {
   // todo(lixiaonan): add process filter status logic
+}
+
+void AVPipeline::ShowStateInfo() {
+  renderer_->ShowStateInfo();
 }
 
 }  // namespace media
