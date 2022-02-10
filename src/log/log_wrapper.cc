@@ -145,7 +145,7 @@ FormatLogMessage::FormatLogMessage(const char* file,
     }
 
   format_out_string_stream_<<
-    "["<<file_name<<"("<<line<<")"<<"]"<<" ["<< only_function_name <<"] ";
+    "["<<file_name<<"("<<line<<")"<<"("<< only_function_name <<")"<<"] ";
 }
 
 FormatLogMessage::~FormatLogMessage(){

@@ -260,6 +260,10 @@ void FFmpegDemuxer::ReadFrameAction(
 // decode thread
 void FFmpegDemuxer::OnReadFrameDone(
     std::shared_ptr<EncodedAVFrame> encoded_avframe, bool result) {
+  if (pause_state_) {
+    LOGGING(LOG_LEVEL_DEBUG) << "PAUSING ...";
+    return;
+  }
   FFmpegDemuxerStream* video_stream =
       static_cast<FFmpegDemuxerStream*>(GetDemuxerStream(DemuxerStream::VIDEO));
   FFmpegDemuxerStream* audio_stream =
