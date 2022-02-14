@@ -227,14 +227,15 @@ void init(void) {
 }
 void display(void) {
   if(pause_state) return;
+  std::shared_ptr<media::VideoFrame> videoFrame = GlobalReadVideoFrame();
+  if (!videoFrame.get()) {
+    return;
+  }
   glClear(GL_COLOR_BUFFER_BIT);
   glColor3f(1.0, 1.0, 1.0);
-  std::shared_ptr<media::VideoFrame> videoFrame = GlobalReadVideoFrame();
-  if (videoFrame.get()) {
-    videoH = videoFrame->_h;
-    videoW = videoFrame->_w;
-    updateTexture(videoFrame);
-  }
+  videoH = videoFrame->_h;
+  videoW = videoFrame->_w;
+  updateTexture(videoFrame);
   float playingH = videoH * (winW * 1.0f) / (videoW * 1.0f);
   float playingYPos = (winH * 1.0f - playingH) / 2.0f;
   glBegin(GL_QUADS);
