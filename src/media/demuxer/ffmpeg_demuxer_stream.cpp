@@ -43,14 +43,6 @@ DemuxerStream::Type FFmpegDemuxerStream::type() {
 void FFmpegDemuxerStream::EnqueueEncodedFrame(
     std::shared_ptr<EncodedAVFrame> frame) {
   encoded_avframe_queue_.push(frame);
-  switch (type_) {
-  case AUDIO:
-	  //std::cout << "[AUDIO] queue is empty" << std::endl;
-	  break;
-  case VIDEO:
-	  //std::cout << "[VIDEO] queue size:" << encoded_avframe_queue_.size()<<std::endl;
-	  break;
-  }
   if (read_cb_) {
     std::shared_ptr<EncodedAVFrame> av_frame = encoded_avframe_queue_.front();
     encoded_avframe_queue_.pop();

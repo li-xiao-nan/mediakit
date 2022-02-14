@@ -195,7 +195,9 @@ void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
   }
   avformat_flush(av_format_context_);
   avio_flush(av_format_context_->pb);
-  AfterSeekReadFirstPacket();
+  Resume();
+  //AfterSeekReadFirstPacket();
+  ReadFrameIfNeeded();
   //DropBufferedDataTest(timestamp_ms);
   PostTask(TID_DECODE, boost::bind(action_cb, (ret >= 0 ? true : false)));
 }
@@ -223,6 +225,11 @@ void FFmpegDemuxer::OnSeekDone(PipelineStatusCB status_cb, bool result) {
     return;
   }
 }
+
+
+
+
+
 
 // decode thread
 void FFmpegDemuxer::ReadFrameIfNeeded() {
