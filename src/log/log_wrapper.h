@@ -10,6 +10,10 @@ namespace media {
     LOG_LEVEL_ERROR,
     LOG_LEVEL_WRANING,
   };
+
+  void EnableAVPacketProcessTrace();
+  void DisableAVPacketProcessTrace();
+  bool IsAVPacketProcessTraceEnabled();
   void InitializeLog();
   std::wstring GetApplicationFileDirUtf16();
   std::string GetApplicationFileDirUtf8();
@@ -31,6 +35,7 @@ namespace media {
   };
 
 #define LOGGING(severity) media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, severity).stream()
+#define TraceAVPacketProcess(pts)   !IsAVPacketProcessTraceEnabled() ? (void)0 : (media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, LOG_LEVEL_DEBUG).stream() << "pts:" << pts);
 
   class ScopeTimeCount {
    public:

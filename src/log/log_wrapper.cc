@@ -73,6 +73,20 @@ void InitializeLog(){
   initialized =true;
 }
 
+static bool enable_avpacket_process_track = false;
+
+void EnableAVPacketProcessTrace() {
+  enable_avpacket_process_track = true;
+}
+
+void DisableAVPacketProcessTrace() {
+  enable_avpacket_process_track = false;
+}
+
+bool IsAVPacketProcessTraceEnabled() {
+  return enable_avpacket_process_track;
+}
+
 void LogMessage(LogLevel log_level, const std::string& message) {
   std::shared_ptr<spdlog::logger> logger = spdlog::get(kLoggerName);
   if(logger == nullptr) {
