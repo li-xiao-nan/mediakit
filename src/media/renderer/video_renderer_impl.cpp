@@ -181,6 +181,7 @@ void VideoRendererImpl::OnReadFrameDone(
   boost::mutex::scoped_lock lock(ready_frames_lock_);
 
   if (video_frame.get()) {
+    TraceAVPacketProcess(video_frame->timestamp_);
     pending_paint_frames_.push(video_frame);
     frame_available_.notify_all();
   }

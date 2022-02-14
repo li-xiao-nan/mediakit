@@ -29,6 +29,7 @@ class VideoDecoder {
                           OutputCB output_cb) = 0;
   virtual void Decode(const std::shared_ptr<EncodedAVFrame>,
                       DecodeCB decode_cb) = 0;
+  virtual void ClearBuffer() = 0;
 };
 }
 #endif

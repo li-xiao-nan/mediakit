@@ -30,8 +30,8 @@ void FFmpegVideoDecoder::Decode(
   int decode_count;
   // TODO(lixiaonan): log the cost time that decode one frame
   int64_t pre_decode_timestamp = GetPlaybackTime();
-  int decode_result = avcodec_decode_video2(av_codec_context_, av_frame_, &decode_count,
-    encoded_avframe.get());
+  int decode_result = avcodec_decode_video2(
+    av_codec_context_, av_frame_, &decode_count, encoded_avframe.get());
   int decode_expend_time = static_cast<int>(GetPlaybackTime() - pre_decode_timestamp);
   if (decode_result < 0) {
     state_ = STATE_OCCUR_ERROR;
@@ -105,6 +105,11 @@ int64_t FFmpegVideoDecoder::GetPlaybackTime(){
     return 0;
   }
   return playback_clock->GetCurrentMediaTime();
+}
+
+void FFmpegVideoDecoder::ClearBuffer() {
+  if(!av_codec_context_) return;
+  avcodec_flush_buffers(av_codec_context_);
 }
 
 }  // namespace media

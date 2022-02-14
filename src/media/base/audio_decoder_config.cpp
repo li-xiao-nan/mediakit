@@ -61,10 +61,5 @@ int AudioDecoderConfig::bytes_per_channel() { return bytes_per_channel_; }
 int AudioDecoderConfig::bytes_per_frame() { return bytes_per_frame_; }
 
 void AudioDecoderConfig::ShowAudioConfigInfo() {
-  printf("audio:\n");
-  printf(
-      "    codec:%d, sample_format:%d, channel_layout:%d, samplePerSecond:%d\n",
-      audio_codec_, sample_format_,
-      channel_layout_, sample_per_second_);
 }
 }  // namespace media

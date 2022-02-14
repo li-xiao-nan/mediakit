@@ -14,6 +14,7 @@ class FFmpegAudioDecoder : public AudioDecoder {
                           OutputCB output_cb) override;
   virtual void Decode(const std::shared_ptr<EncodedAVFrame>,
                       DecodeCB decode_cb) override;
+  virtual void ClearBuffer() override;
 
  private:
   enum DecoderState {

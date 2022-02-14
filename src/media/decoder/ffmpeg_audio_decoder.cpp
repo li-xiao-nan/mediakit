@@ -79,4 +79,9 @@ void FFmpegAudioDecoder::FFmpegDecode(
   decode_cb(STATUS_OK);
 }
 
+void FFmpegAudioDecoder::ClearBuffer() {
+  if(!av_codec_context_) return;
+  avcodec_flush_buffers(av_codec_context_);
+}
+
 }  // namespace media

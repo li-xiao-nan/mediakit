@@ -108,6 +108,7 @@ void VideoFrameStream::OnReadFromDemuxerStreamDone(
       (!encoded_av_frame.get() && demuxer_stream_->is_demux_complete())) {
     decoder_->Decode(encoded_av_frame,
                      boost::bind(&VideoFrameStream::OnDecodeDone, this, _1));
+    TraceAVPacketProcess(encoded_av_frame->pts);
   } else {
     // do nothing
     assert(0);
@@ -117,6 +118,8 @@ void VideoFrameStream::OnReadFromDemuxerStreamDone(
 void VideoFrameStream::DecoderOutputCB(
     std::shared_ptr<VideoFrame> video_frame) {
   video_frame_queue_.push_back(video_frame);
+  TraceAVPacketProcess(video_frame->timestamp_);
+
 }
 
 // decode thread
@@ -135,6 +138,7 @@ void VideoFrameStream::ClearBuffer() {
   std::deque<std::shared_ptr<VideoFrame> > empty;
   std::swap(empty, video_frame_queue_);
   demuxer_stream_->ClearEncodedAVFrameBuffer();
+  decoder_->ClearBuffer();
 }
 
 void VideoFrameStream::ShowStateInfo() {

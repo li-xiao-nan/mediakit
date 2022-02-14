@@ -28,6 +28,7 @@ class FFmpegVideoDecoder : public VideoDecoder {
                           OutputCB output_cb);
   virtual void Decode(const std::shared_ptr<EncodedAVFrame>,
                       DecodeCB decode_cb);
+  virtual void ClearBuffer() override; 
 
  private:
   enum DecoderState {

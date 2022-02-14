@@ -277,6 +277,7 @@ void FFmpegDemuxer::OnReadFrameDone(
     } else if (video_stream &&
                encoded_avframe_stream_id == video_stream->stream_index()) {
       video_stream->EnqueueEncodedFrame(encoded_avframe);
+      TraceAVPacketProcess(encoded_avframe->pts);
     } else {
     }
   }
