@@ -10,6 +10,7 @@
 
 1. 工程构建
 - Visual studio版本：VS2017
+- Window SDK 版本：10.0.17763.0
 - 工程目录：(your_root_dir)/mediakit.sln
 1. 应用启动
 - mediakit.exe "video file full path"

@@ -5,3 +5,5 @@ Debug
 /src/platform/win/MediaKit/MediaKit/MediaKit.vcxproj.user
 /*.user
 ffmpeg
+/mediakit.sdf
+/mediakit.v12.suo
