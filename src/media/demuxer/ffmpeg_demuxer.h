@@ -16,6 +16,7 @@
 
 #include "demuxer.h"
 #include "base/base_type.h"
+#include "base/macros.h"
 #include "net/io_channel.h"
 #include "ffmpeg_demuxer_stream.h"
 
@@ -25,7 +26,6 @@ class FFmpegDemuxer : public Demuxer {
   typedef boost::function<void(bool)> ActionCB;
 
   FFmpegDemuxer(std::shared_ptr<net::IOChannel> data_source);
-  ~FFmpegDemuxer();
 
   // demuxer implementation
   virtual void Initialize(PipelineStatusCB status_cb) override;
@@ -93,6 +93,8 @@ class FFmpegDemuxer : public Demuxer {
   int video_stream_index_;
   bool pause_state_;
   DemuxerDelegate* demuxer_delegate_;
+
+  DISALLOW_COPY_AND_ASSIGN(FFmpegDemuxer);
 };
 
 }  // namespace media

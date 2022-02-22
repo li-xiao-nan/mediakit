@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 
+#include "base/macros.h"
 #include "media/base/pipeline_status.h"
 #include "media/renderer/renderer.h"
 #include "media/renderer/audio_renderer.h"
@@ -26,20 +27,21 @@ class RendererImpl : public Renderer {
 
   RendererImpl(std::shared_ptr<AudioRenderer> audio_renderer,
                std::shared_ptr<VideoRenderer> video_renderer);
-  ~RendererImpl();
-  virtual void Initialize(DemuxerStreamProvider* demuxer_stream_provider,
+  ~RendererImpl() override;
+
+  void Initialize(DemuxerStreamProvider* demuxer_stream_provider,
                           PipelineStatusCB init_cb,
                           PipelineStatusCB status_cb,
                           VideoRenderer::PaintCB paint_cb) override;
-  virtual void StartPlayingFrom(int64_t time_offset) override;
-  virtual void SetPlaybackRate(float rate) override;
-  virtual void SetVolume(float volume) override;
-  virtual int64_t GetPlaybackTime() override;
-  virtual void Pause() override;
-  virtual void Resume() override;
-  virtual void Seek(int64_t) override;
-  virtual void UpdateAlignSeekTimestamp(int64_t timestamp) override;
-  virtual void ShowStateInfo() override;
+  void StartPlayingFrom(int64_t time_offset) override;
+  void SetPlaybackRate(float rate) override;
+  void SetVolume(float volume) override;
+  int64_t GetPlaybackTime() override;
+  void Pause() override;
+  void Resume() override;
+  void Seek(int64_t) override;
+  void UpdateAlignSeekTimestamp(int64_t timestamp) override;
+  void ShowStateInfo() override;
 
  private:
   enum State {
@@ -72,6 +74,8 @@ class RendererImpl : public Renderer {
   DemuxerStreamProvider* demuxer_stream_provider_;
   std::shared_ptr<AudioRenderer> audio_renderer_;
   std::shared_ptr<VideoRenderer> video_renderer_;
+
+  DISALLOW_COPY_AND_ASSIGN(RendererImpl);
 };
 }  // namespace media
 #endif

@@ -3,10 +3,12 @@
 
 #include <mutex>
 #include <condition_variable>
+
 #include "boost/thread/thread.hpp"
 #include "boost/thread/condition.hpp"
 #include "boost/scoped_ptr.hpp"
 
+#include "base/macros.h"
 #include "media/decoder/video_frame_stream.h"
 #include "media/renderer/renderer_impl.h"
 #include "media/renderer/video_renderer.h"
@@ -16,7 +18,6 @@ class VideoRendererImpl : public VideoRenderer {
  public:
   VideoRendererImpl(
       const VideoFrameStream::VecVideoDecoders& vec_video_decoders);
-
   // VideoRenderer impl
   virtual void Initialize(DemuxerStream* demuxer_stream,
                           PipelineStatusCB init_cb, PipelineStatusCB status_cb,
@@ -71,6 +72,8 @@ class VideoRendererImpl : public VideoRenderer {
   std::mutex mutex_for_pause_;
   std::condition_variable condition_variable_for_puase_;
   bool pause_state_;
+
+  DISALLOW_COPY_AND_ASSIGN(VideoRendererImpl);
 };
 }  // namespace media
 #endif

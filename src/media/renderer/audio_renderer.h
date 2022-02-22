@@ -9,7 +9,7 @@ class AudioRenderer {
  public:
   typedef boost::function<int64_t(void)> GetTimeCB;
 
-  virtual ~AudioRenderer() {}
+  virtual ~AudioRenderer() = default;
   virtual void Initialize(DemuxerStream* demuxer_stream,
                           PipelineStatusCB init_cb,
                           PipelineStatusCB status_cb,

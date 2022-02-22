@@ -6,6 +6,7 @@
 #include "boost/thread/thread.hpp"
 
 #include "audio_renderer.h"
+#include "base/macros.h"
 #include "media/demuxer/demuxer_stream.h"
 #include "media/renderer/audio_renderer_sink.h"
 #include "media/base/pipeline_status.h"
@@ -20,17 +21,18 @@ class AudioRendererImpl : public AudioRenderer,
  public:
   AudioRendererImpl(
       const AudioFrameStream::VecAudioDecoders& vec_audio_decoders);
-  virtual void Initialize(DemuxerStream* demuxer_stream,
+
+  void Initialize(DemuxerStream* demuxer_stream,
                           PipelineStatusCB init_cb,
                           PipelineStatusCB status_cb,
                           GetTimeCB get_time_cb) override;
-  virtual void StartPlayingFrom(int64_t offset) override;
-  virtual void SetPlaybackRate(float rate) override;
-  virtual void SetVolume(float volume) override;
-  virtual void Pause() override;
-  virtual void Resume() override;
-  virtual void ClearAVFrameBuffer() override;
-  virtual void ShowStateInfo() override;
+  void StartPlayingFrom(int64_t offset) override;
+  void SetPlaybackRate(float rate) override;
+  void SetVolume(float volume) override;
+  void Pause() override;
+  void Resume() override;
+  void ClearAVFrameBuffer() override;
+  void ShowStateInfo() override;
 
   //
   virtual void Render(uint8_t* data, int data_size);
@@ -65,6 +67,8 @@ class AudioRendererImpl : public AudioRenderer,
   PipelineStatusCB init_cb_;
   PipelineStatusCB status_cb_;
   GetTimeCB get_time_cb_;
+
+  DISALLOW_COPY_AND_ASSIGN(AudioRendererImpl);
 };
 }
 #endif

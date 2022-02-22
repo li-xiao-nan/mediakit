@@ -30,8 +30,6 @@ FFmpegDemuxer::FFmpegDemuxer(std::shared_ptr<net::IOChannel> data_source)
   data_source_ = data_source;
 }
 
-FFmpegDemuxer::~FFmpegDemuxer() {}
-
 void FFmpegDemuxer::Initialize(PipelineStatusCB status_cb) {
   ActionCB action_cb = boost::bind(&FFmpegDemuxer::OnOpenAVFormatContextDone,
                                    this, status_cb, _1);

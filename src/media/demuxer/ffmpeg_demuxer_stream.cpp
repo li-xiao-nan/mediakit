@@ -32,8 +32,6 @@ FFmpegDemuxerStream::FFmpegDemuxerStream(FFmpegDemuxer* demuxer,
   }
 }
 
-FFmpegDemuxerStream::~FFmpegDemuxerStream() {
-}
 
 DemuxerStream::Type FFmpegDemuxerStream::type() {
   return type_;

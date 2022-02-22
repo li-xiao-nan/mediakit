@@ -13,7 +13,7 @@ class AudioRendererSink {
    public:
     virtual void Render(uint8_t* data, int data_size) = 0;
     virtual void OnRenderError() = 0;
-    virtual ~RenderCallback(){};
+    virtual ~RenderCallback() = default;
   };
   virtual ~AudioRendererSink() {}
   virtual void Initialize(RenderCallback* render_callback,

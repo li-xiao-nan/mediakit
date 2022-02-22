@@ -116,6 +116,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\base\ImageType.h" />
     <ClInclude Include="src\base\jsoncpp\json\json-forwards.h" />
     <ClInclude Include="src\base\jsoncpp\json\json.h" />
+    <ClInclude Include="src\base\macros.h" />
     <ClInclude Include="src\base\message_loop_thread.h" />
     <ClInclude Include="src\base\message_loop_thread_manager.h" />
     <ClInclude Include="src\base\SnailConfig.h" />

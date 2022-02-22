@@ -23,7 +23,7 @@ class AudioDecoder {
   typedef boost::function<void(std::shared_ptr<AudioFrame> audio_frame)>
       OutputCB;
 
-  virtual ~AudioDecoder() {}
+  virtual ~AudioDecoder() = default;
 
   virtual void Initialize(const AudioDecoderConfig& config,
                           InitCB init_cb,

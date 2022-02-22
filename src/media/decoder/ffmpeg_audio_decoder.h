@@ -1,8 +1,9 @@
 #ifndef MEDIA_DECODER_FFMPEG_AUDIO_DECODER_H
 #define MEDIA_DECODER_FFMPEG_AUDIO_DECODER_H
 
-#include "media/decoder/audio_decoder.h"
 #include "base/base_type.h"
+#include "base/macros.h"
+#include "media/decoder/audio_decoder.h"
 #include "media/base/audio_decoder_config.h"
 
 namespace media {
@@ -34,6 +35,7 @@ class FFmpegAudioDecoder : public AudioDecoder {
   DecoderState state_;
   InitCB init_cb_;
   AVFrame* av_frame_;
+  DISALLOW_COPY_AND_ASSIGN(FFmpegAudioDecoder);
 };
 }  // namespace media
 #endif

@@ -6,6 +6,7 @@
 #include <memory>
 #include "boost/thread/thread.hpp"
 
+#include "base/macros.h"
 #include "base/base_type.h"
 #include "media/base/audio_frame.h"
 #include "media/decoder/audio_decoder.h"
@@ -69,6 +70,7 @@ class AudioFrameStream {
   AudioDecoder* decoder_;
   DemuxerStream* demuxer_stream_;
   std::deque<std::shared_ptr<AudioFrame> > frame_queue_;
+  DISALLOW_COPY_AND_ASSIGN(AudioFrameStream);
 };
 
 }  // namespace media

@@ -9,8 +9,8 @@
 namespace media {
 class Demuxer : public DemuxerStreamProvider {
  public:
-  Demuxer();
-  virtual ~Demuxer();
+  Demuxer()= default;
+  virtual ~Demuxer() = default;
   virtual void Initialize(PipelineStatusCB status_cb) = 0;
   virtual void Seek(int64_t timestamp, PipelineStatusCB status_cb) = 0;
   virtual void Stop() = 0;

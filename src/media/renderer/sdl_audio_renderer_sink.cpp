@@ -9,8 +9,6 @@ const int kSDLMinAudioBufferSize = 512;
 const int kSDLAudioMaxCallbacksPerSec = 30;
 
 SdlAudioRendererSink::SdlAudioRendererSink() : pause_state_(false) {}
-SdlAudioRendererSink::~SdlAudioRendererSink() {
-}
 void SdlAudioRendererSink::Initialize(RenderCallback* render_callback,
                                       InitCB init_cb,
                                       const AudioParameters& parameters) {

@@ -12,6 +12,7 @@
 #include <queue>
 
 #include "boost/scoped_ptr.hpp"
+#include "base/macros.h"
 #include "media/demuxer/demuxer_stream.h"
 
 namespace media {
@@ -22,7 +23,6 @@ class VideoDecoderConfig;
 class FFmpegDemuxerStream : public DemuxerStream {
  public:
   FFmpegDemuxerStream(FFmpegDemuxer* demuxer, AVStream* stream);
-  ~FFmpegDemuxerStream();
 
   // DemuxerStream implementation
   virtual Type type();
@@ -56,8 +56,9 @@ class FFmpegDemuxerStream : public DemuxerStream {
   ReadCB read_cb_;
   AudioDecoderConfig audio_decoder_config_;
   VideoDecoderConfig video_decoder_config_;
-  FFmpegDemuxer* demuxer_;std::queue<std::shared_ptr<EncodedAVFrame> >
-   encoded_avframe_queue_;
+  FFmpegDemuxer* demuxer_;
+  std::queue<std::shared_ptr<EncodedAVFrame> > encoded_avframe_queue_;
+  DISALLOW_COPY_AND_ASSIGN(FFmpegDemuxerStream);
 };
 
 }  // namespace media

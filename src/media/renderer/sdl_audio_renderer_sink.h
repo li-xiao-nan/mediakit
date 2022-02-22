@@ -4,6 +4,7 @@
 #include "SDL_audio.h"
 #include "SDL.h"
 
+#include "base/macros.h"
 #include "media/renderer/audio_renderer_sink.h"
 #include "media/base/audio_parameters.h"
 
@@ -11,7 +12,6 @@ namespace media {
 class SdlAudioRendererSink : public AudioRendererSink {
  public:
   SdlAudioRendererSink();
-  virtual ~SdlAudioRendererSink();
   virtual void Initialize(RenderCallback* render_callback,
                           InitCB init_cb,
                           const AudioParameters& parameters) override;
@@ -32,6 +32,8 @@ class SdlAudioRendererSink : public AudioRendererSink {
   SDL_AudioSpec sdl_audio_spec_;
   AudioParameters audio_parameters_;
   RenderCallback* render_callback_;
+
+  DISALLOW_COPY_AND_ASSIGN(SdlAudioRendererSink);
 };
 }
 #endif

@@ -11,7 +11,7 @@ class VideoRenderer {
   typedef boost::function<void(std::shared_ptr<VideoFrame>)> PaintCB;
   typedef boost::function<int64_t(void)> GetTimeCB;
 
-  ~VideoRenderer() {}
+  virtual ~VideoRenderer() = default;
   virtual void Initialize(DemuxerStream* demuxer_stream,
                           PipelineStatusCB init_cb,
                           PipelineStatusCB status_cb,

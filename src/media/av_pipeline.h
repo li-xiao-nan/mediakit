@@ -42,6 +42,9 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
              PipelineStatusCB error_cb,
              PipelineStatusCB seek_cb,
              VideoRenderer::PaintCB paint_cb);
+  AVPipeline(const AVPipeline& av_pipeline) = delete;
+  AVPipeline(AVPipeline&& av_pipeline) = delete;
+  AVPipeline& operator = (const AVPipeline& av_pipeline) = delete;
   void Start();
   void Stop();
   void Pause();

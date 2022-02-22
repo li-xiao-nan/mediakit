@@ -8,7 +8,7 @@
 namespace media {
 class Renderer {
  public:
-  virtual ~Renderer(){};
+  virtual ~Renderer() = default;
   virtual void Initialize(DemuxerStreamProvider* demuxer_stream_provider,
                           PipelineStatusCB init_cb, PipelineStatusCB status_cb,
                           VideoRenderer::PaintCB paint_cb) = 0;

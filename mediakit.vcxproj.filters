@@ -230,6 +230,9 @@
     <ClInclude Include="src\media\demuxer\demuxer_delegate.h">
       <Filter>media\demuxer</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\macros.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
