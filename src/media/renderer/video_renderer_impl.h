@@ -72,6 +72,7 @@ class VideoRendererImpl : public VideoRenderer {
   std::mutex mutex_for_pause_;
   std::condition_variable condition_variable_for_puase_;
   bool pause_state_;
+  bool is_wait_happened_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoRendererImpl);
 };

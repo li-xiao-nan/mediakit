@@ -6,15 +6,15 @@
 namespace media {
 const int kMaxPendingPaintFrameCount = 2<<2;
 const int kMaxTimeDelta = 100;  // ms
-
+const int kSleepInterval = 1000/60; // ms;
 VideoRendererImpl::VideoRendererImpl(
     const VideoFrameStream::VecVideoDecoders& vec_video_decoders)
     : pending_paint_(false),
       pause_state_(false),
       state_(STATE_UNINITIALIZED),
-      video_frame_stream_(
-          new VideoFrameStream(vec_video_decoders)),
-          droped_frame_count_(0) {
+      video_frame_stream_(new VideoFrameStream(vec_video_decoders)),
+      droped_frame_count_(0),
+      is_wait_happened_(false){
 }
 
 void VideoRendererImpl::Initialize(DemuxerStream* demuxer_stream,
@@ -127,6 +127,7 @@ void VideoRendererImpl::ThreadMain() {
       LOGGING(LOG_LEVEL_DEBUG) << "video decoded frame is empty, begin wait";
       ScopeTimeCount ScopeTimeCount("Wait decode time:");
       frame_available_.wait(lock);
+      is_wait_happened_ = true;
     }
 
     std::shared_ptr<VideoFrame> next_frame = pending_paint_frames_.front();
@@ -136,6 +137,10 @@ void VideoRendererImpl::ThreadMain() {
 
     FrameOperation operation =
         DetermineNextFrameOperation(current_time, next_frame_timestamp);
+    if(is_wait_happened_) {
+      LOGGING(LOG_LEVEL_INFO)<<"wait happened,AVFrame pts:"<< next_frame_timestamp
+        <<"; current time:" << current_time;
+    }
     switch (operation) {
       case OPERATION_DROP_FRAME:
         next_frame->_timeRecoder._popupTime = get_time_cb_();
@@ -155,6 +160,8 @@ void VideoRendererImpl::ThreadMain() {
       default:
         break;
     }  // switch
+    is_wait_happened_ = false;
+    Sleep(kSleepInterval);
   }    // for(;;)
 }
 
