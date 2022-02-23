@@ -55,6 +55,7 @@ void FFmpegVideoDecoder::Decode(
     new_video_frame->_timeRecoder._decodeExpendTime = decode_expend_time;
     new_video_frame->_timeRecoder._addQueueTime = static_cast<int>(GetPlaybackTime());
     new_video_frame->_timeRecoder._pst = new_video_frame->timestamp_;
+    av_frame_unref(av_frame_);
     output_cb_(new_video_frame);
     decode_cb(STATUS_OK);
   } else {
