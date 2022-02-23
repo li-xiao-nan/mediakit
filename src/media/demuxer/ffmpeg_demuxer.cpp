@@ -40,6 +40,7 @@ void FFmpegDemuxer::Initialize(PipelineStatusCB status_cb) {
 void FFmpegDemuxer::Seek(int64_t timestamp, PipelineStatusCB status_cb) {
   ActionCB action_cb =
       boost::bind(&FFmpegDemuxer::OnSeekDone, this, status_cb, _1);
+  LOGGING(LOG_LEVEL_DEBUG) << "Post SeekAction Task";
   PostTask(TID_DEMUXER, (boost::bind(&FFmpegDemuxer::SeekAction, this,
                                           timestamp, status_cb, action_cb)));
   return;
@@ -185,6 +186,7 @@ void FFmpegDemuxer::SetDelegate(DemuxerDelegate* delegate) {
 
 void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
                                ActionCB action_cb) {
+  LOGGING(LOG_LEVEL_DEBUG)<<"Enter";
   ScopeTimeCount("SeekAction");
   int ret = 
     av_seek_frame(av_format_context_, -1, timestamp_ms * 1000, AVSEEK_FLAG_BACKWARD);
@@ -194,7 +196,7 @@ void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
   avformat_flush(av_format_context_);
   avio_flush(av_format_context_->pb);
   Resume();
-  //AfterSeekReadFirstPacket();
+  AfterSeekReadFirstPacket();
   ReadFrameIfNeeded();
   //DropBufferedDataTest(timestamp_ms);
   PostTask(TID_DECODE, boost::bind(action_cb, (ret >= 0 ? true : false)));
@@ -209,7 +211,7 @@ void FFmpegDemuxer::AfterSeekReadFirstPacket() {
   }
   int64_t seek_result_pts = encoded_avframe->pts;
   if(demuxer_delegate_) {
-    demuxer_delegate_->OnUpdateAlignedSeekTimestamp(seek_result_pts);
+    demuxer_delegate_->OnUpdateAlignedSeekTimestamp(seek_result_pts - 200);
   }
   PostTask(TID_DECODE, 
     boost::bind(&FFmpegDemuxer::OnReadFrameDone, this, encoded_avframe, true));
@@ -223,11 +225,6 @@ void FFmpegDemuxer::OnSeekDone(PipelineStatusCB status_cb, bool result) {
     return;
   }
 }
-
-
-
-
-
 
 // decode thread
 void FFmpegDemuxer::ReadFrameIfNeeded() {

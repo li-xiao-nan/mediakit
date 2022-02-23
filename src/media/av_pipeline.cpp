@@ -71,9 +71,8 @@ void AVPipeline::SeekAction(int64_t timestamp_ms) {
 
   PipelineStatusCB seek_complete_cb =
       boost::bind(&AVPipeline::StateTransitAction, this, _1);
-  AsyncTask task = boost::bind(&Demuxer::Seek, demuxer_.get(), timestamp_ms,
-                               seek_complete_cb);
-  PostTask(TID_DEMUXER, task);
+  LOGGING(LOG_LEVEL_DEBUG)<<"Post Seek Task";
+  demuxer_->Seek(timestamp_ms, seek_complete_cb);
 }
 
 int64_t AVPipeline::GetPlaybackTime() {
