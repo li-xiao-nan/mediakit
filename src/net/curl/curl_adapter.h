@@ -3,6 +3,7 @@
 
 #include "net/io_channel.h"
 
+#include "base/macros.h"
 extern "C"{
 #include "curl/curl.h"
 }
@@ -13,8 +14,6 @@ public:
 	typedef map<string, string> PostData;
 
 	CurlStreamFile(const string& url, const string& cachefile);
-
-
 	CurlStreamFile(const string& url, const string& vars,
 			const string& cachefile);
 	~CurlStreamFile();
@@ -77,6 +76,7 @@ private:
 	static size_t recv(void *buf, size_t size, size_t nmemb, void *userp);
 	//list of custom headers for this stream
 	struct curl_slist *_customHeaders;
+  DISALLOW_COPY_AND_ASSIGN(CurlStreamFile);
 };
 
 } // namespace net

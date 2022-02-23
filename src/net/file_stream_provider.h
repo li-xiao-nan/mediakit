@@ -24,6 +24,8 @@
 #include "net/io_channel.h"
 #include <stdio.h>
 
+#include "base/macros.h"
+
 namespace net {
 
 class FileStreamProvider: public IOChannel{
@@ -41,6 +43,8 @@ private:
 	int _pos;
 	bool _error;
 	long _size;
+
+  DISALLOW_COPY_AND_ASSIGN(FileStreamProvider);
 };
 
 } // namespace

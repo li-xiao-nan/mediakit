@@ -99,7 +99,7 @@ void keyboard(unsigned char key, int x, int y) {
   }
 }
 
-int winW = 800, winH = 600;
+int winW = 80, winH = 60;
 int videoW, videoH;
 
 GLuint vsID, fsID, pID;
