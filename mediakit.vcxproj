@@ -83,7 +83,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)third_party\curl\lib;$(SolutionDir)third_party\boost\lib\x86\$(Configuration);$(SolutionDir)third_party\ffmpeg\lib\win\;$(SolutionDir)third_party\freeglut\lib\win\;$(SolutionDir)third_party\sdl\x86\$(Configuration)\;$(SolutionDir)third_party\glew\lib\$(Configuration)\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
@@ -163,6 +163,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\media\renderer\sdl_audio_renderer_sink.h" />
     <ClInclude Include="src\media\renderer\video_renderer.h" />
     <ClInclude Include="src\media\renderer\video_renderer_impl.h" />
+    <ClInclude Include="src\media\renderer\yuv_render.h" />
     <ClInclude Include="src\media\sound\AuxStream.h" />
     <ClInclude Include="src\media\sound\InputStream.h" />
     <ClInclude Include="src\media\sound\sdl\SoundHandlerSDL.h" />
@@ -208,6 +209,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\media\renderer\renderer_impl.cpp" />
     <ClCompile Include="src\media\renderer\sdl_audio_renderer_sink.cpp" />
     <ClCompile Include="src\media\renderer\video_renderer_impl.cpp" />
+    <ClCompile Include="src\media\renderer\yuv_render.cc" />
     <ClCompile Include="src\media\sound\AuxStream.cpp" />
     <ClCompile Include="src\media\sound\sdl\SoundHandlerSDL.cpp" />
     <ClCompile Include="src\media\sound\SoundHandler.cpp" />

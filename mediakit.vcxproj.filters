@@ -233,6 +233,9 @@
     <ClInclude Include="src\base\macros.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="src\media\renderer\yuv_render.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -354,6 +357,9 @@
     </ClCompile>
     <ClCompile Include="src\media\av_pipeline_factory.cc">
       <Filter>media</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\renderer\yuv_render.cc">
+      <Filter>media\renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
