@@ -1,4 +1,5 @@
 #include "audio_renderer_impl.h"
+#include "base/timer/ClockTime.h"
 #include "media/renderer/sdl_audio_renderer_sink.h"
 #include "log/log_wrapper.h"
 
@@ -8,7 +9,8 @@ int kMaxTimeDelta = 100; //ms
 
 AudioRendererImpl::AudioRendererImpl(
     const AudioFrameStream::VecAudioDecoders& vec_audio_decoders)
-    : state_(STATE_UNINITIALIZED) {
+    : state_(STATE_UNINITIALIZED)
+    , is_waiting_(false){
   pending_read_ = false;
   audio_frame_stream_ = new AudioFrameStream(vec_audio_decoders);
   audio_renderer_sink_ = new SdlAudioRendererSink();
@@ -105,7 +107,20 @@ void AudioRendererImpl::Render(uint8_t* data, int data_size) {
   ReadReadyFrameLocked();
   if (pending_paint_frames_.empty()) {
     LOGGING(LOG_LEVEL_ERROR) << "pending paint frames empty";
+    if(!is_waiting_) {
+      is_waiting_ = true;
+      begin_wait_timestamp_ = MediaCore::getTicks();
+      LOGGING(LOG_LEVEL_ERROR) << "[Start] Audio Sink wait data";
+    } else {
+      LOGGING(LOG_LEVEL_ERROR) << "Audio Sink wait data:" << MediaCore::getTicks() - begin_wait_timestamp_;
+    }
     return;
+  } else {
+    if(is_waiting_) {
+      is_waiting_ = false;
+      begin_wait_timestamp_ = 0;
+      LOGGING(LOG_LEVEL_ERROR) << "[End] Audio Sink wait data";
+    }
   }
   int size = pending_paint_frames_.size();
   int needed_data_size = data_size;

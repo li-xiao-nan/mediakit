@@ -67,6 +67,8 @@ class AudioRendererImpl : public AudioRenderer,
   PipelineStatusCB init_cb_;
   PipelineStatusCB status_cb_;
   GetTimeCB get_time_cb_;
+  bool is_waiting_;
+  int64_t begin_wait_timestamp_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioRendererImpl);
 };
