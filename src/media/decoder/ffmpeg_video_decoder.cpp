@@ -49,6 +49,7 @@ void FFmpegVideoDecoder::Decode(
     new_video_frame.reset(new VideoFrame(
         av_codec_context_->width, av_codec_context_->height, VideoFrame::YUV));
     AVFrameToVideoFrame(av_frame_, new_video_frame.get());
+    Yuv2Rgb(av_frame_, new_video_frame->rgb_format_avframe_);
     new_video_frame->timestamp_ =
         TimeBaseToMillionSecond(av_frame_->pkt_pts, GetVideoStreamTimeBase());
     // record decode cost time
@@ -61,6 +62,30 @@ void FFmpegVideoDecoder::Decode(
   } else {
     decode_cb(STATUS_DECODE_ABORT);
   }
+}
+
+void FFmpegVideoDecoder::Yuv2Rgb(AVFrame* src_yuv, AVFrame* dist_rgb) {
+  int width = src_yuv->width;
+  int height = src_yuv->height;
+  //int dist_buffer_size = av_image_get_buffer_size(AV_PIX_FMT_RGBA, width, height, 32);
+  //uint8_t* dist_buffer = new uint8_t[dist_buffer_size];
+  int result = av_image_fill_arrays(
+    dist_rgb->data, dist_rgb->linesize, NULL,
+    AV_PIX_FMT_RGBA, width, height, 32);
+  if(result < 0) {
+    LOGGING(LOG_LEVEL_ERROR) << "initialize dist avframe failed, error:" << result;
+    return;
+  }
+  struct SwsContext* sws =
+      sws_getContext(width, height, AVPixelFormat(src_yuv->format),
+        width, height, AV_PIX_FMT_BGRA, SWS_BILINEAR, NULL, NULL, NULL);
+  result = sws_scale(sws, src_yuv->data, src_yuv->linesize, 0, height, dist_rgb->data, dist_rgb->linesize);
+  if(result < 0) {
+    LOGGING(LOG_LEVEL_ERROR) << "scale operat failed, result:" << result;
+  }
+
+  sws_freeContext(sws);
+  return ;
 }
 
 void FFmpegVideoDecoder::ReleaseFFmpegResource() {

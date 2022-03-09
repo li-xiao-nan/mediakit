@@ -1,6 +1,7 @@
 #include "media/base/video_frame.h"
 #include "log/log_wrapper.h"
 
+
 namespace media {
 
 
@@ -55,6 +56,7 @@ VideoFrame::VideoFrame(int w, int h, enum Format format)
 
   frame_no_ = GetNextFrameNo();
   _timeRecoder._frameNo = frame_no_;
+  rgb_format_avframe_ = av_frame_alloc();
 }
 
 VideoFrame::~VideoFrame() {
@@ -70,6 +72,7 @@ VideoFrame::~VideoFrame() {
     // free(_yuvData);
     free(_yuv);
   }
+  av_frame_free(&rgb_format_avframe_);
 }
 
 int VideoFrame::GetNextFrameNo() {

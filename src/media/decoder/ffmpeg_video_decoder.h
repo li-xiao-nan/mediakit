@@ -41,6 +41,7 @@ class FFmpegVideoDecoder : public VideoDecoder {
   bool ConfigureDecoder(bool low_delay);
   void ReleaseFFmpegResource();
   int64_t GetPlaybackTime();
+  void Yuv2Rgb(AVFrame* src_yuv, AVFrame* dist_rgb);
 
   AVCodecContext* av_codec_context_;
   OutputCB output_cb_;

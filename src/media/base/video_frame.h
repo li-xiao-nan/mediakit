@@ -4,6 +4,12 @@
 #include <stdint.h>
 #include <iostream>
 #include "log/log_wrapper.h"
+extern "C" {
+#include "libavformat/avformat.h"
+#include "libavutil/avutil.h"
+#include "libavutil/samplefmt.h"
+#include "libswresample/swresample.h"
+}
 
 namespace media {
 class VideoFrame {
@@ -54,6 +60,7 @@ public:
   int64_t _pts;
   int64_t timestamp_;
   TimeRecoder _timeRecoder;
+  AVFrame* rgb_format_avframe_;
 };
 }  // namespace media
 
