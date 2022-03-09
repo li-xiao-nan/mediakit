@@ -119,48 +119,49 @@ void VideoRendererImpl::EndPauseState() {
 void VideoRendererImpl::ThreadMain() {
   for (;;) {
     EnterPauseStateIfNeeded();
-    boost::mutex::scoped_lock lock(ready_frames_lock_);
-    int64_t beg_time = get_time_cb_();
-    if (pending_paint_frames_.empty()) {
-      ReadFrameIfNeeded();
-      int64_t begin_wait_timestamp = get_time_cb_();
-      LOGGING(LOG_LEVEL_DEBUG) << "video decoded frame is empty, begin wait";
-      ScopeTimeCount ScopeTimeCount("Wait decode time:");
-      frame_available_.wait(lock);
-      is_wait_happened_ = true;
-    }
+    { boost::mutex::scoped_lock lock(ready_frames_lock_);
+      int64_t beg_time = get_time_cb_();
+      if (pending_paint_frames_.empty()) {
+        ReadFrameIfNeeded();
+        int64_t begin_wait_timestamp = get_time_cb_();
+        LOGGING(LOG_LEVEL_DEBUG) << "video decoded frame is empty, begin wait";
+        ScopeTimeCount ScopeTimeCount("Wait decode time:");
+        frame_available_.wait(lock);
+        is_wait_happened_ = true;
+      }
 
-    std::shared_ptr<VideoFrame> next_frame = pending_paint_frames_.front();
-    int64_t next_frame_timestamp = next_frame->timestamp_;
-    static int64_t pre_timestamp;
-    int64_t current_time = get_time_cb_();
+      std::shared_ptr<VideoFrame> next_frame = pending_paint_frames_.front();
+      int64_t next_frame_timestamp = next_frame->timestamp_;
+      static int64_t pre_timestamp;
+      int64_t current_time = get_time_cb_();
 
-    FrameOperation operation =
-        DetermineNextFrameOperation(current_time, next_frame_timestamp);
-    if(is_wait_happened_) {
-      LOGGING(LOG_LEVEL_INFO)<<"wait happened,AVFrame pts:"<< next_frame_timestamp
-        <<"; current time:" << current_time;
+      FrameOperation operation =
+          DetermineNextFrameOperation(current_time, next_frame_timestamp);
+      if(is_wait_happened_) {
+        LOGGING(LOG_LEVEL_INFO)<<"wait happened,AVFrame pts:"<< next_frame_timestamp
+          <<"; current time:" << current_time;
+      }
+      switch (operation) {
+        case OPERATION_DROP_FRAME:
+          next_frame->_timeRecoder._popupTime = get_time_cb_();
+          next_frame->_timeRecoder._renderResult = L"drop";
+          LogDecodeInfo(next_frame);
+          pending_paint_frames_.pop();
+          continue;
+          break;
+        case OPERATION_PAINT_IMMEDIATELY:
+          next_frame->_timeRecoder._popupTime = get_time_cb_();
+          next_frame->_timeRecoder._renderResult = L"display";
+          paint_cb_(next_frame);
+          pending_paint_frames_.pop();
+          break;
+        case OPERATION_WAIT_FOR_PAINT:
+          break;
+        default:
+          break;
+      }  // switch
+      is_wait_happened_ = false;
     }
-    switch (operation) {
-      case OPERATION_DROP_FRAME:
-        next_frame->_timeRecoder._popupTime = get_time_cb_();
-        next_frame->_timeRecoder._renderResult = L"drop";
-        LogDecodeInfo(next_frame);
-        pending_paint_frames_.pop();
-        continue;
-        break;
-      case OPERATION_PAINT_IMMEDIATELY:
-        next_frame->_timeRecoder._popupTime = get_time_cb_();
-        next_frame->_timeRecoder._renderResult = L"display";
-        paint_cb_(next_frame);
-        pending_paint_frames_.pop();
-        break;
-      case OPERATION_WAIT_FOR_PAINT:
-        break;
-      default:
-        break;
-    }  // switch
-    is_wait_happened_ = false;
     Sleep(kSleepInterval);
   }    // for(;;)
 }
