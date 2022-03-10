@@ -236,6 +236,9 @@
     <ClInclude Include="src\media\renderer\yuv_render.h">
       <Filter>media\renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\media\renderer\rgb_render.h">
+      <Filter>media\renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -359,6 +362,9 @@
       <Filter>media</Filter>
     </ClCompile>
     <ClCompile Include="src\media\renderer\yuv_render.cc">
+      <Filter>media\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\renderer\rgb_render.cc">
       <Filter>media\renderer</Filter>
     </ClCompile>
   </ItemGroup>

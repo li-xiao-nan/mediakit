@@ -41,13 +41,15 @@ class FFmpegVideoDecoder : public VideoDecoder {
   bool ConfigureDecoder(bool low_delay);
   void ReleaseFFmpegResource();
   int64_t GetPlaybackTime();
-  void Yuv2Rgb(AVFrame* src_yuv, AVFrame* dist_rgb);
+  void Yuv2Rgb(AVFrame* src_yuv, std::shared_ptr<VideoFrame> video_frame);
 
   AVCodecContext* av_codec_context_;
   OutputCB output_cb_;
   VideoDecoderConfig config_;
   DecoderState state_;
   AVFrame* av_frame_;
+  //used for yuv to rgb 
+  SwsContext* sws_context_;
 };
 }  // namespace media
 #endif

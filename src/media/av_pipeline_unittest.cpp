@@ -27,6 +27,7 @@ extern "C" {
 #include "base/message_loop_thread_manager.h"
 #include "av_pipeline_factory.h"
 #include "media/renderer/yuv_render.h"
+#include "media/renderer/rgb_render.h"
 
 
 
@@ -36,6 +37,8 @@ boost::mutex queue_mutex;
 media::WatchMovieStateRecoder file_view_record;
 std::string movie_name;
 media::YuvRender yuv_render;
+media::RgbRender rgb_render;
+bool use_yuv_render = true;
 
 void GlobalPaintCallBack(std::shared_ptr<media::VideoFrame> video_frame) {
   boost::mutex::scoped_lock lock(queue_mutex);
@@ -123,7 +126,11 @@ int main(int argc, char* argv[]) {
   glutCreateWindow(argv[1]);
   init();
   glewInit();
-  yuv_render.Init();
+  if(use_yuv_render) {
+    yuv_render.Init();
+  } else {
+    rgb_render.Init();
+  }
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboard);
@@ -144,8 +151,13 @@ void display(void) {
   if (!videoFrame.get()) {
     return;
   }
-  yuv_render.updateTexture(videoFrame);
-  yuv_render.render(winW, winH, videoFrame->_w, videoFrame->_h);
+  if (use_yuv_render) {
+    yuv_render.updateTexture(videoFrame);
+    yuv_render.render(winW, winH, videoFrame->_w, videoFrame->_h);
+  } else {
+    rgb_render.updateTexture(videoFrame);
+    rgb_render.render(winW, winH, videoFrame->_w, videoFrame->_h);
+  }
 }
 void reshape(int w, int h) {
   winW = w;

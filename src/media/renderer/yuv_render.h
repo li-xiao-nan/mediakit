@@ -1,5 +1,5 @@
-#ifndef MEDIA_RENDERER_VIDEO_RENDER_H
-#define MEDIA_RENDERER_VIDEO_RENDER_H
+#ifndef MEDIA_RENDERER_YUV_RENDER_H
+#define MEDIA_RENDERER_YUV_RENDER_H
 
 #include <memory>
 #include "media/base/video_frame.h"

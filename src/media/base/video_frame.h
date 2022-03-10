@@ -34,7 +34,7 @@ class VideoFrame {
     UNKNOWN,
     YUV,
     RGB,
-    ARGB,
+    RGBA,
     FORMAT_MAX,
   };
 
@@ -51,6 +51,8 @@ public:
   int frame_no_;
   unsigned int _w;
   unsigned int _h;
+  // RGBA数据格式下，每一行的字符数，计算方式：W*每个像素点颜色位数（例如 RGBA是4，RGB是3）
+  int stride_;
   Format _format;
   unsigned char* _data;
   unsigned char* _yuvData[3];
@@ -60,7 +62,6 @@ public:
   int64_t _pts;
   int64_t timestamp_;
   TimeRecoder _timeRecoder;
-  AVFrame* rgb_format_avframe_;
 };
 }  // namespace media
 
