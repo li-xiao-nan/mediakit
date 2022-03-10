@@ -13,6 +13,7 @@ class YuvRender {
  public:
   YuvRender() : is_init_(false), is_init_texture_(false) {}
   void Init();
+  void SetViewport(int w, int h);
   void updateTexture(std::shared_ptr<media::VideoFrame> image);
   void render(int window_w, int window_h, int video_w, int video_h);
 

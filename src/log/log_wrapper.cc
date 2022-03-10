@@ -131,6 +131,17 @@ std::string AnsiToUtf8(const std::string& str) {
   return ret;
 }
 
+std::string UTF16toANSI(const std::wstring& utf16_str) {
+  int len = WideCharToMultiByte(CP_ACP, 0, utf16_str.c_str(), -1, NULL, 0, NULL, NULL);
+  char* u_str = new char[len + 1];
+  memset(u_str, 0, len + 1);
+  WideCharToMultiByte(CP_ACP, 0, utf16_str.c_str(), -1, u_str, len, NULL, NULL);
+  std::string ret = u_str;
+  if (u_str)
+    delete[] u_str;
+  return ret;
+}
+
 std::string GetMovieNameUtf8(const std::string& movie_file_path) {
     std::string movie_name;
     if (movie_file_path.find_last_of('/') != std::wstring::npos) {

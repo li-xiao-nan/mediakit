@@ -18,6 +18,7 @@ namespace media {
   std::wstring GetApplicationFileDirUtf16();
   std::string GetApplicationFileDirUtf8();
   std::string UTF16toUTF8(const std::wstring& str);
+  std::string UTF16toANSI(const std::wstring& str);
   std::string AnsiToUtf8(const std::string& str);
   std::string GetMovieNameUtf8(const std::string& movie_file_path);
   

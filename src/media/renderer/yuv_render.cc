@@ -29,6 +29,15 @@ void YuvRender::Init() {
   glUseProgram(pID);
 }
 
+void YuvRender::SetViewport(int w, int h) {
+  glViewport(0, 0, (GLsizei)w, (GLsizei)h);
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluOrtho2D(0, w, h, 0);
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+}
+
 void YuvRender::examShaderCompileResult(GLuint obj) {
   int infoLogLength = 0;
   int charsWritten = 0;

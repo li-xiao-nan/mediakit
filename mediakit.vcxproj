@@ -85,7 +85,8 @@
       <SubSystem>Windows</SubSystem>
       <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)third_party\curl\lib;$(SolutionDir)third_party\boost\lib\x86\$(Configuration);$(SolutionDir)third_party\ffmpeg\lib\win\;$(SolutionDir)third_party\freeglut\lib\win\;$(SolutionDir)third_party\sdl\x86\$(Configuration)\;$(SolutionDir)third_party\glew\lib\$(Configuration)\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
     <PostBuildEvent>
       <Command>copy $(SolutionDir)third_party\sdl\x86\$(ConfigurationName)\SDL.dll $(SolutionDir)$(ConfigurationName)\
@@ -113,6 +114,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h" />
+    <ClInclude Include="src\base\gl_context_win.h" />
     <ClInclude Include="src\base\ImageType.h" />
     <ClInclude Include="src\base\jsoncpp\json\json-forwards.h" />
     <ClInclude Include="src\base\jsoncpp\json\json.h" />
@@ -176,6 +178,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\utils\string_utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\base\gl_context_win.cpp" />
     <ClCompile Include="src\base\ImageType.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -190,6 +193,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\log\watch_movie_state_recoder.cpp" />
     <ClCompile Include="src\media\av_pipeline.cpp" />
     <ClCompile Include="src\media\av_pipeline_factory.cc" />
+    <ClCompile Include="src\media\av_pipeline_native_window_unittest.cpp" />
     <ClCompile Include="src\media\av_pipeline_unittest.cpp" />
     <ClCompile Include="src\media\base\audio_decoder_config.cpp" />
     <ClCompile Include="src\media\base\audio_frame.cpp" />

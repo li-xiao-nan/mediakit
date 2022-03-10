@@ -239,6 +239,9 @@
     <ClInclude Include="src\media\renderer\rgb_render.h">
       <Filter>media\renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\gl_context_win.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -366,6 +369,12 @@
     </ClCompile>
     <ClCompile Include="src\media\renderer\rgb_render.cc">
       <Filter>media\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\av_pipeline_native_window_unittest.cpp">
+      <Filter>media</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\gl_context_win.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

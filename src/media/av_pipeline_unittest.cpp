@@ -1,3 +1,4 @@
+#if 0
 #include "boost/smart_ptr/scoped_ptr.hpp"
 #include "boost/asio/io_service.hpp"
 #include "boost/function.hpp"
@@ -169,3 +170,4 @@ void reshape(int w, int h) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 }
+#endif
