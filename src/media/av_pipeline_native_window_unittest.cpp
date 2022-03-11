@@ -212,7 +212,6 @@ LRESULT CALLBACK WndProc(HWND hWnd,
     } break;
     case WM_PAINT: {
       display();
-      SwapBuffers(GetWindowDC(hWnd));
     } break;
     case WM_SIZE: {
       RECT rects;
