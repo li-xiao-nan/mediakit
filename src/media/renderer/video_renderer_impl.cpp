@@ -5,7 +5,7 @@
 
 namespace media {
 const int kMaxPendingPaintFrameCount = 2<<2;
-const int kMaxTimeDelta = 100;  // ms
+const int kMaxTimeDelta = 20;  // ms
 const int kSleepInterval = 1000/60; // ms;
 VideoRendererImpl::VideoRendererImpl(
     const VideoFrameStream::VecVideoDecoders& vec_video_decoders)

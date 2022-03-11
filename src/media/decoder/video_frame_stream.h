@@ -10,7 +10,7 @@
 #include "media/base/video_frame.h"
 #include "media/decoder/video_decoder.h"
 
-const int kMaxVideoFrameQueueSize = 2<<5;
+const int kMaxVideoFrameQueueSize = 2<<2;
 
 namespace media {
 

@@ -10,7 +10,7 @@
 #include "media/demuxer/ffmpeg_demuxer.h"
 #include "media/FFmpeg/ffmpeg_common.h"
 #include "log/log_wrapper.h"
-const int kMaxQueueSize = 2<<6;
+const int kMaxQueueSize = 2<<3;
 
 namespace media {
 FFmpegDemuxerStream::FFmpegDemuxerStream(FFmpegDemuxer* demuxer,
