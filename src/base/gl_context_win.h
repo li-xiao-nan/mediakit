@@ -6,11 +6,11 @@
 namespace media {
 class GLContextWin {
  public:
-   GLContextWin(HWND, HDC);
+   GLContextWin();
   ~GLContextWin() = default;
   void SetCurrentGLContext();
+  void Initialize(HWND hwnd, HDC hdc);
 private:
-  void Initialize(HWND, HDC);
   void SetupPixelFormat(HDC);
 
 

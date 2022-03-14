@@ -1,8 +1,8 @@
-#include "media/renderer/yuv_render.h"
+#include "window/yuv_render.h"
 
 #include "log/log_wrapper.h"
 
-namespace media {
+namespace mediakit {
 void YuvRender::Init() {
   if (is_init_)
     return;

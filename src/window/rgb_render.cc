@@ -1,10 +1,10 @@
-#include "media/renderer/rgb_render.h"
+#include "window/rgb_render.h"
 
 extern "C" {
 #include "GL/glew.h"
 }
 
-namespace media {
+namespace mediakit {
 void RgbRender::Init() {
   if (is_init_)
     return;

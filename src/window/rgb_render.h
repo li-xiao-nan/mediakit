@@ -3,12 +3,9 @@
 
 #include <memory>
 #include "media/base/video_frame.h"
-
-extern "C" {
 #include "GL/glew.h"
-}
 
-namespace media {
+namespace mediakit {
 class RgbRender {
  public:
    RgbRender() : is_init_(false), is_init_texture_(false) {}

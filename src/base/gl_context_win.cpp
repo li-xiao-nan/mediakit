@@ -1,12 +1,11 @@
 #include "base/gl_context_win.h"
-extern "C" {
+
 #include "GL/glew.h"
-}
+#include "GL/glut.h"
 
 namespace media {
-GLContextWin::GLContextWin(HWND hwnd, HDC hdc): 
-  hwnd_(hwnd), hdc_(hdc), hrc_(0), format_(0) {
-  Initialize(hwnd_, hdc_);
+GLContextWin::GLContextWin(): 
+  hwnd_(0), hdc_(0), hrc_(0), format_(0) {
 }
 
 void GLContextWin::SetupPixelFormat(HDC hdc) {

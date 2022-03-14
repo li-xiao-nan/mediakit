@@ -51,6 +51,9 @@
     <Filter Include="base\jsoncpp\json">
       <UniqueIdentifier>{e74840f1-2135-456a-b798-b83da41994d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="window">
+      <UniqueIdentifier>{3c96400d-4d01-4494-bb68-98d4ab36ab51}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h">
@@ -233,14 +236,17 @@
     <ClInclude Include="src\base\macros.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="src\media\renderer\yuv_render.h">
-      <Filter>media\renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="src\media\renderer\rgb_render.h">
-      <Filter>media\renderer</Filter>
-    </ClInclude>
     <ClInclude Include="src\base\gl_context_win.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="src\window\video_display_window.h">
+      <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\window\rgb_render.h">
+      <Filter>window</Filter>
+    </ClInclude>
+    <ClInclude Include="src\window\yuv_render.h">
+      <Filter>window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -364,17 +370,20 @@
     <ClCompile Include="src\media\av_pipeline_factory.cc">
       <Filter>media</Filter>
     </ClCompile>
-    <ClCompile Include="src\media\renderer\yuv_render.cc">
-      <Filter>media\renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="src\media\renderer\rgb_render.cc">
-      <Filter>media\renderer</Filter>
-    </ClCompile>
     <ClCompile Include="src\media\av_pipeline_native_window_unittest.cpp">
       <Filter>media</Filter>
     </ClCompile>
     <ClCompile Include="src\base\gl_context_win.cpp">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window\video_display_window.cc">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window\rgb_render.cc">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window\yuv_render.cc">
+      <Filter>window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

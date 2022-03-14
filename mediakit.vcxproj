@@ -162,11 +162,9 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\media\renderer\audio_renderer_sink.h" />
     <ClInclude Include="src\media\renderer\renderer.h" />
     <ClInclude Include="src\media\renderer\renderer_impl.h" />
-    <ClInclude Include="src\media\renderer\rgb_render.h" />
     <ClInclude Include="src\media\renderer\sdl_audio_renderer_sink.h" />
     <ClInclude Include="src\media\renderer\video_renderer.h" />
     <ClInclude Include="src\media\renderer\video_renderer_impl.h" />
-    <ClInclude Include="src\media\renderer\yuv_render.h" />
     <ClInclude Include="src\media\sound\AuxStream.h" />
     <ClInclude Include="src\media\sound\InputStream.h" />
     <ClInclude Include="src\media\sound\sdl\SoundHandlerSDL.h" />
@@ -176,6 +174,9 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\net\io_channel.h" />
     <ClInclude Include="src\net\url.h" />
     <ClInclude Include="src\utils\string_utils.h" />
+    <ClInclude Include="src\window\rgb_render.h" />
+    <ClInclude Include="src\window\video_display_window.h" />
+    <ClInclude Include="src\window\yuv_render.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\gl_context_win.cpp" />
@@ -212,10 +213,8 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\media\renderer\audio_renderer_impl.cpp" />
     <ClCompile Include="src\media\renderer\audio_renderer_sink.cpp" />
     <ClCompile Include="src\media\renderer\renderer_impl.cpp" />
-    <ClCompile Include="src\media\renderer\rgb_render.cc" />
     <ClCompile Include="src\media\renderer\sdl_audio_renderer_sink.cpp" />
     <ClCompile Include="src\media\renderer\video_renderer_impl.cpp" />
-    <ClCompile Include="src\media\renderer\yuv_render.cc" />
     <ClCompile Include="src\media\sound\AuxStream.cpp" />
     <ClCompile Include="src\media\sound\sdl\SoundHandlerSDL.cpp" />
     <ClCompile Include="src\media\sound\SoundHandler.cpp" />
@@ -224,6 +223,9 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\net\io_channel.cpp" />
     <ClCompile Include="src\net\url.cpp" />
     <ClCompile Include="src\utils\string_utils.cpp" />
+    <ClCompile Include="src\window\rgb_render.cc" />
+    <ClCompile Include="src\window\video_display_window.cc" />
+    <ClCompile Include="src\window\yuv_render.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\media\av_pipeline_unittest.gyp" />
