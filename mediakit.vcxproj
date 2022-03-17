@@ -174,6 +174,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\net\io_channel.h" />
     <ClInclude Include="src\net\url.h" />
     <ClInclude Include="src\utils\string_utils.h" />
+    <ClInclude Include="src\window\main_message_loop_win.h" />
     <ClInclude Include="src\window\rgb_render.h" />
     <ClInclude Include="src\window\video_display_window.h" />
     <ClInclude Include="src\window\yuv_render.h" />
@@ -223,6 +224,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\net\io_channel.cpp" />
     <ClCompile Include="src\net\url.cpp" />
     <ClCompile Include="src\utils\string_utils.cpp" />
+    <ClCompile Include="src\window\main_message_loop_win.cc" />
     <ClCompile Include="src\window\rgb_render.cc" />
     <ClCompile Include="src\window\video_display_window.cc" />
     <ClCompile Include="src\window\yuv_render.cc" />

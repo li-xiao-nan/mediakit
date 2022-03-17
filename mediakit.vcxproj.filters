@@ -248,6 +248,9 @@
     <ClInclude Include="src\window\yuv_render.h">
       <Filter>window</Filter>
     </ClInclude>
+    <ClInclude Include="src\window\main_message_loop_win.h">
+      <Filter>window</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -383,6 +386,9 @@
       <Filter>window</Filter>
     </ClCompile>
     <ClCompile Include="src\window\yuv_render.cc">
+      <Filter>window</Filter>
+    </ClCompile>
+    <ClCompile Include="src\window\main_message_loop_win.cc">
       <Filter>window</Filter>
     </ClCompile>
   </ItemGroup>

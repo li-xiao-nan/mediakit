@@ -11,6 +11,7 @@
 #include "base/message_loop_thread_manager.h"
 #include "av_pipeline_factory.h"
 #include "window/video_display_window.h"
+#include "window/main_message_loop_win.h"
 
 std::unique_ptr<media::AVPipeline> av_pipeline = nullptr;
 mediakit::VideoDisplayWindow *video_display_window = nullptr;
@@ -39,18 +40,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   UNREFERENCED_PARAMETER(lpCmdLine);
   video_display_window = new mediakit::VideoDisplayWindow(hInstance);
   CreatePipeline(media::UTF16toANSI(lpCmdLine).c_str());
-  HACCEL hAccelTable =
-      LoadAccelerators(hInstance, MAKEINTRESOURCE(109));
-  MSG msg;
-  // 主消息循环
-  while (GetMessage(&msg, nullptr, 0, 0)) {
-    if (!TranslateAccelerator(msg.hwnd, hAccelTable, &msg)) {
-      TranslateMessage(&msg);
-      DispatchMessage(&msg);
-    }
-  }
 
-  return (int)msg.wParam;
+  int result = mediakit::EnterMainMessageLoop(hInstance);
+  return result;
 }
 
 #endif
