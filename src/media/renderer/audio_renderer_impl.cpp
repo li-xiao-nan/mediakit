@@ -74,6 +74,10 @@ void AudioRendererImpl::ShowStateInfo() {
   demuxer_stream_->ShowStateInfo();
 }
 
+void AudioRendererImpl::Stop() {
+  audio_renderer_sink_->Stop();
+}
+
 AudioRendererImpl::State AudioRendererImpl::GetNextState() {
   switch (state_) {
     case STATE_UNINITIALIZED:

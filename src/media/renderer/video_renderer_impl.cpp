@@ -14,7 +14,8 @@ VideoRendererImpl::VideoRendererImpl(
       state_(STATE_UNINITIALIZED),
       video_frame_stream_(new VideoFrameStream(vec_video_decoders)),
       droped_frame_count_(0),
-      is_wait_happened_(false){
+      is_wait_happened_(false),
+      is_stoped_(false){
 }
 
 void VideoRendererImpl::Initialize(DemuxerStream* demuxer_stream,
@@ -117,7 +118,7 @@ void VideoRendererImpl::EndPauseState() {
   return;
 }
 void VideoRendererImpl::ThreadMain() {
-  for (;;) {
+  while(!is_stoped_){
     EnterPauseStateIfNeeded();
     { boost::mutex::scoped_lock lock(ready_frames_lock_);
       int64_t beg_time = get_time_cb_();
@@ -208,6 +209,10 @@ void VideoRendererImpl::ReadFrameIfNeeded() {
 void VideoRendererImpl::ReadFrame() {
   video_frame_stream_->Read(
       boost::bind(&VideoRendererImpl::OnReadFrameDone, this, _1, _2));
+}
+
+void VideoRendererImpl::Stop() {
+  is_stoped_ = true;
 }
 
 }  // namespace media

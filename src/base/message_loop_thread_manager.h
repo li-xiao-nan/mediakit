@@ -10,6 +10,7 @@ class MessageLoopManager {
  public:
   static MessageLoopManager* GetInstance();
   void PostTask(MKThreadId tid, AsyncTask async_task);
+  void StopAll();
  private:
   MessageLoopManager();
   std::map<MKThreadId, std::unique_ptr<MessageLoop>> s_message_loop_instance_;

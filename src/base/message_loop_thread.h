@@ -20,6 +20,7 @@ public:
   unsigned int GetTID();
   MKThreadId GetThreadType();
   void PostTask(AsyncTask task);
+  void Stop();
 private:
 private:
   int thread_id_;

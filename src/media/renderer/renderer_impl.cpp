@@ -29,8 +29,6 @@ RendererImpl::RendererImpl(std::shared_ptr<AudioRenderer> audio_renderer,
 }
 
 RendererImpl::~RendererImpl(){
-  // TODO(lixiaonan): 暂时不添加多个pipeline实例的ID管理模块，默认ID为0，后续需要添加，并修改此处代码
-  playback_clock_map_.erase(0);
 }
 
 void RendererImpl::Initialize(DemuxerStreamProvider* demuxer_stream_provider,
@@ -88,6 +86,11 @@ void RendererImpl::Seek(int64_t timestamp_ms) {
   audio_renderer_->ClearAVFrameBuffer();
   video_renderer_->ClearAVFrameBuffer();
   return;
+}
+
+void RendererImpl::Stop() {
+  video_renderer_->Stop();
+  audio_renderer_->Stop();
 }
 
 int64_t RendererImpl::GetPlaybackTime() {

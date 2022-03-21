@@ -28,6 +28,7 @@ class VideoRendererImpl : public VideoRenderer {
   virtual void Resume() override;
   virtual void ClearAVFrameBuffer() override;
   virtual void ShowStateInfo() override;
+  virtual void Stop() override;
 
  private:
   enum State {
@@ -73,6 +74,7 @@ class VideoRendererImpl : public VideoRenderer {
   std::condition_variable condition_variable_for_puase_;
   bool pause_state_;
   bool is_wait_happened_;
+  bool is_stoped_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoRendererImpl);
 };

@@ -22,6 +22,7 @@ class Renderer {
   virtual void Seek(int64_t) = 0;
   virtual void UpdateAlignSeekTimestamp(int64_t) = 0;
   virtual void ShowStateInfo() = 0;
+  virtual void Stop() = 0;
 };
 }  // namespace media
 

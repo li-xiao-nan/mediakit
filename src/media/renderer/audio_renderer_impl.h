@@ -33,6 +33,7 @@ class AudioRendererImpl : public AudioRenderer,
   void Resume() override;
   void ClearAVFrameBuffer() override;
   void ShowStateInfo() override;
+  void Stop() override;
 
   //
   virtual void Render(uint8_t* data, int data_size);

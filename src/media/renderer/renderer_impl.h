@@ -42,6 +42,7 @@ class RendererImpl : public Renderer {
   void Seek(int64_t) override;
   void UpdateAlignSeekTimestamp(int64_t timestamp) override;
   void ShowStateInfo() override;
+  void Stop() override;
 
  private:
   enum State {

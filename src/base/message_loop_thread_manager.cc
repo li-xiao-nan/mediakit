@@ -20,4 +20,10 @@ namespace media {
     s_message_loop_instance_[TID_DECODE] = 
       std::make_unique<MessageLoop>(TID_DECODE);
   }
+
+  void MessageLoopManager::StopAll() {
+    for(auto& item : s_message_loop_instance_) {
+      item.second->Stop();
+    }
+  }
 } // namespace media

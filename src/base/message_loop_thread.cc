@@ -21,4 +21,8 @@ void MessageLoop::PostTask(AsyncTask task) {
   task_runner_->post(task);
 }
 
+void MessageLoop::Stop() {
+  task_runner_->stop();
+}
+
 } //  namespace media

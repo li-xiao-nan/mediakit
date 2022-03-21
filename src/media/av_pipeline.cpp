@@ -43,8 +43,6 @@ void AVPipeline::InitializeRenderer(PipelineStatusCB done_cb) {
                         paint_cb_);
 }
 
-void AVPipeline::Stop() {}
-
 void AVPipeline::Pause() {
   renderer_->Pause();
   demuxer_->Pause();
@@ -77,6 +75,11 @@ void AVPipeline::SeekAction(int64_t timestamp_ms) {
 
 int64_t AVPipeline::GetPlaybackTime() {
     return renderer_->GetPlaybackTime();
+}
+
+void AVPipeline::Stop() {
+  renderer_->Stop();
+  MessageLoopManager::GetInstance()->StopAll();
 }
 
 void AVPipeline::OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) {

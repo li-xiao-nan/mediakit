@@ -23,12 +23,6 @@ void GlobalPaintCallBack(std::shared_ptr<media::VideoFrame> video_frame) {
   video_display_window->display(video_frame);
 }
 
-void CreatePipeline(const char* video_url) {
-  av_pipeline = MakeAVPipeLine(video_url, boost::bind(GlobalPaintCallBack, _1));
-  av_pipeline->Start();
-}
-
-
 #define MAX_LOADSTRING 100
 // 全局变量:
 HINSTANCE hInst;                      // 当前实例
@@ -39,9 +33,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   UNREFERENCED_PARAMETER(hPrevInstance);
   UNREFERENCED_PARAMETER(lpCmdLine);
   video_display_window = new mediakit::VideoDisplayWindow(hInstance);
-  CreatePipeline(media::UTF16toANSI(lpCmdLine).c_str());
-
+  std::string video_url = media::UTF16toANSI(lpCmdLine);
+  av_pipeline = MakeAVPipeLine(video_url.c_str(), boost::bind(GlobalPaintCallBack, _1));
+  av_pipeline->Start();
   int result = mediakit::EnterMainMessageLoop(hInstance);
+  av_pipeline->Stop();
   return result;
 }
 

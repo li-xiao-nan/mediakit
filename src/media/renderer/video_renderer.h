@@ -23,6 +23,7 @@ class VideoRenderer {
   virtual void Resume() = 0;
   virtual void ClearAVFrameBuffer() = 0;
   virtual void ShowStateInfo() = 0;
+  virtual void Stop() = 0;
 };
 }  // namespace media
 #endif
