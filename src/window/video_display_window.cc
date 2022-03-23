@@ -5,9 +5,9 @@ namespace mediakit {
 const wchar_t *kWindowClassName = L"VideoDisplayWindow";
 const wchar_t *kWindowTitle = L"mediakit";
 
-VideoDisplayWindow::VideoDisplayWindow(HINSTANCE hInstance):is_initialized_(false) {
-  RegisterWindowClass(hInstance);
-  hInstance_ = hInstance;
+VideoDisplayWindow::VideoDisplayWindow():is_initialized_(false) {
+  hInstance_ = GetModuleHandle(NULL);
+  RegisterWindowClass(hInstance_);
   gl_context_win_.reset(new media::GLContextWin());
   hwnd_ = CreateWindowW(kWindowClassName, kWindowTitle, WS_OVERLAPPEDWINDOW,
                         CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr,
@@ -32,6 +32,9 @@ void VideoDisplayWindow::Initialize() {
 }
 
 void VideoDisplayWindow::display(std::shared_ptr<media::VideoFrame> video_frame) {
+  if(!video_frame) {
+    return;
+  }
   if(!is_initialized_) {
     Initialize();
   }

@@ -173,6 +173,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\net\file_stream_provider.h" />
     <ClInclude Include="src\net\io_channel.h" />
     <ClInclude Include="src\net\url.h" />
+    <ClInclude Include="src\player\media_player.h" />
     <ClInclude Include="src\utils\string_utils.h" />
     <ClInclude Include="src\window\main_message_loop_win.h" />
     <ClInclude Include="src\window\rgb_render.h" />
@@ -193,10 +194,9 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\base\timer\wall_clock_timer.cpp" />
     <ClCompile Include="src\log\log_wrapper.cc" />
     <ClCompile Include="src\log\watch_movie_state_recoder.cpp" />
+    <ClCompile Include="src\main_entry\main_entry.cpp" />
     <ClCompile Include="src\media\av_pipeline.cpp" />
     <ClCompile Include="src\media\av_pipeline_factory.cc" />
-    <ClCompile Include="src\media\av_pipeline_native_window_unittest.cpp" />
-    <ClCompile Include="src\media\av_pipeline_unittest.cpp" />
     <ClCompile Include="src\media\base\audio_decoder_config.cpp" />
     <ClCompile Include="src\media\base\audio_frame.cpp" />
     <ClCompile Include="src\media\base\playback_clock.cpp" />
@@ -223,14 +223,12 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\net\file_stream_provider.cpp" />
     <ClCompile Include="src\net\io_channel.cpp" />
     <ClCompile Include="src\net\url.cpp" />
+    <ClCompile Include="src\player\media_player.cc" />
     <ClCompile Include="src\utils\string_utils.cpp" />
     <ClCompile Include="src\window\main_message_loop_win.cc" />
     <ClCompile Include="src\window\rgb_render.cc" />
     <ClCompile Include="src\window\video_display_window.cc" />
     <ClCompile Include="src\window\yuv_render.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\media\av_pipeline_unittest.gyp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

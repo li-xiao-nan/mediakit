@@ -14,7 +14,7 @@ LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 
 class VideoDisplayWindow {
 public:
-  VideoDisplayWindow(HINSTANCE hInstance);
+  VideoDisplayWindow();
   void display(std::shared_ptr<media::VideoFrame> video_frame);
 private:
   ATOM RegisterWindowClass(HINSTANCE hInstance);

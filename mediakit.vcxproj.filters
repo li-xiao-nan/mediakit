@@ -54,6 +54,12 @@
     <Filter Include="window">
       <UniqueIdentifier>{3c96400d-4d01-4494-bb68-98d4ab36ab51}</UniqueIdentifier>
     </Filter>
+    <Filter Include="player">
+      <UniqueIdentifier>{14e4bd4c-b039-47f0-8f9a-eaad72f600d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main_entry">
+      <UniqueIdentifier>{cf363770-031a-4561-a17f-8094cb96b163}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h">
@@ -251,6 +257,9 @@
     <ClInclude Include="src\window\main_message_loop_win.h">
       <Filter>window</Filter>
     </ClInclude>
+    <ClInclude Include="src\player\media_player.h">
+      <Filter>player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -272,9 +281,6 @@
       <Filter>log</Filter>
     </ClCompile>
     <ClCompile Include="src\media\av_pipeline.cpp">
-      <Filter>media</Filter>
-    </ClCompile>
-    <ClCompile Include="src\media\av_pipeline_unittest.cpp">
       <Filter>media</Filter>
     </ClCompile>
     <ClCompile Include="src\media\base\audio_decoder_config.cpp">
@@ -373,9 +379,6 @@
     <ClCompile Include="src\media\av_pipeline_factory.cc">
       <Filter>media</Filter>
     </ClCompile>
-    <ClCompile Include="src\media\av_pipeline_native_window_unittest.cpp">
-      <Filter>media</Filter>
-    </ClCompile>
     <ClCompile Include="src\base\gl_context_win.cpp">
       <Filter>base</Filter>
     </ClCompile>
@@ -391,10 +394,11 @@
     <ClCompile Include="src\window\main_message_loop_win.cc">
       <Filter>window</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="src\media\av_pipeline_unittest.gyp">
-      <Filter>media</Filter>
-    </None>
+    <ClCompile Include="src\player\media_player.cc">
+      <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main_entry\main_entry.cpp">
+      <Filter>main_entry</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
