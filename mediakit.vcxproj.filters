@@ -60,6 +60,9 @@
     <Filter Include="main_entry">
       <UniqueIdentifier>{cf363770-031a-4561-a17f-8094cb96b163}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{9b09b5f5-c44e-4573-851d-c935f79cf11e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h">
@@ -260,6 +263,9 @@
     <ClInclude Include="src\player\media_player.h">
       <Filter>player</Filter>
     </ClInclude>
+    <ClInclude Include="src\UI\main_window.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -399,6 +405,9 @@
     </ClCompile>
     <ClCompile Include="src\main_entry\main_entry.cpp">
       <Filter>main_entry</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\main_window.cc">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

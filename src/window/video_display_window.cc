@@ -2,21 +2,23 @@
 #include "video_display_window.h"
 
 namespace mediakit {
-const wchar_t *kWindowClassName = L"VideoDisplayWindow";
-const wchar_t *kWindowTitle = L"mediakit";
+static const wchar_t *kWindowClassName = L"VideoDisplayWindow";
+static const wchar_t *kWindowTitle = L"mediakit";
 
-VideoDisplayWindow::VideoDisplayWindow():is_initialized_(false) {
+VideoDisplayWindow::VideoDisplayWindow(HWND parent_hwnd, int x, int y, int w, int h):
+  is_initialized_(false),
+  parent_hwnd_(parent_hwnd){
   hInstance_ = GetModuleHandle(NULL);
   RegisterWindowClass(hInstance_);
   gl_context_win_.reset(new media::GLContextWin());
-  hwnd_ = CreateWindowW(kWindowClassName, kWindowTitle, WS_OVERLAPPEDWINDOW,
-                        CW_USEDEFAULT, 0, CW_USEDEFAULT, 0, nullptr, nullptr,
+  hwnd_ = CreateWindowW(kWindowClassName, kWindowTitle, WS_CHILD,
+                        x, y, w, h, parent_hwnd_, nullptr,
                         hInstance_, nullptr);
-  SetWindowLong(
-      hwnd_, GWL_EXSTYLE,
-      GetWindowLong(hwnd_, GWL_EXSTYLE) | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
-  ShowWindow(hwnd_, 10);
-  UpdateWindow(hwnd_);
+  //SetWindowLong(
+  //    hwnd_, GWL_EXSTYLE,
+  //    GetWindowLong(hwnd_, GWL_EXSTYLE) | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
+  ShowWindow(hwnd_, SW_SHOWNORMAL);
+  //UpdateWindow(hwnd_);
 }
 
 void VideoDisplayWindow::Initialize() {
@@ -59,7 +61,7 @@ ATOM VideoDisplayWindow::RegisterWindowClass(HINSTANCE hInstance) {
   wcex.hInstance = hInstance;
   wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(109));
   wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-  wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
+  wcex.hbrBackground = CreateSolidBrush(RGB(255, 255, 0));// (HBRUSH)(COLOR_WINDOW + 1);
   wcex.lpszMenuName = MAKEINTRESOURCEW(109);
   wcex.lpszClassName = kWindowClassName;
   wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(108));
@@ -80,7 +82,7 @@ LRESULT CALLBACK WndProc(HWND hWnd,
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
   }
-  return 0;
+  return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 }  // namespace mediakit

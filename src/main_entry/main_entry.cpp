@@ -9,6 +9,7 @@
 #include "base/message_loop_thread_manager.h"
 #include "window/main_message_loop_win.h"
 #include "player/media_player.h"
+#include "ui/main_window.h"
 // 全局变量:
 HINSTANCE hInst;                      // 当前实例
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -17,8 +18,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_ int nCmdShow) {
   UNREFERENCED_PARAMETER(hPrevInstance);
   UNREFERENCED_PARAMETER(lpCmdLine);
+  mediakit::MainWindow main_window;
+  RECT rects;
+  ::GetWindowRect(main_window.GetWindowHandle(), &rects);
+  int w = rects.right - rects.left;
+  int h = rects.bottom - rects.top;
   std::string video_url = media::UTF16toANSI(lpCmdLine);
-  mediakit::MediaPlayer *mediaplayer = mediakit::MediaPlayer::CreateMediaPlayer(video_url);
+  mediakit::MediaPlayer *mediaplayer = 
+    mediakit::MediaPlayer::CreateMediaPlayer(main_window.GetWindowHandle(), 0, 0, w, h, video_url);
   if(mediaplayer == nullptr) return -1;
   mediaplayer->Start();
   int result = mediakit::EnterMainMessageLoop(hInstance);
