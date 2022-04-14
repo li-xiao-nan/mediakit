@@ -31,6 +31,10 @@ RendererImpl::RendererImpl(std::shared_ptr<AudioRenderer> audio_renderer,
 RendererImpl::~RendererImpl(){
 }
 
+void RendererImpl::SetDelegate(RendererDelegate* delegate) {
+  delegate_ = delegate;
+}
+
 void RendererImpl::Initialize(DemuxerStreamProvider* demuxer_stream_provider,
                               PipelineStatusCB init_cb,
                               PipelineStatusCB status_cb,
@@ -94,7 +98,9 @@ void RendererImpl::Stop() {
 }
 
 int64_t RendererImpl::GetPlaybackTime() {
-  return GetCurrentTime();
+  int64_t current_timestamp = GetCurrentTime();
+  if(delegate_) delegate_->OnPlayProgressUpdate(current_timestamp);
+  return current_timestamp;
 }
 void RendererImpl::InitializeAudioRenderer() {
   audio_renderer_->Initialize(
@@ -125,7 +131,10 @@ void RendererImpl::OnInitializeVideoRendererDone(PipelineStatus status) {
   init_cb_(status);
 }
 int64_t RendererImpl::GetCurrentTime() {
-  return playback_clock_->GetCurrentMediaTime();
+  int64_t current_timestamp = playback_clock_->GetCurrentMediaTime();
+  if (delegate_)
+    delegate_->OnPlayProgressUpdate(current_timestamp);
+  return current_timestamp;
 }
 
 }  // namespace media

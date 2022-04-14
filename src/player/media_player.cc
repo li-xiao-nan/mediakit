@@ -2,16 +2,14 @@
 #include "media/av_pipeline_factory.h"
 #include "boost/bind.hpp"
 namespace mediakit {
-MediaPlayer* MediaPlayer::CreateMediaPlayer(
+std::shared_ptr<MediaPlayer> MediaPlayer::CreateMediaPlayer(
   HWND parent_hwnd, int x, int y, int w, int h, const std::string& video_url) {
-  MediaPlayer* new_media_player = new MediaPlayer(parent_hwnd, video_url);
+  std::shared_ptr<MediaPlayer> new_media_player(new MediaPlayer(parent_hwnd, video_url));
   bool result = new_media_player->initialize(parent_hwnd, x, y, w, h);
-
+  new_media_player->av_pipeline_->AddObserver(new_media_player);
   if(!result) {
-    delete new_media_player;
     new_media_player = nullptr;
   }
-  
   return new_media_player;
 }
 
@@ -38,6 +36,26 @@ void MediaPlayer::Start() {
 
 void MediaPlayer::Stop() {
   av_pipeline_->Stop();
+}
+
+void MediaPlayer::SetClient(std::shared_ptr<MediaPlayerClient> client) {
+  mediaplayer_client_ = client;
+}
+
+void MediaPlayer::OnGetMediaInfo(const media::MediaInfo& media_info) {
+  if(!mediaplayer_client_) {
+    return;
+  }
+  mediaplayer_client_->OnGetMediaInfo(media_info);
+  return;
+}
+
+void MediaPlayer::OnPlayProgressUpdate(int timpesatamp) {
+  if (!mediaplayer_client_) {
+    return;
+  }
+  mediaplayer_client_->OnPlayProgressUpdate(timpesatamp);
+  return;
 }
 
 } // namespace mediakit

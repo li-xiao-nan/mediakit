@@ -4,11 +4,13 @@
 #include "media/base/pipeline_status.h"
 #include "media/demuxer/demuxer_stream_provider.h"
 #include "media/renderer/video_renderer.h"
+#include "media/renderer/renderer_delegate.h"
 
 namespace media {
 class Renderer {
  public:
   virtual ~Renderer() = default;
+  virtual void SetDelegate(RendererDelegate* delegate) = 0;
   virtual void Initialize(DemuxerStreamProvider* demuxer_stream_provider,
                           PipelineStatusCB init_cb, PipelineStatusCB status_cb,
                           VideoRenderer::PaintCB paint_cb) = 0;

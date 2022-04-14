@@ -15,6 +15,7 @@ MainWindow::MainWindow() {
         GetWindowLong(hwnd_, GWL_EXSTYLE) | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
     ShowWindow(hwnd_, SW_SHOWNORMAL);
     UpdateWindow(hwnd_);
+    progress_window_.reset(new ProgressWindow(hwnd_));
   }
 LRESULT CALLBACK MainWindowProc(HWND hWnd,
                                 UINT message,
@@ -56,6 +57,23 @@ ATOM MainWindow::RegisterWindowClass(HINSTANCE hInstance) {
 
 HWND MainWindow::GetWindowHandle() {
   return hwnd_;
+}
+
+void MainWindow::SetProgressWindowTop() {
+  progress_window_->SetTopWindow();
+}
+
+void MainWindow::OnGetMediaInfo(const media::MediaInfo& media_info) {
+  media_info_.video_duration_ = media_info.video_duration_;
+  if(progress_window_) {
+    progress_window_->SetRange(media_info_.video_duration_);
+  }
+}
+
+void MainWindow::OnPlayProgressUpdate(const int64_t timestamp) {
+  if(progress_window_) {
+    progress_window_->SetProgress(timestamp);
+  }
 }
 
 } // namespace mediakit

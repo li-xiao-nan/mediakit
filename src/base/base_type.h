@@ -30,5 +30,9 @@ namespace media {
 #define EncodedAVFrame AVPacket
 typedef boost::function<void(void)> AsyncTask;
 typedef boost::asio::io_service TaskRunner;
+struct MediaInfo {
+  // unit: ms
+  int64_t video_duration_;
+};
 };
 #endif

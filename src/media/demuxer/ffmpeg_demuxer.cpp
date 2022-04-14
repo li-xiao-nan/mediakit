@@ -91,6 +91,14 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
       LOGGING(LOG_LEVEL_ERROR) << "open video file failed";
     } else {
       LOGGING(LOG_LEVEL_INFO) << "open video file success";
+      if(demuxer_delegate_) {
+        AVRational av_format_context_time_base = {1, AV_TIME_BASE};
+        int64_t max_duration = std::max(max_duration, av_format_context_->duration);
+        int64_t duration_by_second = max_duration / AV_TIME_BASE;
+        MediaInfo media_info;
+        media_info.video_duration_ = duration_by_second * 1000;
+        demuxer_delegate_->OnGetMediaInfo(media_info);
+      }
     }
     result = true;
     PostTask(TID_DECODE, boost::bind(action_cb, result));

@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "demuxer_stream_provider.h"
 #include "media/base/pipeline_status.h"
+#include "base/base_type.h"
 
 namespace media {
   class DemuxerDelegate {
@@ -12,6 +13,7 @@ namespace media {
     // 因此输入的seek时间与实际seek时间相差很大
     // 可以基于次函数通知的时间戳，设置为最终的seek的时间戳
     virtual void OnUpdateAlignedSeekTimestamp(int64_t timestamp) = 0;
+    virtual void OnGetMediaInfo(const MediaInfo& media_inf) = 0;
   };
 }  // namespace media
 

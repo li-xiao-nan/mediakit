@@ -25,6 +25,7 @@ AVPipeline::AVPipeline(std::shared_ptr<Demuxer> demuxer,
   , seek_cb_(seek_cb)
   , paint_cb_(paint_cb){
   demuxer_->SetDelegate(this);
+  renderer_->SetDelegate(this);
 }
 
 void AVPipeline::Start() {
@@ -141,6 +142,25 @@ void AVPipeline::FiltersStatusCB(PipelineStatus filters_status) {
 
 void AVPipeline::ShowStateInfo() {
   renderer_->ShowStateInfo();
+}
+
+void AVPipeline::OnGetMediaInfo(const MediaInfo& media_info) {
+  for(auto key : avpipeline_observer_list_) {
+    key->OnGetMediaInfo(media_info);
+  }
+}
+
+void AVPipeline::OnPlayProgressUpdate(int timestamp) {
+  for (auto key : avpipeline_observer_list_) {
+    key->OnPlayProgressUpdate(timestamp);
+  }
+}
+
+void AVPipeline::AddObserver(std::shared_ptr<AVPipelineObserver> observer) {
+  avpipeline_observer_list_.push_back(observer);
+}
+void AVPipeline::RemoveObserver(std::shared_ptr<AVPipelineObserver> observer) {
+  avpipeline_observer_list_.remove(observer);
 }
 
 }  // namespace media

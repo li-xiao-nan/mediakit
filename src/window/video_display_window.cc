@@ -11,7 +11,7 @@ VideoDisplayWindow::VideoDisplayWindow(HWND parent_hwnd, int x, int y, int w, in
   hInstance_ = GetModuleHandle(NULL);
   RegisterWindowClass(hInstance_);
   gl_context_win_.reset(new media::GLContextWin());
-  hwnd_ = CreateWindowW(kWindowClassName, kWindowTitle, WS_CHILD,
+  hwnd_ = CreateWindowW(kWindowClassName, kWindowTitle, WS_CHILD | WS_CLIPSIBLINGS,
                         x, y, w, h, parent_hwnd_, nullptr,
                         hInstance_, nullptr);
   //SetWindowLong(

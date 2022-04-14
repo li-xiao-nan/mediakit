@@ -29,6 +29,7 @@ class RendererImpl : public Renderer {
                std::shared_ptr<VideoRenderer> video_renderer);
   ~RendererImpl() override;
 
+  void SetDelegate(RendererDelegate* delegate) override;
   void Initialize(DemuxerStreamProvider* demuxer_stream_provider,
                           PipelineStatusCB init_cb,
                           PipelineStatusCB status_cb,
@@ -71,6 +72,7 @@ class RendererImpl : public Renderer {
   PipelineStatusCB init_cb_;
   PipelineStatusCB status_cb_;
   State state_;
+  RendererDelegate* delegate_;
   std::shared_ptr<TimeSource> playback_clock_;
   DemuxerStreamProvider* demuxer_stream_provider_;
   std::shared_ptr<AudioRenderer> audio_renderer_;

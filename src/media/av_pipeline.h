@@ -10,6 +10,7 @@
 #define MEDIA_AV_PIPELINE_H_
 
 #include <memory>
+#include <list>
 
 #include "boost/function.hpp"
 #include "boost/enable_shared_from_this.hpp"
@@ -19,11 +20,13 @@
 #include "media/renderer/renderer.h"
 #include "media/renderer/video_renderer.h"
 #include "media/demuxer/demuxer_delegate.h"
+#include "media/av_pipeline_observer.h"
 
 namespace media {
 
 class AVPipeline : public boost::enable_shared_from_this<AVPipeline>, 
-  public DemuxerDelegate{
+  public DemuxerDelegate,
+  public RendererDelegate {
  public:
   enum PipelineState {
     STATE_CREATE,
@@ -51,8 +54,15 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   void Seek(int64_t timestamp_ts);
   void Stop();
   int64_t GetPlaybackTime();
+  void AddObserver(std::shared_ptr<AVPipelineObserver> observer);
+  void RemoveObserver(std::shared_ptr<AVPipelineObserver> observer);
   
+  // DemuxerDelegate impl
   void OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) override;
+  void OnGetMediaInfo(const MediaInfo& media_info) override;
+
+  // RendererDelegate impl
+  void OnPlayProgressUpdate(int timestamp) override;
  private:
   void StartAction();
   void InitializeDemuxer(PipelineStatusCB done_cb);
@@ -71,6 +81,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   std::shared_ptr<Renderer> renderer_;
   PipelineStatusCB error_cb_;
   PipelineStatusCB seek_cb_;
+  std::list<std::shared_ptr<AVPipelineObserver>> avpipeline_observer_list_;
 };
 
 }  // namespace media

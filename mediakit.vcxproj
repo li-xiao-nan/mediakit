@@ -83,7 +83,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)third_party\curl\lib;$(SolutionDir)third_party\boost\lib\x86\$(Configuration);$(SolutionDir)third_party\ffmpeg\lib\win\;$(SolutionDir)third_party\freeglut\lib\win\;$(SolutionDir)third_party\sdl\x86\$(Configuration)\;$(SolutionDir)third_party\glew\lib\$(Configuration)\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <EntryPointSymbol>
       </EntryPointSymbol>
@@ -133,6 +133,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\log\watch_movie_state_recoder.h" />
     <ClInclude Include="src\media\av_pipeline.h" />
     <ClInclude Include="src\media\av_pipeline_factory.h" />
+    <ClInclude Include="src\media\av_pipeline_observer.h" />
     <ClInclude Include="src\media\base\audio_decoder_config.h" />
     <ClInclude Include="src\media\base\audio_frame.h" />
     <ClInclude Include="src\media\base\audio_parameters.h" />
@@ -161,6 +162,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\media\renderer\audio_renderer_impl.h" />
     <ClInclude Include="src\media\renderer\audio_renderer_sink.h" />
     <ClInclude Include="src\media\renderer\renderer.h" />
+    <ClInclude Include="src\media\renderer\renderer_delegate.h" />
     <ClInclude Include="src\media\renderer\renderer_impl.h" />
     <ClInclude Include="src\media\renderer\sdl_audio_renderer_sink.h" />
     <ClInclude Include="src\media\renderer\video_renderer.h" />
@@ -174,7 +176,9 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\net\io_channel.h" />
     <ClInclude Include="src\net\url.h" />
     <ClInclude Include="src\player\media_player.h" />
+    <ClInclude Include="src\player\media_player_client.h" />
     <ClInclude Include="src\UI\main_window.h" />
+    <ClInclude Include="src\UI\progress_window.h" />
     <ClInclude Include="src\utils\string_utils.h" />
     <ClInclude Include="src\window\main_message_loop_win.h" />
     <ClInclude Include="src\window\rgb_render.h" />
@@ -226,6 +230,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\net\url.cpp" />
     <ClCompile Include="src\player\media_player.cc" />
     <ClCompile Include="src\UI\main_window.cc" />
+    <ClCompile Include="src\UI\progress_window.cc" />
     <ClCompile Include="src\utils\string_utils.cpp" />
     <ClCompile Include="src\window\main_message_loop_win.cc" />
     <ClCompile Include="src\window\rgb_render.cc" />

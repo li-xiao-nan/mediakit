@@ -18,15 +18,17 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                       _In_ int nCmdShow) {
   UNREFERENCED_PARAMETER(hPrevInstance);
   UNREFERENCED_PARAMETER(lpCmdLine);
-  mediakit::MainWindow main_window;
+  std::shared_ptr<mediakit::MainWindow> main_window(new mediakit::MainWindow());
+
   RECT rects;
-  ::GetWindowRect(main_window.GetWindowHandle(), &rects);
+  ::GetWindowRect(main_window->GetWindowHandle(), &rects);
   int w = rects.right - rects.left;
   int h = rects.bottom - rects.top;
   std::string video_url = media::UTF16toANSI(lpCmdLine);
-  mediakit::MediaPlayer *mediaplayer = 
-    mediakit::MediaPlayer::CreateMediaPlayer(main_window.GetWindowHandle(), 0, 0, w, h, video_url);
+  std::shared_ptr<mediakit::MediaPlayer> mediaplayer = 
+    mediakit::MediaPlayer::CreateMediaPlayer(main_window->GetWindowHandle(), 0, 0, w, h, video_url);
   if(mediaplayer == nullptr) return -1;
+  mediaplayer->SetClient(main_window);
   mediaplayer->Start();
   int result = mediakit::EnterMainMessageLoop(hInstance);
   mediaplayer->Stop();
