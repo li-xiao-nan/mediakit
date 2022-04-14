@@ -4,6 +4,7 @@
 
 namespace mediakit {
 static const int kPBHeight = 6;
+HHOOK ProgressWindow::pre_hook_ = 0;
 HWND ProgressWindow::hwnd_ = 0;
 ProgressWindow::ProgressWindow(HWND hwnd_parent):hwnd_parent_(hwnd_parent) {
   RECT rect;
@@ -21,6 +22,46 @@ ProgressWindow::ProgressWindow(HWND hwnd_parent):hwnd_parent_(hwnd_parent) {
     pb_rect.top,
     pb_rect.right - pb_rect.left,
     pb_rect.bottom - pb_rect.top, hwnd_parent_, (HMENU)0, hInstance, nullptr);
+  // 获得线程ID
+  DWORD dwThreadId = 0;
+  dwThreadId = GetWindowThreadProcessId(hwnd_, NULL);
+  pre_hook_ =
+      SetWindowsHookEx(WH_GETMESSAGE, GetHookBrowerProc, NULL, dwThreadId);
+}
+
+LRESULT CALLBACK ProgressWindow::GetHookBrowerProc(int code,
+                                          WPARAM wParam,
+                                          LPARAM lParam) {
+  MSG* pMsg = (MSG*)lParam;
+  RECT rect = {};
+  if (nullptr == pMsg || code < 0 || pMsg->hwnd != hwnd_) {
+    return CallNextHookEx(pre_hook_, code, wParam, lParam);
+  }
+
+  switch (pMsg->message) {
+      case WM_LBUTTONUP: {
+      } break;
+      case WM_MOUSEMOVE: {
+        GetClientRect(pMsg->hwnd, &rect);
+      } break;
+      case WM_LBUTTONDOWN: {
+      } break;
+      case WM_MOUSELEAVE: {
+      } break;
+      case WM_POINTERUPDATE: {
+      } break;
+      case WM_POINTERDOWN: {
+      } break;
+      case WM_POINTERUP: {
+      } break;
+      case WM_POINTERENTER: {
+      } break;
+      case WM_POINTERLEAVE: {
+      } break;
+      default:
+        break;
+  }
+  return CallNextHookEx(pre_hook_, code, wParam, lParam);
 }
 
 void ProgressWindow::SetTopWindow(){

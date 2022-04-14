@@ -12,11 +12,15 @@ public:
   // unit:ms
   void SetRange(int64_t media_duration);
   void SetProgress(int64_t timestamp);
+private:
+  static LRESULT CALLBACK GetHookBrowerProc(int code,
+                                            WPARAM wParam,
+                                            LPARAM lParam);
  private:
-  static HWND hwnd_;
+  static HHOOK pre_hook_;
   int64_t media_duration_;
   HWND hwnd_parent_;
-
+  static HWND hwnd_;
 };
 } // namespace mediakit
 
