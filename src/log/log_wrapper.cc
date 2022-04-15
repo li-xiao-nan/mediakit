@@ -50,7 +50,7 @@ void InitializeLog(){
     return;
   }
   spdlog::drop_all();
-  std::string log_file_dir = GetApplicationFileDirUtf8() + "/log/";
+  std::string log_file_dir = UTF16toANSI(GetApplicationFileDirUtf16()) + "/log/";
   if(!boost::filesystem::is_directory(log_file_dir)) {
     bool result =  boost::filesystem::create_directory(log_file_dir);
     if(!result) {
