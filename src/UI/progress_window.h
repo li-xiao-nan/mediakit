@@ -3,10 +3,10 @@
 #include <windows.h>
 #include <iostream>
 namespace mediakit {
-
+class MainWindow;
 class ProgressWindow {
 public:
-  ProgressWindow(HWND hwnd_parent, int left, int top, int w, int h);
+  ProgressWindow(MainWindow* mian_window, HWND hwnd_parent, int left, int top, int w, int h);
   ~ProgressWindow() = default;
   void SetTopWindow();
   // unit:ms
@@ -15,11 +15,13 @@ public:
   void UpdateWindowPosition(int left, int top, int w, int h);
   void ShowHoverWindow(int x, int y);
   void HideHoverWindow();
+  void OnLButtionDown(int x, int y);
 private:
   static LRESULT CALLBACK GetHookBrowerProc(int code,
                                             WPARAM wParam,
                                             LPARAM lParam);
   void CreateHoverTextControl();
+  int CaculatePlayTimestampByXPos(int x);
  private:
   int left_, top_, width_, height_;
   static HHOOK pre_hook_;
@@ -27,6 +29,7 @@ private:
   HWND hwnd_parent_;
   static HWND hwnd_;
   HWND hwnd_hover_;
+  MainWindow* main_window_;
 };
 } // namespace mediakit
 

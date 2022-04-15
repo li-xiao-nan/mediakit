@@ -29,7 +29,8 @@ MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0) {
       kPlayTimeTextControlWidth,
       kPlayTimeTextControlHeight);
     progress_window_.reset(
-      new ProgressWindow(hwnd_, 0, rect.bottom - kPlayControlAreaHeight, rect.right - rect.left, kPBHeight));
+      new ProgressWindow(this, hwnd_, 0, 
+        rect.bottom - kPlayControlAreaHeight, rect.right - rect.left, kPBHeight));
   }
 
 LRESULT CALLBACK MainWindowProc(HWND hWnd,
@@ -180,6 +181,11 @@ void MainWindow::CreatePlayingTimeTextControl(int left, int top, int w, int h) {
   current_playing_timestamp_str_ = FormatDurationInfo(0);
   duration_format_str_ = FormatDurationInfo(0);
   UpdatePlaytingShowText();
+}
+
+void MainWindow::Seek(int timestamp_ms) {
+  if(!mediaplayer_instance_) return;
+  mediaplayer_instance_->Seek(timestamp_ms);
 }
 
 } // namespace mediakit

@@ -7,11 +7,13 @@
 // 1、在包含Windows.h前定义宏WIN32_LEAN_AND_MEAN，就OK了（WIN32_LEAN_AND_MEAN表示不包含一些极少使用和偏门的资料）
 // 2、在包含Windows.h前包含winsock2.h
 // 3、在包含Windows.h前包含asio.hpp
+#include <windows.h>
 #include "ui/progress_window.h"
 #include "player/media_player.h"
-#include <windows.h>
 
 namespace mediakit {
+class MediaPlayer;
+class ProgressWindow;
 
 LRESULT CALLBACK MainWindowProc(HWND, UINT, WPARAM, LPARAM);
 class MainWindow : public MediaPlayerClient {
@@ -19,6 +21,7 @@ public:
   MainWindow();
   ~MainWindow() = default;
   HWND GetWindowHandle();
+  void Seek(int timestamp_ms);
   void SetProgressWindowTop();
   void OnWindowSizeChanged();
   void OnMouseMove();

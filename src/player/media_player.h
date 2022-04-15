@@ -15,6 +15,7 @@ public:
   void DisplayCallBack(std::shared_ptr<media::VideoFrame> video_frame);
   void Start();
   void Stop();
+  void Seek(int timestamp_ms);
   void SetClient(std::shared_ptr<MediaPlayerClient> client);
   void UpdatePlayerWindowPosition(int left, int top, int w, int h);
   

@@ -1,14 +1,17 @@
 #include "ui/progress_window.h"
-#include <CommCtrl.h >
 #include <string>
+#include <CommCtrl.h >
+#include "ui/main_window.h"
 
 namespace mediakit {
 static int kHoverTextControlWidth = 65;
 static int kHoverTextControlHeight = 15;
 HHOOK ProgressWindow::pre_hook_ = 0;
 HWND ProgressWindow::hwnd_ = 0;
-ProgressWindow::ProgressWindow(HWND hwnd_parent, int left, int top, int w, int h)
-  : hwnd_parent_(hwnd_parent)
+ProgressWindow::ProgressWindow(MainWindow* main_window,
+  HWND hwnd_parent, int left, int top, int w, int h)
+  : main_window_(main_window)
+  , hwnd_parent_(hwnd_parent)
   , left_(left)
   , top_(top)
   , width_(w)
@@ -70,7 +73,10 @@ LRESULT CALLBACK ProgressWindow::GetHookBrowerProc(int code,
         hover_showing = true;
       } break;
       case WM_LBUTTONDOWN: {
-        GetClientRect(pMsg->hwnd, &rect);
+        int x, y;
+        x = LOWORD(pMsg->lParam);
+        y = HIWORD(pMsg->lParam);
+        progress_window->OnLButtionDown(x, y);
       } break;
       case WM_NCMOUSELEAVE: {
         progress_window->HideHoverWindow();
@@ -145,10 +151,19 @@ void ProgressWindow::ShowHoverWindow(int x, int y) {
   int hover_window_y = top_ - kHoverTextControlHeight;
   ::SetWindowPos(hwnd_hover_, 0, hover_window_x, hover_window_y, kHoverTextControlWidth,
     kHoverTextControlHeight, SWP_NOZORDER);
-  float progress_value = x*1.0 / width_*1.0f;
-  int hover_timestamp = media_duration_ * progress_value;
+  int hover_timestamp = CaculatePlayTimestampByXPos(x);
   SetWindowText(hwnd_hover_, FormatDurationInfo(hover_timestamp).c_str());
   ShowWindow(hwnd_hover_, SW_SHOWNORMAL);
+}
+
+int ProgressWindow::CaculatePlayTimestampByXPos(int x) {
+  float progress_value = x * 1.0 / width_ * 1.0f;
+  int hover_timestamp = media_duration_ * progress_value;
+  return hover_timestamp;
+}
+void ProgressWindow::OnLButtionDown(int x, int y) {
+  int click_timestamp = CaculatePlayTimestampByXPos(x);
+  main_window_->Seek(click_timestamp);
 }
 
 void ProgressWindow::HideHoverWindow() {

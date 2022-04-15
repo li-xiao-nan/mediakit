@@ -38,6 +38,10 @@ void MediaPlayer::Stop() {
   av_pipeline_->Stop();
 }
 
+void MediaPlayer::Seek(int timestamp_ms) {
+  av_pipeline_->Seek(timestamp_ms);
+}
+
 void MediaPlayer::SetClient(std::shared_ptr<MediaPlayerClient> client) {
   mediaplayer_client_ = client;
 }

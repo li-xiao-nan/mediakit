@@ -99,7 +99,6 @@ void RendererImpl::Stop() {
 
 int64_t RendererImpl::GetPlaybackTime() {
   int64_t current_timestamp = GetCurrentTime();
-  if(delegate_) delegate_->OnPlayProgressUpdate(current_timestamp);
   return current_timestamp;
 }
 void RendererImpl::InitializeAudioRenderer() {

@@ -51,7 +51,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   void Start();
   void Pause();
   void Resume();
-  void Seek(int64_t timestamp_ts);
+  void Seek(int64_t timestamp_ms);
   void Stop();
   int64_t GetPlaybackTime();
   void AddObserver(std::shared_ptr<AVPipelineObserver> observer);
