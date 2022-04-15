@@ -6,7 +6,7 @@ namespace mediakit {
 
 class ProgressWindow {
 public:
-  ProgressWindow(HWND hwnd_parent);
+  ProgressWindow(HWND hwnd_parent, int left, int top, int w, int h);
   ~ProgressWindow() = default;
   void SetTopWindow();
   // unit:ms

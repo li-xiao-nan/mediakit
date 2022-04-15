@@ -3,17 +3,18 @@
 #include <CommCtrl.h >
 
 namespace mediakit {
-static const int kPBHeight = 6;
+static const int kPBHeight = 8;
 HHOOK ProgressWindow::pre_hook_ = 0;
 HWND ProgressWindow::hwnd_ = 0;
-ProgressWindow::ProgressWindow(HWND hwnd_parent):hwnd_parent_(hwnd_parent) {
+ProgressWindow::ProgressWindow(HWND hwnd_parent, int left, int top, int w, int h)
+  : hwnd_parent_(hwnd_parent) {
   RECT rect;
   GetClientRect(hwnd_parent, &rect);
   RECT pb_rect;
-  pb_rect.left = 10;
-  pb_rect.top = (rect.bottom - rect.top) - 20 - kPBHeight;
-  pb_rect.right = (rect.right - rect.left) - 10;
-  pb_rect.bottom = pb_rect.top + kPBHeight;
+  pb_rect.left = left;
+  pb_rect.top = top;
+  pb_rect.right = left + w;
+  pb_rect.bottom = top + h;
   HMODULE hInstance = GetModuleHandle(NULL);
   InitCommonControls();
   hwnd_ = CreateWindowExW(0, PROGRESS_CLASS, L"",
@@ -45,6 +46,7 @@ LRESULT CALLBACK ProgressWindow::GetHookBrowerProc(int code,
         GetClientRect(pMsg->hwnd, &rect);
       } break;
       case WM_LBUTTONDOWN: {
+        GetClientRect(pMsg->hwnd, &rect);
       } break;
       case WM_MOUSELEAVE: {
       } break;

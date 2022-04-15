@@ -21,12 +21,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   std::shared_ptr<mediakit::MainWindow> main_window(new mediakit::MainWindow());
 
   RECT rects;
-  ::GetWindowRect(main_window->GetWindowHandle(), &rects);
+  ::GetClientRect(main_window->GetWindowHandle(), &rects);
   int w = rects.right - rects.left;
   int h = rects.bottom - rects.top;
   std::string video_url = media::UTF16toANSI(lpCmdLine);
   std::shared_ptr<mediakit::MediaPlayer> mediaplayer = 
-    mediakit::MediaPlayer::CreateMediaPlayer(main_window->GetWindowHandle(), 0, 0, w, h, video_url);
+    mediakit::MediaPlayer::CreateMediaPlayer(main_window->GetWindowHandle(), 0, 0, w, h-30, video_url);
   if(mediaplayer == nullptr) return -1;
   mediaplayer->SetClient(main_window);
   mediaplayer->Start();

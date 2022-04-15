@@ -26,10 +26,17 @@ public:
   void OnPlayProgressUpdate(const int64_t timestamp) override;
 private:
   ATOM RegisterWindowClass(HINSTANCE hInstance);
+  void CreatePlayingTimeTextControl(int left, int top, int w, int h);
+  std::wstring  FormatDurationInfo(int media_duration);
+  void UpdatePlaytingShowText();
 private:
   HWND hwnd_;
+  HWND playing_time_hwnd_;
+  std::wstring duration_format_str_;
+  std::wstring current_playing_timestamp_str_;
   media::MediaInfo media_info_;
   std::unique_ptr<ProgressWindow> progress_window_;
+  int pre_playing_timestamp_by_second_;
 };
 } // namespace mediakit
 
