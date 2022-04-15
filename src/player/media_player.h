@@ -16,6 +16,7 @@ public:
   void Start();
   void Stop();
   void SetClient(std::shared_ptr<MediaPlayerClient> client);
+  void UpdatePlayerWindowPosition(int left, int top, int w, int h);
   
   // AVPipelineObserver impl
   void OnGetMediaInfo(const media::MediaInfo& media_info) override;

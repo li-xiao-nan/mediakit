@@ -42,6 +42,10 @@ void MediaPlayer::SetClient(std::shared_ptr<MediaPlayerClient> client) {
   mediaplayer_client_ = client;
 }
 
+void MediaPlayer::UpdatePlayerWindowPosition(int left, int top, int w, int h) {
+  video_display_window_->SetWindowPosition(left, top, w, h);
+}
+
 void MediaPlayer::OnGetMediaInfo(const media::MediaInfo& media_info) {
   if(!mediaplayer_client_) {
     return;

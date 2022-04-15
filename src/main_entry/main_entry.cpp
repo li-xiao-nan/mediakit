@@ -28,6 +28,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   std::shared_ptr<mediakit::MediaPlayer> mediaplayer = 
     mediakit::MediaPlayer::CreateMediaPlayer(main_window->GetWindowHandle(), 0, 0, w, h-30, video_url);
   if(mediaplayer == nullptr) return -1;
+  main_window->SetMediaPlayer(mediaplayer);
   mediaplayer->SetClient(main_window);
   mediaplayer->Start();
   int result = mediakit::EnterMainMessageLoop(hInstance);

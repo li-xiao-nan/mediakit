@@ -33,6 +33,10 @@ void VideoDisplayWindow::Initialize() {
   render_.SetViewport(w, h);
 }
 
+void VideoDisplayWindow::SetWindowPosition(int left, int top, int w, int h) {
+  ::SetWindowPos(hwnd_, 0, left, top, w, h, SWP_NOZORDER);
+}
+
 void VideoDisplayWindow::display(std::shared_ptr<media::VideoFrame> video_frame) {
   if(!video_frame) {
     return;

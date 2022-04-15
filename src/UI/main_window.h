@@ -8,6 +8,7 @@
 // 2、在包含Windows.h前包含winsock2.h
 // 3、在包含Windows.h前包含asio.hpp
 #include "ui/progress_window.h"
+#include "player/media_player.h"
 #include <windows.h>
 
 namespace mediakit {
@@ -19,7 +20,8 @@ public:
   ~MainWindow() = default;
   HWND GetWindowHandle();
   void SetProgressWindowTop();
-
+  void OnWindowSizeChanged();
+  void SetMediaPlayer(std::shared_ptr<MediaPlayer> mediaplayer);
   // MediaPlayerClient impl
   void OnGetMediaInfo(const media::MediaInfo& media_info) override;
   void OnPlayStateChanged() override {};
@@ -37,6 +39,7 @@ private:
   media::MediaInfo media_info_;
   std::unique_ptr<ProgressWindow> progress_window_;
   int pre_playing_timestamp_by_second_;
+  std::shared_ptr<MediaPlayer> mediaplayer_instance_;
 };
 } // namespace mediakit
 

@@ -12,6 +12,7 @@ public:
   // unit:ms
   void SetRange(int64_t media_duration);
   void SetProgress(int64_t timestamp);
+  void UpdateWindowPosition(int left, int top, int w, int h);
 private:
   static LRESULT CALLBACK GetHookBrowerProc(int code,
                                             WPARAM wParam,

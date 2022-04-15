@@ -17,6 +17,8 @@ MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0) {
     SetWindowLong(
         hwnd_, GWL_EXSTYLE,
         GetWindowLong(hwnd_, GWL_EXSTYLE) | WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
+    ::SetWindowLongPtr(hwnd_, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+
     ShowWindow(hwnd_, SW_SHOWNORMAL);
     UpdateWindow(hwnd_);
     RECT rect;
@@ -29,14 +31,20 @@ MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0) {
     progress_window_.reset(
       new ProgressWindow(hwnd_, 0, rect.bottom - kPlayControlAreaHeight, rect.right - rect.left, kPBHeight));
   }
+
 LRESULT CALLBACK MainWindowProc(HWND hWnd,
                                 UINT message,
                                 WPARAM wParam,
                                 LPARAM lParam) {
+    MainWindow* main_window = reinterpret_cast<MainWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    if(!main_window) {
+      return DefWindowProc(hWnd, message, wParam, lParam);
+    }
     switch (message) {
       case WM_PAINT: {
       } break;
       case WM_SIZE: {
+        main_window->OnWindowSizeChanged();
       } break;
       case WM_DESTROY:
         PostQuitMessage(0);
@@ -45,6 +53,24 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd,
         return DefWindowProc(hWnd, message, wParam, lParam);
     }
     return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+void MainWindow::OnWindowSizeChanged() {
+  RECT rect;
+  GetClientRect(hwnd_, &rect);
+  int w = rect.right - rect.left;
+  int h = rect.bottom - rect.top;
+  if(mediaplayer_instance_) {
+    mediaplayer_instance_->UpdatePlayerWindowPosition(0, 0, w, h-kPlayControlAreaHeight);
+  }
+  if(progress_window_) {
+    progress_window_->UpdateWindowPosition(
+      0, rect.bottom - kPlayControlAreaHeight, rect.right - rect.left, kPBHeight);
+  }
+  SetWindowPos(playing_time_hwnd_, 0, 10,
+               rect.bottom - kPlayControlAreaHeight + kPBHeight,
+               kPlayTimeTextControlWidth, kPlayTimeTextControlHeight, SWP_NOZORDER);
+ 
 }
 
 ATOM MainWindow::RegisterWindowClass(HINSTANCE hInstance) {
@@ -73,6 +99,10 @@ HWND MainWindow::GetWindowHandle() {
 
 void MainWindow::SetProgressWindowTop() {
   progress_window_->SetTopWindow();
+}
+
+void MainWindow::SetMediaPlayer(std::shared_ptr<MediaPlayer> mediaplayer){
+  mediaplayer_instance_ = mediaplayer;
 }
 
 void MainWindow::OnGetMediaInfo(const media::MediaInfo& media_info) {

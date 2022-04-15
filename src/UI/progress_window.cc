@@ -79,4 +79,8 @@ void ProgressWindow::SetProgress(int64_t timestamp) {
   SendMessage(hwnd_, PBM_SETPOS, timestamp/1000, (LPARAM)0);
 }
 
+void ProgressWindow::UpdateWindowPosition(int left, int top, int w, int h) {
+  SetWindowPos(hwnd_, 0, left, top, w, h, SWP_NOZORDER);
+}
+
 } // namespace mediakit
