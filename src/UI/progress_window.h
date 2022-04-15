@@ -13,15 +13,20 @@ public:
   void SetRange(int64_t media_duration);
   void SetProgress(int64_t timestamp);
   void UpdateWindowPosition(int left, int top, int w, int h);
+  void ShowHoverWindow(int x, int y);
+  void HideHoverWindow();
 private:
   static LRESULT CALLBACK GetHookBrowerProc(int code,
                                             WPARAM wParam,
                                             LPARAM lParam);
+  void CreateHoverTextControl();
  private:
+  int left_, top_, width_, height_;
   static HHOOK pre_hook_;
   int64_t media_duration_;
   HWND hwnd_parent_;
   static HWND hwnd_;
+  HWND hwnd_hover_;
 };
 } // namespace mediakit
 

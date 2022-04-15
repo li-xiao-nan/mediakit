@@ -21,6 +21,7 @@ public:
   HWND GetWindowHandle();
   void SetProgressWindowTop();
   void OnWindowSizeChanged();
+  void OnMouseMove();
   void SetMediaPlayer(std::shared_ptr<MediaPlayer> mediaplayer);
   // MediaPlayerClient impl
   void OnGetMediaInfo(const media::MediaInfo& media_info) override;

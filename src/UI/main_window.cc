@@ -70,7 +70,6 @@ void MainWindow::OnWindowSizeChanged() {
   SetWindowPos(playing_time_hwnd_, 0, 10,
                rect.bottom - kPlayControlAreaHeight + kPBHeight,
                kPlayTimeTextControlWidth, kPlayTimeTextControlHeight, SWP_NOZORDER);
- 
 }
 
 ATOM MainWindow::RegisterWindowClass(HINSTANCE hInstance) {
