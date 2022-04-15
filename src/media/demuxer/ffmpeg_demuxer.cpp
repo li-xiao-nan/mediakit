@@ -204,7 +204,7 @@ void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
   avformat_flush(av_format_context_);
   avio_flush(av_format_context_->pb);
   Resume();
-  AfterSeekReadFirstPacket();
+  //AfterSeekReadFirstPacket();
   ReadFrameIfNeeded();
   //DropBufferedDataTest(timestamp_ms);
   PostTask(TID_DECODE, boost::bind(action_cb, (ret >= 0 ? true : false)));
@@ -217,9 +217,13 @@ void FFmpegDemuxer::AfterSeekReadFirstPacket() {
     LOGGING(LOG_LEVEL_ERROR) << "av_read_frame failed";
     return;
   }
-  int64_t seek_result_pts = encoded_avframe->pts;
+  int64_t seek_result_pts;
+  if(encoded_avframe->stream_index == 0)
+    seek_result_pts = TimeBaseToMillionSecond(encoded_avframe->pts, GetAudioStreamTimeBase());
+  else 
+    seek_result_pts = TimeBaseToMillionSecond(encoded_avframe->pts, GetVideoStreamTimeBase());
   if(demuxer_delegate_) {
-    demuxer_delegate_->OnUpdateAlignedSeekTimestamp(seek_result_pts - 200);
+    demuxer_delegate_->OnUpdateAlignedSeekTimestamp(seek_result_pts);
   }
   PostTask(TID_DECODE, 
     boost::bind(&FFmpegDemuxer::OnReadFrameDone, this, encoded_avframe, true));

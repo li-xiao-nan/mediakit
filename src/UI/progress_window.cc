@@ -2,6 +2,7 @@
 #include <string>
 #include <CommCtrl.h >
 #include "ui/main_window.h"
+#include "log/log_wrapper.h"
 
 namespace mediakit {
 static int kHoverTextControlWidth = 65;
@@ -126,7 +127,7 @@ void ProgressWindow::CreateHoverTextControl() {
         hwnd_parent_, (HMENU)2, hInstance, NULL);
 }
 
-std::wstring FormatDurationInfo(int media_duration) {
+std::wstring FormatDurationInfoW(int media_duration) {
   int duration_by_second = media_duration / 1000;
   int hour_value = duration_by_second / (60 * 60);
   int minute_value = duration_by_second / 60 % 60;
@@ -146,13 +147,33 @@ std::wstring FormatDurationInfo(int media_duration) {
   return result;
 }
 
+std::string FormatDurationInfoA(int media_duration) {
+  int duration_by_second = media_duration / 1000;
+  int hour_value = duration_by_second / (60 * 60);
+  int minute_value = duration_by_second / 60 % 60;
+  int second_value = duration_by_second % 60;
+  std::string hour_value_str =
+      hour_value >= 10 ? std::to_string(hour_value)
+                       : std::to_string(0) + std::to_string(hour_value);
+  std::string minute_value_str =
+      minute_value >= 10 ? std::to_string(minute_value)
+                         : std::to_string(0) + std::to_string(minute_value);
+  std::string second_value_str =
+      second_value >= 10 ? std::to_string(second_value)
+                         : std::to_string(0) + std::to_string(second_value);
+
+  std::string result =
+      hour_value_str + ":" + minute_value_str + ":" + second_value_str;
+  return result;
+}
+
 void ProgressWindow::ShowHoverWindow(int x, int y) {
   int hover_window_x = left_ + x;
   int hover_window_y = top_ - kHoverTextControlHeight;
   ::SetWindowPos(hwnd_hover_, 0, hover_window_x, hover_window_y, kHoverTextControlWidth,
     kHoverTextControlHeight, SWP_NOZORDER);
   int hover_timestamp = CaculatePlayTimestampByXPos(x);
-  SetWindowText(hwnd_hover_, FormatDurationInfo(hover_timestamp).c_str());
+  SetWindowText(hwnd_hover_, FormatDurationInfoW(hover_timestamp).c_str());
   ShowWindow(hwnd_hover_, SW_SHOWNORMAL);
 }
 
@@ -164,6 +185,7 @@ int ProgressWindow::CaculatePlayTimestampByXPos(int x) {
 void ProgressWindow::OnLButtionDown(int x, int y) {
   int click_timestamp = CaculatePlayTimestampByXPos(x);
   main_window_->Seek(click_timestamp);
+  LOGGING(media::LogLevel::LOG_LEVEL_INFO)<<"seek:"<<FormatDurationInfoA(click_timestamp).c_str()<<"("<<click_timestamp<<"ms)";
 }
 
 void ProgressWindow::HideHoverWindow() {

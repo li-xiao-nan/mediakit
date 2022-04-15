@@ -60,7 +60,7 @@ void AVStreamToVideoDecoderConfig(const AVStream* stream,
 }
 
 int64_t ConvertToTimeBase(int64_t timestamp, const AVRational& time_base) {
-  return av_rescale_q(timestamp, kMicroTimeBase, time_base);
+  return av_rescale_q(timestamp, kMillionTimeBase, time_base);
 }
 
 int64_t TimeBaseToMillionSecond(int64_t timestamp,

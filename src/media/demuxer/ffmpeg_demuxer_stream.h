@@ -45,12 +45,11 @@ class FFmpegDemuxerStream : public DemuxerStream {
   int64_t duration() { return duration_; }
   const AVRational& time_base() { return time_base_; }
   void ShowConfigInfo();
-
+  AVRational time_base_;
  private:
   int stream_index_;
   // micro second
   int64_t duration_;
-  AVRational time_base_;
   bool is_demux_complete_;
   Type type_;
   ReadCB read_cb_;
