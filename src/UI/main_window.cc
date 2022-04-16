@@ -7,8 +7,12 @@ static const int kPBHeight = 8;
 static const int kPlayControlAreaHeight = 30;
 static const int kPlayTimeTextControlWidth = 130;
 static const int kPlayTimeTextControlHeight = 15;
+static const int kPlayPauseButtionID = 100;
+static const int kPlayPauseButtionWidth = 50;
+static const int kPlayPauseButtionHeight = 20;
 
-MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0) {
+MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0)
+    , is_pauseing_(false){
     HMODULE hInstance = GetModuleHandle(NULL);
     RegisterWindowClass(hInstance);
     hwnd_ = CreateWindowW(kWindowClassName, kWindowTitle, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
@@ -23,37 +27,58 @@ MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0) {
     UpdateWindow(hwnd_);
     RECT rect;
     GetClientRect(hwnd_, &rect);
+    int parent_window_width = rect.right - rect.left;
+    int parent_window_height = rect.bottom - rect.top;
     CreatePlayingTimeTextControl(
       10,
       rect.bottom  - kPlayControlAreaHeight + kPBHeight,
       kPlayTimeTextControlWidth,
       kPlayTimeTextControlHeight);
+    CreatePlayPauseButtion(parent_window_width/2 - kPlayTimeTextControlWidth/2,
+      rect.bottom - kPlayControlAreaHeight + kPBHeight,
+      kPlayPauseButtionWidth,
+      kPlayPauseButtionHeight);
     progress_window_.reset(
       new ProgressWindow(this, hwnd_, 0, 
         rect.bottom - kPlayControlAreaHeight, rect.right - rect.left, kPBHeight));
+
   }
 
 LRESULT CALLBACK MainWindowProc(HWND hWnd,
                                 UINT message,
                                 WPARAM wParam,
                                 LPARAM lParam) {
-    MainWindow* main_window = reinterpret_cast<MainWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-    if(!main_window) {
-      return DefWindowProc(hWnd, message, wParam, lParam);
-    }
-    switch (message) {
-      case WM_PAINT: {
-      } break;
-      case WM_SIZE: {
-        main_window->OnWindowSizeChanged();
-      } break;
-      case WM_DESTROY:
-        PostQuitMessage(0);
-        break;
-      default:
-        return DefWindowProc(hWnd, message, wParam, lParam);
-    }
+  MainWindow* main_window = reinterpret_cast<MainWindow*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+  if(!main_window) {
     return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  switch (message) {
+  case WM_COMMAND:{
+    int control_id = LOWORD(wParam);
+    if (control_id == kPlayPauseButtionID) {
+      main_window->OnPlayPauseButtionClick();
+    }
+    break;
+  }
+  case WM_PAINT: {
+    } break;
+  case WM_KEYUP:{
+    // ¿Õ¸ñ¼ü
+    if(wParam == 32) {
+      main_window->OnPlayPauseButtionClick();
+    }
+    break;
+  }
+    case WM_SIZE: {
+      main_window->OnWindowSizeChanged();
+    } break;
+    case WM_DESTROY:
+      PostQuitMessage(0);
+      break;
+    default:
+      return DefWindowProc(hWnd, message, wParam, lParam);
+  }
+  return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 void MainWindow::OnWindowSizeChanged() {
@@ -186,6 +211,33 @@ void MainWindow::CreatePlayingTimeTextControl(int left, int top, int w, int h) {
 void MainWindow::Seek(int timestamp_ms) {
   if(!mediaplayer_instance_) return;
   mediaplayer_instance_->Seek(timestamp_ms);
+}
+
+void MainWindow::CreatePlayPauseButtion(int left, int top, int w, int h) {
+  play_pause_hwnd_ = CreateWindow(
+      L"BUTTON",          // Predefined class; Unicode assumed
+      L"ÔÝÍ£",  // Button text
+      WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles
+      left,                                                     // x position
+      top,                                                    // y position
+      w,                                                    // Button width
+      h,                                                     // Button height
+      hwnd_,                                                   // Parent window
+      (HMENU)kPlayPauseButtionID,  // Assign appropriate control ID
+      (HINSTANCE)GetWindowLong(hwnd_, GWL_HINSTANCE),
+      NULL);  // Pointer not needed.
+}
+
+void MainWindow::OnPlayPauseButtionClick(){
+  if(is_pauseing_) {
+    is_pauseing_ = false;
+    mediaplayer_instance_->Resume();
+    SetWindowText(play_pause_hwnd_ ,L"ÔÝÍ£");
+  } else {
+    is_pauseing_ = true;
+    mediaplayer_instance_->Pause();
+    SetWindowText(play_pause_hwnd_, L"²¥·Å");
+  }
 }
 
 } // namespace mediakit

@@ -16,6 +16,8 @@ public:
   void Start();
   void Stop();
   void Seek(int timestamp_ms);
+  void Pause();
+  void Resume();
   void SetClient(std::shared_ptr<MediaPlayerClient> client);
   void UpdatePlayerWindowPosition(int left, int top, int w, int h);
   

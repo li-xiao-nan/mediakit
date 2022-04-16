@@ -38,6 +38,14 @@ void MediaPlayer::Stop() {
   av_pipeline_->Stop();
 }
 
+void MediaPlayer::Pause() {
+  av_pipeline_->Pause();
+}
+
+void MediaPlayer::Resume() {
+  av_pipeline_->Resume();
+}
+
 void MediaPlayer::Seek(int timestamp_ms) {
   av_pipeline_->Seek(timestamp_ms);
 }

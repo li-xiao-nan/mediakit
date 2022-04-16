@@ -122,7 +122,7 @@ void ProgressWindow::UpdateWindowPosition(int left, int top, int w, int h) {
 void ProgressWindow::CreateHoverTextControl() {
   HMODULE hInstance = GetModuleHandle(NULL);
   hwnd_hover_ =
-      CreateWindow(L"static", L"01:22:23", WS_CHILD , 0,
+      CreateWindow(L"static", L"01:22:23", WS_CHILD | WS_CLIPSIBLINGS, 0,
         0, kHoverTextControlWidth, kHoverTextControlHeight, 
         hwnd_parent_, (HMENU)2, hInstance, NULL);
 }

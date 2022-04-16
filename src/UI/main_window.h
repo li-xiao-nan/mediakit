@@ -30,14 +30,18 @@ public:
   void OnGetMediaInfo(const media::MediaInfo& media_info) override;
   void OnPlayStateChanged() override {};
   void OnPlayProgressUpdate(const int64_t timestamp) override;
+  void OnPlayPauseButtionClick();
 private:
   ATOM RegisterWindowClass(HINSTANCE hInstance);
   void CreatePlayingTimeTextControl(int left, int top, int w, int h);
   std::wstring  FormatDurationInfo(int media_duration);
   void UpdatePlaytingShowText();
+  void CreatePlayPauseButtion(int left, int top, int w, int h);
 private:
+  bool is_pauseing_;
   HWND hwnd_;
   HWND playing_time_hwnd_;
+  HWND play_pause_hwnd_;
   std::wstring duration_format_str_;
   std::wstring current_playing_timestamp_str_;
   media::MediaInfo media_info_;
