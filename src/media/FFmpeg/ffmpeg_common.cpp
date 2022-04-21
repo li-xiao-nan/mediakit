@@ -218,11 +218,15 @@ void AVFrameToAudioFrame(AVFrame* av_frame,
   //**********************convert the sample format **********/
   static SwrContext* swr_context_ = NULL;
   int wanted_nb_samples = av_frame->nb_samples;
-  int out_ch_count = ChannelLayoutToChannelCount(av_codec_context->channel_layout);
+  // out_ch_layout:
+  // SDL音频播放支持单声道/双声道播放，
+  // 单声道音频，依然使用单声道，非单声道音频统一转换为双声道
+  // out_sample_fmt: SDL 音频最大支持16位数据类型
+  int64_t out_ch_layout = (av_codec_context->channel_layout == AV_CH_LAYOUT_MONO 
+      ? AV_CH_LAYOUT_MONO : AV_CH_LAYOUT_STEREO);
+  int out_ch_count = ChannelLayoutToChannelCount(out_ch_layout);
   if (!swr_context_) {
     swr_free(&swr_context_);
-    // out_ch_layout: SDL音频播放支持单声道/双声道播放，此处统一转换为双声道音频数据
-    // out_sample_fmt: SDL 音频最大支持16位数据类型
     swr_context_ = swr_alloc_set_opts(
       NULL,
       av_codec_context->channel_layout,
