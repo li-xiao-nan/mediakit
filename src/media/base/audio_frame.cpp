@@ -4,8 +4,15 @@
 namespace media {
 AudioFrame::AudioFrame(unsigned char* data, int data_size, int64_t pts) {
   pts_ = pts;
-  data_.assign(data, data + data_size);
+  data_size_ = data_size;
+  data_ = new unsigned char[data_size_];
+  memcpy(data_, data, data_size_);
   offset_ = 0;
+}
+
+AudioFrame::~AudioFrame() {
+  delete [] data_;
+  data_ = nullptr;
 }
 
 int AudioFrame::Read(uint8_t* data, int length) {
@@ -23,11 +30,11 @@ int AudioFrame::Read(uint8_t* data, int length) {
   return can_read_size;
 }
 int AudioFrame::data_size() {
-  return data_.size() - offset_;
+  return data_size_ - offset_;
 }
 
 unsigned char* AudioFrame::data() {
-  if (data_.empty())
+  if (!data_)
     return NULL;
   return &data_[0];
 }
