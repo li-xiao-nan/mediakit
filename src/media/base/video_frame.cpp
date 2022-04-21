@@ -6,6 +6,7 @@ namespace media {
 
 
 int VideoFrame::frame_count_base_ = 0;
+int VideoFrame::s_global_instance_count_ = 0;
 
 VideoFrame::VideoFrame(int w, int h, enum Format format)
     : _w(w), _h(h), _format(format), _data(0), _pts(0) {
@@ -58,9 +59,11 @@ VideoFrame::VideoFrame(int w, int h, enum Format format)
 
   frame_no_ = GetNextFrameNo();
   _timeRecoder._frameNo = frame_no_;
+  s_global_instance_count_++;
 }
 
 VideoFrame::~VideoFrame() {
+  s_global_instance_count_--;
   if (_data) {
     // cout<<"delete the data"<<endl;
     delete (_data);

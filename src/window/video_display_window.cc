@@ -38,6 +38,7 @@ void VideoDisplayWindow::SetWindowPosition(int left, int top, int w, int h) {
 }
 
 void VideoDisplayWindow::display(std::shared_ptr<media::VideoFrame> video_frame) {
+  LOGGING(media::LOG_LEVEL_DEBUG)<<"VideoFrameCount:"<<media::VideoFrame::GetGlobalInstanceCount();
   if(!video_frame) {
     return;
   }

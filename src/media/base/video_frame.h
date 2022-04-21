@@ -42,8 +42,9 @@ class VideoFrame {
   ~VideoFrame();
 
   unsigned char* begin() const { return _data; }
-
+  static int GetGlobalInstanceCount() { return s_global_instance_count_;}
   static int frame_count_base_;
+  static int s_global_instance_count_;
 private:
   int GetNextFrameNo();
 
