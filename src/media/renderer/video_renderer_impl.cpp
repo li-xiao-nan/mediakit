@@ -90,6 +90,7 @@ void VideoRendererImpl::Resume() {
 }
 
 void VideoRendererImpl::ClearAVFrameBuffer() {
+  boost::mutex::scoped_lock lock(ready_frames_lock_);
   std::queue<std::shared_ptr<VideoFrame> > empty;
   std::swap(empty, pending_paint_frames_);
   video_frame_stream_->ClearBuffer();
