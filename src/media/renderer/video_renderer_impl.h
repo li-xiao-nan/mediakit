@@ -75,6 +75,7 @@ class VideoRendererImpl : public VideoRenderer {
   bool pause_state_;
   bool is_wait_happened_;
   bool is_stoped_;
+  bool read_frame_doing_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoRendererImpl);
 };

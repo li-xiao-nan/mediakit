@@ -15,7 +15,8 @@ VideoRendererImpl::VideoRendererImpl(
       video_frame_stream_(new VideoFrameStream(vec_video_decoders)),
       droped_frame_count_(0),
       is_wait_happened_(false),
-      is_stoped_(false){
+      is_stoped_(false),
+      read_frame_doing_(false){
 }
 
 void VideoRendererImpl::Initialize(DemuxerStream* demuxer_stream,
@@ -183,7 +184,6 @@ VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
     return OPERATION_DROP_FRAME;
   }
 }
-
 void VideoRendererImpl::OnReadFrameDone(
     VideoFrameStream::Status status,
     std::shared_ptr<VideoFrame> video_frame) {
@@ -192,16 +192,20 @@ void VideoRendererImpl::OnReadFrameDone(
   if (video_frame.get()) {
     TraceAVPacketProcess(video_frame->timestamp_);
     pending_paint_frames_.push(video_frame);
+    LOGGING(LOG_LEVEL_DEBUG) << "pending_paint_frames_:" << pending_paint_frames_.size();
     frame_available_.notify_all();
   }
-
+  read_frame_doing_ = false;
   ReadFrameIfNeeded();
 }
 
 
 void VideoRendererImpl::ReadFrameIfNeeded() {
-  if (pending_paint_frames_.size() >= kMaxPendingPaintFrameCount)
+  if (pending_paint_frames_.size() >= kMaxPendingPaintFrameCount || read_frame_doing_)
     return;
+  // 屏蔽视频帧绘制线程调用此函数，导致ReadFrame任务堆积的问题，
+  // 最终导致pending_paint_frames_大小达到100+,由此导致内存内漏
+  read_frame_doing_ = true;
   PostTask(TID_DECODE, boost::bind(&VideoRendererImpl::ReadFrame, this));
 }
 
