@@ -145,19 +145,21 @@ void YuvRender::updateTexture(std::shared_ptr<media::VideoFrame> image) {
 }
 
 void YuvRender::render(int window_w, int window_h, int video_w, int video_h) {
-  float playingH = video_h * (window_w * 1.0f) / (video_w * 1.0f);
+  float playingH = window_h;
+  float playingW = video_w * ((window_h*1.0f)/(video_h*1.0f));
+  float playingXPos = (window_w*1.0f - playingW) / 2.0f;
   float playingYPos = (window_h * 1.0f - playingH) / 2.0f;
   glClear(GL_COLOR_BUFFER_BIT);
   glColor3f(1.0, 1.0, 1.0);
   glBegin(GL_QUADS);
   glTexCoord2f(0.0, 0.0);
-  glVertex2f(0.0, playingYPos);
+  glVertex2f(playingXPos, playingYPos);
   glTexCoord2f(1.0, 0.0);
-  glVertex2f(window_w * 1.0f, playingYPos);
+  glVertex2f(playingXPos+ playingW * 1.0f, playingYPos);
   glTexCoord2f(1.0, 1.0);
-  glVertex2f(window_w * 1.0f, playingYPos + playingH);
+  glVertex2f(playingXPos+ playingW * 1.0f, playingYPos + playingH);
   glTexCoord2f(0.0, 1.0);
-  glVertex2f(0.0, playingYPos + playingH);
+  glVertex2f(playingXPos, playingYPos + playingH);
   glEnd();
   glFlush();
 }
