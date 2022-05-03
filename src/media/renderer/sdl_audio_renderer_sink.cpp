@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "media/renderer/sdl_audio_renderer_sink.h"
+#include "log/log_wrapper.h"
 
 namespace media {
 const int kSDLMinAudioBufferSize = 512;
@@ -35,11 +36,13 @@ void SdlAudioRendererSink::Resume() {
   pause_state_ = false;
 }
 void SdlAudioRendererSink::Stop() {
+  TRACEPOINT;
   SDL_PauseAudio(1);
-  SDL_CloseAudio();
+  TRACEPOINT;
 }
 
 void SdlAudioRendererSink::InitializeSDLAudio() {
+  SDL_CloseAudio();
   sdl_audio_spec_.freq = audio_parameters_.sample_rate_;
   sdl_audio_spec_.format = AUDIO_S16SYS;  // audio_parameters_.sample_format_;
   // SDL 只支持单声道和双声道，如果设置声道数>2,则会初始化失败
