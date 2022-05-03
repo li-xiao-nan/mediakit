@@ -278,6 +278,9 @@
     <ClInclude Include="src\media\renderer\renderer_delegate.h">
       <Filter>media\renderer</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\util.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -423,6 +426,9 @@
     </ClCompile>
     <ClCompile Include="src\UI\progress_window.cc">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\util.cc">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

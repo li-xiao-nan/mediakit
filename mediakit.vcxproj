@@ -129,6 +129,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\base\timer\SystemClock.h" />
     <ClInclude Include="src\base\timer\VirtualClock.h" />
     <ClInclude Include="src\base\timer\wall_clock_timer.h" />
+    <ClInclude Include="src\base\util.h" />
     <ClInclude Include="src\log\log_wrapper.h" />
     <ClInclude Include="src\log\watch_movie_state_recoder.h" />
     <ClInclude Include="src\media\av_pipeline.h" />
@@ -197,6 +198,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\base\timer\scheduler_timer.cpp" />
     <ClCompile Include="src\base\timer\SystemClock.cpp" />
     <ClCompile Include="src\base\timer\wall_clock_timer.cpp" />
+    <ClCompile Include="src\base\util.cc" />
     <ClCompile Include="src\log\log_wrapper.cc" />
     <ClCompile Include="src\log\watch_movie_state_recoder.cpp" />
     <ClCompile Include="src\main_entry\main_entry.cpp" />
