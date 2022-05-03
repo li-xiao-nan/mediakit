@@ -1,4 +1,5 @@
 #include "video_renderer_impl.h"
+#include "boost/bind.hpp"
 #include "media/decoder/video_frame_stream.h"
 #include "base/message_loop_thread_manager.h"
 #include "log/log_wrapper.h"
@@ -16,7 +17,8 @@ VideoRendererImpl::VideoRendererImpl(
       droped_frame_count_(0),
       is_wait_happened_(false),
       is_stoped_(false),
-      read_frame_doing_(false){
+      read_frame_doing_(false),
+      time_update_notify_completed_(true){
 }
 
 void VideoRendererImpl::Initialize(DemuxerStream* demuxer_stream,
@@ -109,6 +111,10 @@ void VideoRendererImpl::EnterPauseStateIfNeeded() {
   condition_variable_for_puase_.wait(lock);
 }
 
+void VideoRendererImpl::SetDelegate(VideoRendererDelegate* delegate) {
+  delegate_ = delegate;
+}
+
 void VideoRendererImpl::EndPauseState() {
   if(pause_state_ == true){
     std::unique_lock<std::mutex> lock(mutex_for_pause_);
@@ -119,11 +125,23 @@ void VideoRendererImpl::EndPauseState() {
   }
   return;
 }
+
+void VideoRendererImpl::NotifyTimeUpdate() {
+  if(!delegate_) return;
+  delegate_->OnPlayClockUpdate(get_time_cb_());
+  time_update_notify_completed_ = true;
+}
+
 void VideoRendererImpl::ThreadMain() {
   while(!is_stoped_){
     EnterPauseStateIfNeeded();
+    if (is_stoped_) break;
     { boost::mutex::scoped_lock lock(ready_frames_lock_);
-      int64_t beg_time = get_time_cb_();
+      if (delegate_ && time_update_notify_completed_) {
+        MessageLoopManager::GetInstance()->PostTask(TID_MAIN,
+            boost::bind(&VideoRendererImpl::NotifyTimeUpdate, this));
+        time_update_notify_completed_ = false;
+      }
       if (pending_paint_frames_.empty()) {
         ReadFrameIfNeeded();
         int64_t begin_wait_timestamp = get_time_cb_();
@@ -133,6 +151,7 @@ void VideoRendererImpl::ThreadMain() {
         is_wait_happened_ = true;
       }
 
+      if(is_stoped_) break;
       std::shared_ptr<VideoFrame> next_frame = pending_paint_frames_.front();
       int64_t next_frame_timestamp = next_frame->timestamp_;
       static int64_t pre_timestamp;
@@ -217,7 +236,10 @@ void VideoRendererImpl::ReadFrame() {
 }
 
 void VideoRendererImpl::Stop() {
+  boost::mutex::scoped_lock lock(ready_frames_lock_);
   is_stoped_ = true;
+  EndPauseState();
+  frame_available_.notify_all();
 }
 
 }  // namespace media

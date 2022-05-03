@@ -6,6 +6,7 @@
 
 namespace media {
 class DemuxerStream;
+class VideoRendererDelegate;
 class VideoRenderer {
  public:
   typedef boost::function<void(std::shared_ptr<VideoFrame>)> PaintCB;
@@ -24,6 +25,7 @@ class VideoRenderer {
   virtual void ClearAVFrameBuffer() = 0;
   virtual void ShowStateInfo() = 0;
   virtual void Stop() = 0;
+  virtual void SetDelegate(VideoRendererDelegate* delegate) = 0;
 };
 }  // namespace media
 #endif

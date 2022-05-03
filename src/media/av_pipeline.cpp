@@ -26,6 +26,7 @@ AVPipeline::AVPipeline(std::shared_ptr<Demuxer> demuxer,
   , paint_cb_(paint_cb){
   demuxer_->SetDelegate(this);
   renderer_->SetDelegate(this);
+  id_ = GenerateId();
 }
 
 void AVPipeline::Start() {
@@ -79,8 +80,9 @@ int64_t AVPipeline::GetPlaybackTime() {
 }
 
 void AVPipeline::Stop() {
+  Pause();
+  renderer_->SetDelegate(nullptr);
   renderer_->Stop();
-  MessageLoopManager::GetInstance()->StopAll();
 }
 
 void AVPipeline::OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) {
@@ -136,6 +138,11 @@ AVPipeline::PipelineState AVPipeline::GetNextState() {
 }
 void AVPipeline::SetState(AVPipeline::PipelineState state) { state_ = state; }
 
+int AVPipeline::GenerateId() {
+  static int id = 0;
+  return id++;
+}
+
 void AVPipeline::FiltersStatusCB(PipelineStatus filters_status) {
   // todo(lixiaonan): add process filter status logic
 }
@@ -156,10 +163,10 @@ void AVPipeline::OnPlayProgressUpdate(int timestamp) {
   }
 }
 
-void AVPipeline::AddObserver(std::shared_ptr<AVPipelineObserver> observer) {
+void AVPipeline::AddObserver(AVPipelineObserver* observer) {
   avpipeline_observer_list_.push_back(observer);
 }
-void AVPipeline::RemoveObserver(std::shared_ptr<AVPipelineObserver> observer) {
+void AVPipeline::RemoveObserver(AVPipelineObserver* observer) {
   avpipeline_observer_list_.remove(observer);
 }
 

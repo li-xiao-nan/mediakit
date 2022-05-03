@@ -11,6 +11,8 @@
 #include "ui/progress_window.h"
 #include "player/media_player.h"
 
+#define IDM_FILE_OPEN 40001
+
 namespace mediakit {
 class MediaPlayer;
 class ProgressWindow;
@@ -19,7 +21,8 @@ LRESULT CALLBACK MainWindowProc(HWND, UINT, WPARAM, LPARAM);
 class MainWindow : public MediaPlayerClient {
 public:
   MainWindow();
-  ~MainWindow() = default;
+  ~MainWindow();
+  //~MainWindow() = default;
   HWND GetWindowHandle();
   void Seek(int timestamp_ms);
   void SetProgressWindowTop();
@@ -31,7 +34,12 @@ public:
   void OnPlayStateChanged() override {};
   void OnPlayProgressUpdate(const int64_t timestamp) override;
   void OnPlayPauseButtionClick();
+  void OnOpenNewFile();
+  void OnWindowClose();
+  void DestroyPreMediaPlayer(std::shared_ptr<MediaPlayer> instance);
 private:
+  void StartPlayNewVideo(std::wstring file_path);
+  void CreateMainMenu(HWND hwnd);
   ATOM RegisterWindowClass(HINSTANCE hInstance);
   void CreatePlayingTimeTextControl(int left, int top, int w, int h);
   std::wstring  FormatDurationInfo(int media_duration);
@@ -39,6 +47,7 @@ private:
   void CreatePlayPauseButtion(int left, int top, int w, int h);
 private:
   bool is_pauseing_;
+  HMENU h_main_menu;
   HWND hwnd_;
   HWND playing_time_hwnd_;
   HWND play_pause_hwnd_;
@@ -48,6 +57,7 @@ private:
   std::unique_ptr<ProgressWindow> progress_window_;
   int pre_playing_timestamp_by_second_;
   std::shared_ptr<MediaPlayer> mediaplayer_instance_;
+  std::string file_path_;
 };
 } // namespace mediakit
 

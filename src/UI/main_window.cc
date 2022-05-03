@@ -1,4 +1,8 @@
 #include "ui/main_window.h"
+#include <Shlobj.h>
+#include <commdlg.h>
+#include "log/log_wrapper.h"
+#include "base/message_loop_thread_manager.h"
 
 namespace mediakit {
 static const wchar_t* kWindowClassName = L"MainWindow";
@@ -41,8 +45,12 @@ MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0)
     progress_window_.reset(
       new ProgressWindow(this, hwnd_, 0, 
         rect.bottom - kPlayControlAreaHeight, rect.right - rect.left, kPBHeight));
-
+    CreateMainMenu(hwnd_);
   }
+
+MainWindow::~MainWindow() {
+  LOGGING(media::LOG_LEVEL_INFO)<<"loging content";
+}
 
 LRESULT CALLBACK MainWindowProc(HWND hWnd,
                                 UINT message,
@@ -57,6 +65,8 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd,
     int control_id = LOWORD(wParam);
     if (control_id == kPlayPauseButtionID) {
       main_window->OnPlayPauseButtionClick();
+    } else if(control_id == IDM_FILE_OPEN) {
+      main_window->OnOpenNewFile();
     }
     break;
   }
@@ -73,6 +83,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd,
       main_window->OnWindowSizeChanged();
     } break;
     case WM_DESTROY:
+      main_window->OnWindowClose();
       PostQuitMessage(0);
       break;
     default:
@@ -80,6 +91,60 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd,
   }
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
+
+void MainWindow::OnWindowClose() {
+  if(mediaplayer_instance_) {
+    mediaplayer_instance_->Stop();
+  }
+}
+
+void MainWindow::OnOpenNewFile() {
+  OPENFILENAME ofn = {0};
+  TCHAR strFilename[MAX_PATH] = {0};       //用于接收文件名
+  ofn.lStructSize = sizeof(OPENFILENAME);  //结构体大小
+  ofn.hwndOwner =
+      NULL;  //拥有着窗口句柄，为NULL表示对话框是非模态的，实际应用中一般都要有这个句柄
+  ofn.lpstrFilter =
+      TEXT("所有文件\0*.*\0C/C++ Flie\0*.cpp;*.c;*.h\0\0");  //设置过滤
+  ofn.nFilterIndex = 1;                                      //过滤器索引
+  ofn.lpstrFile = strFilename;  //接收返回的文件名，注意第一个字符需要为NULL
+  ofn.nMaxFile = sizeof(strFilename);       //缓冲区长度
+  ofn.lpstrInitialDir = NULL;               //初始目录为默认
+  ofn.lpstrTitle = TEXT("请选择一个文件");  //使用系统默认标题留空即可
+  ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST |
+              OFN_HIDEREADONLY;  //文件、目录必须存在，隐藏只读选项
+  if (GetOpenFileName(&ofn)){
+    StartPlayNewVideo(strFilename);
+  }
+}
+
+void MainWindow::DestroyPreMediaPlayer(std::shared_ptr<MediaPlayer> instance) {
+  // do nothing
+}
+
+void MainWindow::StartPlayNewVideo(std::wstring file_path) {
+  LOGGING(media::LOG_LEVEL_INFO)<<"StartPlayNewVideo";
+  if(mediaplayer_instance_) {
+    mediaplayer_instance_->Stop();
+    LOGGING(media::LOG_LEVEL_INFO) << "mediaplayer_instance_->Stop()";
+    media::MessageLoopManager::GetInstance()->PostTask(media::TID_MAIN, boost::bind(&MainWindow::DestroyPreMediaPlayer, this, mediaplayer_instance_));
+    mediaplayer_instance_ = nullptr;
+  }
+   RECT rects;
+   ::GetClientRect(hwnd_, &rects);
+   int w = rects.right - rects.left;
+   int h = rects.bottom - rects.top;
+   std::string video_url = media::UTF16toANSI(file_path);
+   std::shared_ptr<mediakit::MediaPlayer> mediaplayer =
+     mediakit::MediaPlayer::CreateMediaPlayer(hwnd_, 0, 0, w, h-30, video_url);
+
+   SetMediaPlayer(mediaplayer);
+   mediaplayer->SetClient(this);
+   mediaplayer->Start();
+   file_path_ = video_url;
+   SetWindowText(hwnd_, file_path.c_str());
+}
+
 
 void MainWindow::OnWindowSizeChanged() {
   RECT rect;
@@ -229,6 +294,12 @@ void MainWindow::CreatePlayPauseButtion(int left, int top, int w, int h) {
       (HMENU)kPlayPauseButtionID,  // Assign appropriate control ID
       (HINSTANCE)GetWindowLong(hwnd_, GWL_HINSTANCE),
       NULL);  // Pointer not needed.
+}
+
+void MainWindow::CreateMainMenu(HWND hwnd) {
+  h_main_menu = CreateMenu();
+  AppendMenu(h_main_menu, MF_STRING, IDM_FILE_OPEN, TEXT("打开文件"));
+  SetMenu(hwnd, h_main_menu);
 }
 
 void MainWindow::OnPlayPauseButtionClick(){

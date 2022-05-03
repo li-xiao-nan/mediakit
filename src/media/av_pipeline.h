@@ -54,8 +54,8 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   void Seek(int64_t timestamp_ms);
   void Stop();
   int64_t GetPlaybackTime();
-  void AddObserver(std::shared_ptr<AVPipelineObserver> observer);
-  void RemoveObserver(std::shared_ptr<AVPipelineObserver> observer);
+  void AddObserver(AVPipelineObserver* observer);
+  void RemoveObserver(AVPipelineObserver* observer);
   
   // DemuxerDelegate impl
   void OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) override;
@@ -64,6 +64,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   // RendererDelegate impl
   void OnPlayProgressUpdate(int timestamp) override;
  private:
+  static int GenerateId();
   void StartAction();
   void InitializeDemuxer(PipelineStatusCB done_cb);
   void InitializeRenderer(PipelineStatusCB done_cb);
@@ -81,7 +82,8 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   std::shared_ptr<Renderer> renderer_;
   PipelineStatusCB error_cb_;
   PipelineStatusCB seek_cb_;
-  std::list<std::shared_ptr<AVPipelineObserver>> avpipeline_observer_list_;
+  std::list<AVPipelineObserver*> avpipeline_observer_list_;
+  int id_;
 };
 
 }  // namespace media

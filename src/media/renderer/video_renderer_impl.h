@@ -29,7 +29,7 @@ class VideoRendererImpl : public VideoRenderer {
   virtual void ClearAVFrameBuffer() override;
   virtual void ShowStateInfo() override;
   virtual void Stop() override;
-
+  virtual void SetDelegate(VideoRendererDelegate* delegate) override;
  private:
   enum State {
     STATE_UNINITIALIZED,
@@ -55,6 +55,7 @@ class VideoRendererImpl : public VideoRenderer {
                                              int64_t next_frame_pts);
   void EnterPauseStateIfNeeded();
   void EndPauseState();
+  void NotifyTimeUpdate();
 
   bool pending_paint_;
   State state_;
@@ -76,6 +77,8 @@ class VideoRendererImpl : public VideoRenderer {
   bool is_wait_happened_;
   bool is_stoped_;
   bool read_frame_doing_;
+  bool time_update_notify_completed_;
+  VideoRendererDelegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(VideoRendererImpl);
 };

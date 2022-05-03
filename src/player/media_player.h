@@ -18,7 +18,7 @@ public:
   void Seek(int timestamp_ms);
   void Pause();
   void Resume();
-  void SetClient(std::shared_ptr<MediaPlayerClient> client);
+  void SetClient(MediaPlayerClient* client);
   void UpdatePlayerWindowPosition(int left, int top, int w, int h);
   
   // AVPipelineObserver impl
@@ -30,7 +30,7 @@ private:
 private:
 std::string video_url_;
 HWND parent_hwnd_;
-std::shared_ptr<MediaPlayerClient> mediaplayer_client_;
+MediaPlayerClient* mediaplayer_client_;
 std::unique_ptr<media::AVPipeline> av_pipeline_;
 std::unique_ptr<mediakit::VideoDisplayWindow> video_display_window_;
 };

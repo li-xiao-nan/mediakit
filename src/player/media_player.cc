@@ -1,12 +1,13 @@
 #include "player/media_player.h"
 #include "media/av_pipeline_factory.h"
 #include "boost/bind.hpp"
+#include "log/log_wrapper.h"
+
 namespace mediakit {
 std::shared_ptr<MediaPlayer> MediaPlayer::CreateMediaPlayer(
   HWND parent_hwnd, int x, int y, int w, int h, const std::string& video_url) {
   std::shared_ptr<MediaPlayer> new_media_player(new MediaPlayer(parent_hwnd, video_url));
   bool result = new_media_player->initialize(parent_hwnd, x, y, w, h);
-  new_media_player->av_pipeline_->AddObserver(new_media_player);
   if(!result) {
     new_media_player = nullptr;
   }
@@ -27,6 +28,7 @@ bool MediaPlayer::initialize(HWND parent_hwnd, int x, int y, int w, int h) {
   av_pipeline_ = MakeAVPipeLine(
     video_url_,
     boost::bind(&MediaPlayer::DisplayCallBack, this, _1));
+  av_pipeline_->AddObserver(this);
   return true;
 }
 
@@ -35,7 +37,12 @@ void MediaPlayer::Start() {
 }
 
 void MediaPlayer::Stop() {
+  TRACEPOINT;
   av_pipeline_->Stop();
+  av_pipeline_->RemoveObserver(this);
+  TRACEPOINT;
+  video_display_window_->CloseWindow();
+  TRACEPOINT;
 }
 
 void MediaPlayer::Pause() {
@@ -50,7 +57,7 @@ void MediaPlayer::Seek(int timestamp_ms) {
   av_pipeline_->Seek(timestamp_ms);
 }
 
-void MediaPlayer::SetClient(std::shared_ptr<MediaPlayerClient> client) {
+void MediaPlayer::SetClient(MediaPlayerClient* client) {
   mediaplayer_client_ = client;
 }
 
