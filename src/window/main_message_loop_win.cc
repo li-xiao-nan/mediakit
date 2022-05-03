@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "window/main_message_loop_win.h"
+#include "base/message_loop_thread_manager.h"
 
 namespace mediakit {
 int EnterMainMessageLoop(HINSTANCE hInstance) {
@@ -11,6 +12,7 @@ int EnterMainMessageLoop(HINSTANCE hInstance) {
       TranslateMessage(&msg);
       DispatchMessage(&msg);
     }
+    media::MessageLoopManager::GetInstance()->RunMainThreadTask();
   }
 
   return (int)msg.wParam;

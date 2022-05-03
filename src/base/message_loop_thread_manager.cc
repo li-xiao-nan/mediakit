@@ -6,12 +6,20 @@ namespace media {
   }
 
   void MessageLoopManager::PostTask(MKThreadId tid, AsyncTask async_task) {
-    s_message_loop_instance_[tid]->PostTask(async_task);
+    if(tid == TID_MAIN) {
+      main_thread_io_service_.post(async_task);
+    }else {
+      s_message_loop_instance_[tid]->PostTask(async_task);
+    }
   }
 
   MessageLoopManager* MessageLoopManager::GetInstance() {
     static MessageLoopManager g_instance;
     return &g_instance;
+  }
+
+  void MessageLoopManager::RunMainThreadTask() {
+    main_thread_io_service_.run();
   }
 
   MessageLoopManager::MessageLoopManager() {
@@ -22,6 +30,7 @@ namespace media {
   }
 
   void MessageLoopManager::StopAll() {
+    main_thread_io_service_.stop();
     for(auto& item : s_message_loop_instance_) {
       item.second->Stop();
     }
