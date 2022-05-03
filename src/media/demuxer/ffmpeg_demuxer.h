@@ -26,6 +26,7 @@ class FFmpegDemuxer : public Demuxer {
   typedef boost::function<void(bool)> ActionCB;
 
   FFmpegDemuxer(std::shared_ptr<net::IOChannel> data_source);
+  ~FFmpegDemuxer() override;
 
   // demuxer implementation
   virtual void Initialize(PipelineStatusCB status_cb) override;

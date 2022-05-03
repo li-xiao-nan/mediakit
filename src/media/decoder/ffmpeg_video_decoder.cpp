@@ -10,8 +10,9 @@ FFmpegVideoDecoder::FFmpegVideoDecoder()
       state_(STATE_UNINITIALIZED) {}
 
 FFmpegVideoDecoder::~FFmpegVideoDecoder() { 
-  av_frame_free(&av_frame_);
   sws_freeContext(sws_context_);
+  avcodec_close(av_codec_context_);
+  avcodec_free_context(&av_codec_context_);
 }
 
 void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,

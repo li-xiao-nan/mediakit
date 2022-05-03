@@ -10,6 +10,7 @@ namespace media {
 class FFmpegAudioDecoder : public AudioDecoder {
  public:
   FFmpegAudioDecoder();
+  ~FFmpegAudioDecoder();
   virtual void Initialize(const AudioDecoderConfig& config,
                           InitCB init_cb,
                           OutputCB output_cb) override;

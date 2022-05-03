@@ -10,6 +10,11 @@ AudioFrameStream::AudioFrameStream(const VecAudioDecoders& decoders) {
 }
 
 AudioFrameStream::~AudioFrameStream() {
+  for(auto item : vec_decoders_) {
+    delete item;
+    item = nullptr;
+  }
+  vec_decoders_.clear();
 }
 
 void AudioFrameStream::Initialize(DemuxerStream* stream, InitCB init_cb) {

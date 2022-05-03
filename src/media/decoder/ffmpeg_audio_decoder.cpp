@@ -13,6 +13,10 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
   bool result = ConfigureDecoder();
   init_cb_(result);
 }
+
+FFmpegAudioDecoder::~FFmpegAudioDecoder() {
+  ReleaseFFmpegResource();
+}
 void FFmpegAudioDecoder::Decode(
     const std::shared_ptr<EncodedAVFrame> encoded_avframe,
     DecodeCB decode_cb) {
@@ -27,9 +31,10 @@ bool FFmpegAudioDecoder::ConfigureDecoder() {
   av_codec_context_->refcounted_frames = 0;
 
   AVCodec* codec = avcodec_find_decoder(av_codec_context_->codec_id);
-  if (!codec || avcodec_open2(av_codec_context_, codec, NULL) < 0) {
+  int avcodec_open_result = avcodec_open2(av_codec_context_, codec, NULL);
+  if (!codec || avcodec_open_result < 0) {
     ReleaseFFmpegResource();
-    std::cout << "configure audio decoder failed" << std::endl;
+    LOGGING(LOG_LEVEL_INFO) << "configure audio decoder failed";
     return false;
   }
   char channel_layout_desc[100] = {0};

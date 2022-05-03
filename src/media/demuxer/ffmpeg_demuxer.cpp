@@ -8,6 +8,7 @@
 
 #include "ffmpeg_demuxer.h"
 
+#include "libavutil/log.h"
 #include "boost/bind.hpp"
 
 #include "media/ffmpeg/ffmpeg_common.h"
@@ -30,7 +31,22 @@ FFmpegDemuxer::FFmpegDemuxer(std::shared_ptr<net::IOChannel> data_source)
   data_source_ = data_source;
 }
 
+FFmpegDemuxer::~FFmpegDemuxer() {
+  avformat_close_input(&av_format_context_);
+  if(av_format_context_) {
+    avformat_free_context(av_format_context_);
+    av_format_context_ = nullptr;
+  }
+  if(av_io_context_) {
+    av_free(av_io_context_);
+    av_io_context_ = nullptr;
+  }
+}
+
 void FFmpegDemuxer::Initialize(PipelineStatusCB status_cb) {
+  // av_log_set_callback(ffmpeg_log_callback);
+  // av_log_set_level(LOG_LEVEL_ERROR);
+  
   ActionCB action_cb = boost::bind(&FFmpegDemuxer::OnOpenAVFormatContextDone,
                                    this, status_cb, _1);
   PostTask(TID_DEMUXER,(boost::bind(
@@ -106,26 +122,28 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
 
 void FFmpegDemuxer::OnOpenAVFormatContextDone(PipelineStatusCB status_cb,
                                               bool result) {
+  TRACEPOINT;
   if (result) {
     ActionCB action_cb =
         boost::bind(&FFmpegDemuxer::OnFindStreamInfoDone, this, status_cb, _1);
     PostTask(TID_DEMUXER, (boost::bind(
         &FFmpegDemuxer::FindStreamInfoAction, this, status_cb, action_cb)));
+    TRACEPOINT;
   } else {
     status_cb(DEMUXER_OPEN_CONTEXT_FAILED);
   }
+  TRACEPOINT;
 }
 
 void FFmpegDemuxer::FindStreamInfoAction(PipelineStatusCB status_cb,
                                          ActionCB action_cb) {
+  TRACEPOINT;
   bool result = false;
   if (avformat_find_stream_info(av_format_context_, NULL) < 0) {
-    printf("<lxn> %s(%d) ---> Could not find the stream information\n",
-           __FILE__, __LINE__);
-
+    LOGGING(LOG_LEVEL_ERROR)<< "Could not find the stream information";
   } else {
     result = true;
-    printf("OK: success find the streams information\n");
+    LOGGING(LOG_LEVEL_ERROR) << "OK: success find the streams information";
   }
 
   PostTask(TID_DECODE, boost::bind(action_cb, result));

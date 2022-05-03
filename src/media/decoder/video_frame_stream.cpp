@@ -12,6 +12,10 @@ VideoFrameStream::VideoFrameStream(const VecVideoDecoders& vec_video_decoders){
 }
 
 VideoFrameStream::~VideoFrameStream() {
+  for(auto item : vec_video_decoders_) {
+    delete item;
+  }
+  vec_video_decoders_.clear();
 }
 
 void VideoFrameStream::Initialize(DemuxerStream* stream, InitCB init_cb) {
