@@ -24,6 +24,8 @@ namespace media {
   
   void LogMessage(LogLevel log_level, const std::string& message);
 
+  void ffmpeg_log_callback(void* avcl, int level, const char* fmt, va_list vl);
+
   class FormatLogMessage{
   public:
     FormatLogMessage(const char* file,
@@ -35,6 +37,7 @@ namespace media {
     std::ostringstream format_out_string_stream_;
   };
 
+#define TRACEPOINT media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, media::LOG_LEVEL_DEBUG).stream()
 #define LOGGING(severity) media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, severity).stream()
 #define TraceAVPacketProcess(pts)   !IsAVPacketProcessTraceEnabled() ? (void)0 : (media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, LOG_LEVEL_DEBUG).stream() << "pts:" << pts);
 

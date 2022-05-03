@@ -11,6 +11,8 @@
 #include <codecvt>
 #include <mutex>
 #include <boost/filesystem.hpp>
+#include "libavutil/log.h"
+#include "base/util.h"
 
 const char* kLogFileName = "mediakit.log";
 const int kMaxLogFileSize = 1024 * 1024 * 5;  // 5M
@@ -19,6 +21,26 @@ const char* kLoggerName = "snail_messenger";
 
 namespace media {
 std::mutex log_init_mutex;
+
+void ffmpeg_log_callback(void* avcl, int level, const char* fmt, va_list vl) {
+  std::string log_content = base::string_format(fmt, vl);
+  LogLevel loglevel = LOG_LEVEL_DEBUG;
+  switch(level) {
+  case AV_LOG_ERROR:
+    loglevel = LOG_LEVEL_ERROR;
+    break;
+  case AV_LOG_DEBUG:
+    loglevel = LOG_LEVEL_DEBUG;
+    break;
+  case AV_LOG_INFO:
+    loglevel = LOG_LEVEL_INFO;
+    break;
+  default:
+    loglevel = LOG_LEVEL_INFO;
+  }
+  LOGGING(loglevel)<<log_content;
+}
+
 std::wstring GetApplicationFileDirUtf16() {
   TCHAR szPath[MAX_PATH];
   ::GetModuleFileName(NULL, szPath, MAX_PATH);
