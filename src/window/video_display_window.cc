@@ -54,6 +54,11 @@ void VideoDisplayWindow::display(std::shared_ptr<media::VideoFrame> video_frame)
   render_.render(w, h, video_frame->_w, video_frame->_h);
 }
 
+void VideoDisplayWindow::CloseWindow() {
+  ShowWindow(hwnd_, SW_HIDE);
+  ::DestroyWindow(hwnd_);
+}
+
 ATOM VideoDisplayWindow::RegisterWindowClass(HINSTANCE hInstance) {
   WNDCLASSEXW wcex;
 
@@ -82,7 +87,6 @@ LRESULT CALLBACK WndProc(HWND hWnd,
     case WM_PAINT: {} break;
     case WM_SIZE: {} break;
     case WM_DESTROY:
-      PostQuitMessage(0);
       break;
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);

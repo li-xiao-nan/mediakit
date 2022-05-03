@@ -3,6 +3,7 @@
 #include "boost/bind.hpp"
 #include "media/base/playback_clock.h" 
 #include "log/log_wrapper.h"
+#include "base/message_loop_thread_manager.h"
 
 namespace media {
 
@@ -26,6 +27,7 @@ RendererImpl::RendererImpl(std::shared_ptr<AudioRenderer> audio_renderer,
       video_renderer_(video_renderer) {
   // TODO(lixiaonan): 暂时不添加多个pipeline实例的ID管理模块，默认ID为0，后续需要添加，并修改此处代码
   playback_clock_map_.insert(std::pair<int, std::shared_ptr<TimeSource>>(0, playback_clock_));
+  video_renderer_->SetDelegate(this);
 }
 
 RendererImpl::~RendererImpl(){
@@ -93,8 +95,12 @@ void RendererImpl::Seek(int64_t timestamp_ms) {
 }
 
 void RendererImpl::Stop() {
+  TRACEPOINT;
+  video_renderer_->SetDelegate(nullptr);
   video_renderer_->Stop();
+  TRACEPOINT;
   audio_renderer_->Stop();
+  TRACEPOINT;
 }
 
 int64_t RendererImpl::GetPlaybackTime() {
@@ -131,9 +137,13 @@ void RendererImpl::OnInitializeVideoRendererDone(PipelineStatus status) {
 }
 int64_t RendererImpl::GetCurrentTime() {
   int64_t current_timestamp = playback_clock_->GetCurrentMediaTime();
-  if (delegate_)
-    delegate_->OnPlayProgressUpdate(current_timestamp);
   return current_timestamp;
+}
+
+void RendererImpl::OnPlayClockUpdate(int64_t timestamp) {
+  if (delegate_) {
+    delegate_->OnPlayProgressUpdate(timestamp);
+  }
 }
 
 }  // namespace media

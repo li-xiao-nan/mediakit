@@ -17,6 +17,7 @@ public:
   VideoDisplayWindow(HWND parent_hwnd, int x, int y, int w, int h);
   void display(std::shared_ptr<media::VideoFrame> video_frame);
   void SetWindowPosition(int left, int top, int w, int h);
+  void CloseWindow();
 private:
   ATOM RegisterWindowClass(HINSTANCE hInstance);
   void Initialize();

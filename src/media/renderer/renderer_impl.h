@@ -14,6 +14,7 @@
 #include "media/decoder/audio_decoder.h"
 #include "media/decoder/video_decoder.h"
 #include "media/demuxer/demuxer_stream_provider.h"
+#include "media/renderer/video_renderer_delegate.h"
 #ifdef GetCurrentTime
 #undef GetCurrentTime
 #endif
@@ -21,7 +22,7 @@
 namespace media {
 class TimeSource;
 
-class RendererImpl : public Renderer {
+class RendererImpl : public Renderer, public VideoRendererDelegate {
  public:
   static std::shared_ptr<TimeSource> GetPlaybackClock(int Id);
 
@@ -44,6 +45,9 @@ class RendererImpl : public Renderer {
   void UpdateAlignSeekTimestamp(int64_t timestamp) override;
   void ShowStateInfo() override;
   void Stop() override;
+
+  // VideoRendererDelegate impl
+  void OnPlayClockUpdate(int64_t timestamp) override;
 
  private:
   enum State {
