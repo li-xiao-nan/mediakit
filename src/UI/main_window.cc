@@ -119,7 +119,10 @@ void MainWindow::OnOpenNewFile() {
 }
 
 void MainWindow::DestroyPreMediaPlayer(std::shared_ptr<MediaPlayer> instance) {
-  // do nothing
+  // 此函数主要作用在于，通过参数std::shared_ptr<MediaPlayer> instance，增加MediaPlayer对象引用技术，并通过posttask，
+  // 将其发送至主线程消息队列，保证其在主线程任务队列中，完成销毁动作
+  // 原因为:VideoRenderer中渲染线程，会定时将播放时钟同步状态通知给MediaPlayer，实现方式为发送至主线程任务队列，如果直接销毁MediaPlayer对象，
+  // 会导致访问的对象，已经被释放掉
 }
 
 void MainWindow::StartPlayNewVideo(std::wstring file_path) {
@@ -303,6 +306,9 @@ void MainWindow::CreateMainMenu(HWND hwnd) {
 }
 
 void MainWindow::OnPlayPauseButtionClick(){
+  if(!mediaplayer_instance_) {
+    return;
+  }
   if(is_pauseing_) {
     is_pauseing_ = false;
     mediaplayer_instance_->Resume();

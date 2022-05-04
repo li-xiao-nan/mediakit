@@ -31,6 +31,7 @@ namespace net {
 class FileStreamProvider: public IOChannel{
 public:
 	FileStreamProvider(FILE* fp);
+  ~FileStreamProvider() override;
 	virtual size_t read(void* dst, size_t num);
 	virtual long tell() const;
 	virtual int seek(long p);

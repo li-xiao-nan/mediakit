@@ -31,6 +31,14 @@ FileStreamProvider::FileStreamProvider(FILE* fp)
   fseek(_fp, 0, SEEK_SET);
   printf("position = %ld\n", ftell(_fp));
 }
+
+FileStreamProvider::~FileStreamProvider() {
+  if(_fp) {
+    fclose(_fp);
+    _fp = nullptr;
+  }
+}
+
 size_t FileStreamProvider::read(void* dst, size_t num) {
   if (_fp) {
     int cont = 0;
