@@ -229,7 +229,7 @@ void AVFrameToAudioFrame(AVFrame* av_frame,
     swr_free(&swr_context_);
     swr_context_ = swr_alloc_set_opts(
       NULL,
-      av_codec_context->channel_layout,
+      out_ch_layout,
       AV_SAMPLE_FMT_S16,
       av_frame->sample_rate,
       av_codec_context->channel_layout,
