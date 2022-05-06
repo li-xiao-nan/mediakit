@@ -14,6 +14,7 @@ namespace media {
     // 可以基于次函数通知的时间戳，设置为最终的seek的时间戳
     virtual void OnUpdateAlignedSeekTimestamp(int64_t timestamp) = 0;
     virtual void OnGetMediaInfo(const MediaInfo& media_inf) = 0;
+    virtual void OnOpenMediaFileFailed(const std::string file_name, int error_code, const std::string& error_description) = 0;
   };
 }  // namespace media
 

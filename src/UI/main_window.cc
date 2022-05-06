@@ -320,4 +320,11 @@ void MainWindow::OnPlayPauseButtionClick(){
   }
 }
 
+void MainWindow::OnOpenMediaFileFailed(const std::string file_name,
+                           int error_code,
+                           const std::string& error_description) {
+  std::string content = "打开文件（"+ file_name + ")失败，error-code:" + std::to_string(error_code);
+  MessageBoxA(hwnd_, content.c_str(), "播放失败", MB_OK);
+}
+
 } // namespace mediakit

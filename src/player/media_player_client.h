@@ -7,6 +7,9 @@ public:
   virtual void OnGetMediaInfo(const media::MediaInfo& media_info) = 0;
   virtual void OnPlayProgressUpdate(const int64_t timestamp) =0;
   virtual void OnPlayStateChanged() = 0;
+  virtual void OnOpenMediaFileFailed(const std::string file_name,
+    int error_code,
+    const std::string& error_description) = 0;
 };
 } // namespace mediakit
 #endif

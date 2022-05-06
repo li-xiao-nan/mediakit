@@ -102,9 +102,15 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
     av_format_context_->flags; //|= AVFMT_FLAG_FAST_SEEK;
     av_format_context_->pb = av_io_context_;
     // open the input file
-    if ((avformat_open_input(&av_format_context_, NULL, NULL, NULL)) != 0) {
+    int error_code = avformat_open_input(&av_format_context_, NULL, NULL, NULL);
+    if (error_code != 0) {
       result = false;
       LOGGING(LOG_LEVEL_ERROR) << "open video file failed";
+      if(demuxer_delegate_) {
+        demuxer_delegate_->OnOpenMediaFileFailed(
+          data_source_->GetFileName(), error_code, "failed");
+      }
+      return;
     } else {
       LOGGING(LOG_LEVEL_INFO) << "open video file success";
       if(demuxer_delegate_) {

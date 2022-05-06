@@ -24,10 +24,10 @@ IOChannel* IOChannel::CreateIOChannel(Url url)
         LOGGING(media::LOG_LEVEL_DEBUG) << "Open file path:" << url.str() << " failed";
 				return stream;
 			}
-			stream = new FileStreamProvider(inFp);
+			stream = new FileStreamProvider(url, inFp);
 		}
 	}else if(url.protocol() == "http"){
-		stream = new CurlStreamFile(url.str(),"");
+		stream = new CurlStreamFile(url, url.str(),"");
 	}else {
     LOGGING(media::LOG_LEVEL_ERROR) << "unsupported url or illegal url; url:"<< url.str();
     return nullptr;

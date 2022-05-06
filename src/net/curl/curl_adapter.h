@@ -13,8 +13,8 @@ class CurlStreamFile : public IOChannel{
 public:
 	typedef map<string, string> PostData;
 
-	CurlStreamFile(const string& url, const string& cachefile);
-	CurlStreamFile(const string& url, const string& vars,
+	CurlStreamFile(const Url& original_url, const string& url, const string& cachefile);
+	CurlStreamFile(const Url& original_url, const string& url, const string& vars,
 			const string& cachefile);
 	~CurlStreamFile();
 

@@ -24,7 +24,11 @@ public:
   // AVPipelineObserver impl
   void OnGetMediaInfo(const media::MediaInfo& media_info) override;
   void OnPlayProgressUpdate(int timpesatamp) override;
-private:
+  void OnOpenMediaFileFailed(const std::string file_name,
+                             int error_code,
+                             const std::string& error_description) override;
+
+ private:
   MediaPlayer(HWND parent_hwnd, const std::string& video_url);
   bool initialize(HWND parent_hwnd, int x, int y, int w, int h);
 private:

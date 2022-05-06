@@ -7,12 +7,20 @@
 namespace media {
 FFmpegVideoDecoder::FFmpegVideoDecoder()
     : av_codec_context_(NULL),
-      state_(STATE_UNINITIALIZED) {}
+      state_(STATE_UNINITIALIZED),
+      sws_context_(nullptr){}
 
-FFmpegVideoDecoder::~FFmpegVideoDecoder() { 
-  sws_freeContext(sws_context_);
-  avcodec_close(av_codec_context_);
-  avcodec_free_context(&av_codec_context_);
+FFmpegVideoDecoder::~FFmpegVideoDecoder() {
+  if(sws_context_) {
+    sws_freeContext(sws_context_);
+    sws_context_ = nullptr;
+  }
+  if(av_codec_context_) {
+    avcodec_close(av_codec_context_);
+    avcodec_free_context(&av_codec_context_);
+    av_codec_context_ = nullptr;
+  }
+
 }
 
 void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,

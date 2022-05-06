@@ -60,6 +60,8 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   // DemuxerDelegate impl
   void OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) override;
   void OnGetMediaInfo(const MediaInfo& media_info) override;
+  void OnOpenMediaFileFailed(const std::string file_name, int error_code,
+    const std::string& error_description) override;
 
   // RendererDelegate impl
   void OnPlayProgressUpdate(int timestamp) override;

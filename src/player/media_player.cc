@@ -81,4 +81,16 @@ void MediaPlayer::OnPlayProgressUpdate(int timpesatamp) {
   return;
 }
 
+void MediaPlayer::OnOpenMediaFileFailed(const std::string file_name,
+                           int error_code,
+                           const std::string& error_description) {
+  if (!mediaplayer_client_) {
+    return;
+  }
+  mediaplayer_client_->OnOpenMediaFileFailed(file_name, error_code, error_description);
+  return;
+}
+
+
+
 } // namespace mediakit

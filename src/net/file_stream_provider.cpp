@@ -24,8 +24,8 @@
 
 namespace net {
 
-FileStreamProvider::FileStreamProvider(FILE* fp)
-    : _fp(fp), _pos(0), _error(false) {
+FileStreamProvider::FileStreamProvider(const Url& url, FILE* fp)
+    : IOChannel(url), _fp(fp), _pos(0), _error(false) {
   fseek(_fp, 0, SEEK_END);
   _size = ftell(_fp);
   fseek(_fp, 0, SEEK_SET);

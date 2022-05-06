@@ -33,6 +33,10 @@ public:
   void OnGetMediaInfo(const media::MediaInfo& media_info) override;
   void OnPlayStateChanged() override {};
   void OnPlayProgressUpdate(const int64_t timestamp) override;
+  void OnOpenMediaFileFailed(const std::string file_name,
+                             int error_code,
+                             const std::string& error_description) override;
+
   void OnPlayPauseButtionClick();
   void OnOpenNewFile();
   void OnWindowClose();

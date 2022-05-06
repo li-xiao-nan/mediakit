@@ -163,6 +163,15 @@ void AVPipeline::OnPlayProgressUpdate(int timestamp) {
   }
 }
 
+void AVPipeline::OnOpenMediaFileFailed(
+    const std::string file_name,
+    int error_code,
+    const std::string& error_description) {
+  for (auto key : avpipeline_observer_list_) {
+    key->OnOpenMediaFileFailed(file_name, error_code, error_description);
+  }
+}
+
 void AVPipeline::AddObserver(AVPipelineObserver* observer) {
   avpipeline_observer_list_.push_back(observer);
 }

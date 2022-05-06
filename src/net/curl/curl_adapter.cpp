@@ -261,7 +261,8 @@ void CurlStreamFile::init(const string &url, const string &cachefile) {
   }
 }
 
-CurlStreamFile::CurlStreamFile(const string &url, const string &cachefile) {
+CurlStreamFile::CurlStreamFile(const Url& original_url, const string &url,
+  const string &cachefile):IOChannel(original_url) {
   init(url, cachefile);
 
   CURLMcode mcode = curl_multi_add_handle(_mCurlHandle, _curlHandle);

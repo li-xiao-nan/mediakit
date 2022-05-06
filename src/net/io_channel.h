@@ -11,6 +11,7 @@ namespace net {
 
 class IOChannel{
 public:
+  IOChannel(const Url& url):url_(url){}
 	virtual ~IOChannel(){}
 
 	static IOChannel* CreateIOChannel(Url url);
@@ -37,6 +38,9 @@ public:
 	virtual bool bad() const = 0;
 	virtual size_t size() const {return static_cast<size_t>(-1);}
 	virtual void reset(){}
+  virtual std::string GetFileName(){ return url_.str();}
+private:
+  net::Url url_;
 };
 
 

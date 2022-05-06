@@ -6,6 +6,9 @@ class AVPipelineObserver {
 public:
   virtual void OnGetMediaInfo(const MediaInfo& media_info){};
   virtual void OnPlayProgressUpdate(int timpesatamp){};
+  virtual void OnOpenMediaFileFailed(const std::string file_name,
+                                          int error_code,
+    const std::string& error_description){}
 };
 
 }
