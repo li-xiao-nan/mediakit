@@ -36,6 +36,7 @@ class FFmpegAudioDecoder : public AudioDecoder {
   DecoderState state_;
   InitCB init_cb_;
   AVFrame* av_frame_;
+  SwrContext* swr_context_;
   DISALLOW_COPY_AND_ASSIGN(FFmpegAudioDecoder);
 };
 }  // namespace media

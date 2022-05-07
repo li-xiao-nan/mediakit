@@ -60,7 +60,7 @@ int SampleFormatToBytesPerChannel(SampleFormat sample_format);
 int ChannelLayoutToChannelCount(int64_t channel_layout);
 
 void AVFrameToVideoFrame(AVFrame* av_frame, VideoFrame* video_frame);
-void AVFrameToAudioFrame(AVFrame* av_frame,
+void AVFrameToAudioFrame(SwrContext* swr_context, AVFrame* av_frame,
                          std::shared_ptr<AudioFrame>& audio_frame,
                          AVCodecContext* av_codec_context);
 

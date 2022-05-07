@@ -212,11 +212,10 @@ AVRational GetAudioStreamTimeBase() {
   return g_audio_stream_time_base;
 }
 
-void AVFrameToAudioFrame(AVFrame* av_frame,
+void AVFrameToAudioFrame(SwrContext* swr_context, AVFrame* av_frame,
                          std::shared_ptr<AudioFrame>& audio_frame,
                          AVCodecContext* av_codec_context) {
   //**********************convert the sample format **********/
-  static SwrContext* swr_context_ = NULL;
   int wanted_nb_samples = av_frame->nb_samples;
   // out_ch_layout:
   // SDL音频播放支持单声道/双声道播放，
@@ -225,56 +224,38 @@ void AVFrameToAudioFrame(AVFrame* av_frame,
   int64_t out_ch_layout = (av_codec_context->channel_layout == AV_CH_LAYOUT_MONO 
       ? AV_CH_LAYOUT_MONO : AV_CH_LAYOUT_STEREO);
   int out_ch_count = ChannelLayoutToChannelCount(out_ch_layout);
-  if (!swr_context_) {
-    swr_free(&swr_context_);
-    swr_context_ = swr_alloc_set_opts(
-      NULL,
-      out_ch_layout,
-      AV_SAMPLE_FMT_S16,
-      av_frame->sample_rate,
-      av_codec_context->channel_layout,
-      (enum AVSampleFormat)av_frame->format,
-      av_frame->sample_rate,
-      0,
-      NULL);
-    if (!swr_context_ || swr_init(swr_context_) < 0) {
-      std::cout << "create the swrContext failed" << std::endl;
-      return;
-    }
+  if(!swr_context) return;
+  const uint8_t** in = (const uint8_t**)av_frame->extended_data;
+  int outCount = wanted_nb_samples;
+  int outSize = av_samples_get_buffer_size(NULL, out_ch_count, outCount,
+                                            AV_SAMPLE_FMT_S16, 0);
+
+  uint8_t* tmpPtr = NULL;
+  uint8_t** out = &tmpPtr;
+  *out = new uint8_t[outSize];  //(uint8_t*)malloc(sizeof(uint8_t)*outSize);
+  memset(*out, 0, outSize);
+  if (!(*out)) {
+    std::cout << __FILE__ << ": " << __LINE__ << "ERROR: alloc buffer failed"
+              << std::endl;
+    return;
   }
-  if (swr_context_) {
-    const uint8_t** in = (const uint8_t**)av_frame->extended_data;
-    int outCount = wanted_nb_samples;
-    int outSize = av_samples_get_buffer_size(NULL, out_ch_count, outCount,
-                                             AV_SAMPLE_FMT_S16, 0);
+  int resLen =
+      swr_convert(swr_context, out, outCount, in, av_frame->nb_samples);
+  if (resLen < 0) {
+    std::cout << __FILE__ << ": " << __LINE__ << "convert the frame failed"
+              << std::endl;
+    return;
+  }
+  if (resLen == outCount) {
+    std::cout << "WARNING: audio buffer is probably to small" << std::endl;
+  }
+  int resampledDataSize = resLen * out_ch_count *
+                          av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
 
-    uint8_t* tmpPtr = NULL;
-    uint8_t** out = &tmpPtr;
-    *out = new uint8_t[outSize];  //(uint8_t*)malloc(sizeof(uint8_t)*outSize);
-    memset(*out, 0, outSize);
-    if (!(*out)) {
-      std::cout << __FILE__ << ": " << __LINE__ << "ERROR: alloc buffer failed"
-                << std::endl;
-      return;
-    }
-    int resLen =
-        swr_convert(swr_context_, out, outCount, in, av_frame->nb_samples);
-    if (resLen < 0) {
-      std::cout << __FILE__ << ": " << __LINE__ << "convert the frame failed"
-                << std::endl;
-      return;
-    }
-    if (resLen == outCount) {
-      std::cout << "WARNING: audio buffer is probably to small" << std::endl;
-    }
-    int resampledDataSize = resLen * out_ch_count *
-                            av_get_bytes_per_sample(AV_SAMPLE_FMT_S16);
-
-    audio_frame.reset(new AudioFrame(
-        *out, resampledDataSize,
-        TimeBaseToMillionSecond(av_frame->pkt_pts, GetAudioStreamTimeBase())));
-    delete[] * out;
-  }  // if(_swrCtx)
+  audio_frame.reset(new AudioFrame(
+      *out, resampledDataSize,
+      TimeBaseToMillionSecond(av_frame->pkt_pts, GetAudioStreamTimeBase())));
+  delete[] * out;
 }
 
 }  // namespace media

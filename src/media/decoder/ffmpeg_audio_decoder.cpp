@@ -3,7 +3,11 @@
 #include "log/log_wrapper.h"
 
 namespace media {
-FFmpegAudioDecoder::FFmpegAudioDecoder(){}
+FFmpegAudioDecoder::FFmpegAudioDecoder()
+  : swr_context_(nullptr),
+    av_codec_context_(nullptr),
+    av_frame_(nullptr){}
+
 void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                     InitCB init_cb,
                                     OutputCB output_cb) {
@@ -12,6 +16,28 @@ void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
   output_cb_ = output_cb;
   bool result = ConfigureDecoder();
   init_cb_(result);
+  if (!swr_context_) {
+    int in_sample_rate = av_codec_context_->sample_rate;
+    int out_sample_rate = av_codec_context_->sample_rate;
+    // out_ch_layout:
+    // SDL音频播放支持单声道/双声道播放，
+    // 单声道音频，依然使用单声道，非单声道音频统一转换为双声道
+    // out_sample_fmt: SDL 音频最大支持16位数据类型
+    int64_t out_ch_layout =
+        (av_codec_context_->channel_layout == AV_CH_LAYOUT_MONO
+             ? AV_CH_LAYOUT_MONO
+             : AV_CH_LAYOUT_STEREO);
+    int out_ch_count = ChannelLayoutToChannelCount(out_ch_layout);
+    swr_context_ = swr_alloc_set_opts(NULL, out_ch_layout, AV_SAMPLE_FMT_S16,
+      out_sample_rate,
+      av_codec_context_->channel_layout,
+      av_codec_context_->sample_fmt,
+      in_sample_rate, 0, NULL);
+      if (!swr_context_ || swr_init(swr_context_) < 0) {
+        std::cout << "create the swrContext failed" << std::endl;
+        return;
+      }
+    }
 }
 
 FFmpegAudioDecoder::~FFmpegAudioDecoder() {
@@ -74,7 +100,7 @@ void FFmpegAudioDecoder::FFmpegDecode(
 	  return;
   }
   std::shared_ptr<AudioFrame> audio_frame;
-  AVFrameToAudioFrame(av_frame_, audio_frame, av_codec_context_);
+  AVFrameToAudioFrame(swr_context_, av_frame_, audio_frame, av_codec_context_);
   if (!audio_frame.get()) {
 	  state_ = STATE_OCCUR_ERROR;
 	  decode_cb(STATUS_DECODE_ERROR);
