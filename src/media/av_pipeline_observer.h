@@ -7,8 +7,9 @@ public:
   virtual void OnGetMediaInfo(const MediaInfo& media_info){};
   virtual void OnPlayProgressUpdate(int timpesatamp){};
   virtual void OnOpenMediaFileFailed(const std::string file_name,
-                                          int error_code,
-    const std::string& error_description){}
+    int error_code, const std::string& error_description){}
+  virtual void OnGetKeyVideoFrame(int timestamp_ms,
+    std::shared_ptr<VideoFrame> video_frame){}
 };
 
 }

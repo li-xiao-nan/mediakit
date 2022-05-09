@@ -28,7 +28,9 @@ public:
   void SetProgressWindowTop();
   void OnWindowSizeChanged();
   void OnMouseMove();
+  void NotifyShowVideoPreview(int timestamp_ms);
   void SetMediaPlayer(std::shared_ptr<MediaPlayer> mediaplayer);
+
   // MediaPlayerClient impl
   void OnGetMediaInfo(const media::MediaInfo& media_info) override;
   void OnPlayStateChanged() override {};
@@ -36,6 +38,9 @@ public:
   void OnOpenMediaFileFailed(const std::string file_name,
                              int error_code,
                              const std::string& error_description) override;
+  void OnGetKeyVideoFrame(
+      int timestamp_ms,
+      std::shared_ptr<media::VideoFrame> video_frame) override;
 
   void OnPlayPauseButtionClick();
   void OnOpenNewFile();

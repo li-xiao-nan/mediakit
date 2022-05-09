@@ -4,6 +4,7 @@
 #include "base/base_type.h"
 #include "media/av_pipeline.h"
 #include "media/av_pipeline_observer.h"
+#include "media/base/video_frame.h"
 #include "player/media_player_client.h"
 #include "window/video_display_window.h"
 
@@ -18,6 +19,7 @@ public:
   void Seek(int timestamp_ms);
   void Pause();
   void Resume();
+  void GetVideoKeyFrameAsync(int timestamp_ms);
   void SetClient(MediaPlayerClient* client);
   void UpdatePlayerWindowPosition(int left, int top, int w, int h);
   
@@ -27,6 +29,9 @@ public:
   void OnOpenMediaFileFailed(const std::string file_name,
                              int error_code,
                              const std::string& error_description) override;
+  void OnGetKeyVideoFrame(int timestamp_ms,
+                          std::shared_ptr<media::VideoFrame> video_frame) override;
+
 
  private:
   MediaPlayer(HWND parent_hwnd, const std::string& video_url);

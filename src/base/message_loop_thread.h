@@ -10,6 +10,7 @@ enum MKThreadId {
   TID_MAIN,
   TID_DEMUXER,
   TID_DECODE,
+  TID_WORK
 };
 
 using AsyncTask = boost::function<void(void)>;

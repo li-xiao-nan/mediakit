@@ -172,6 +172,9 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\media\sound\InputStream.h" />
     <ClInclude Include="src\media\sound\sdl\SoundHandlerSDL.h" />
     <ClInclude Include="src\media\sound\SoundHandler.h" />
+    <ClInclude Include="src\media\video_preview\demuxer_unit.h" />
+    <ClInclude Include="src\media\video_preview\video_decoder_unit.h" />
+    <ClInclude Include="src\media\video_preview\video_preview_pipeline.h" />
     <ClInclude Include="src\net\curl\curl_adapter.h" />
     <ClInclude Include="src\net\file_stream_provider.h" />
     <ClInclude Include="src\net\io_channel.h" />
@@ -226,6 +229,9 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\media\sound\AuxStream.cpp" />
     <ClCompile Include="src\media\sound\sdl\SoundHandlerSDL.cpp" />
     <ClCompile Include="src\media\sound\SoundHandler.cpp" />
+    <ClCompile Include="src\media\video_preview\demuxer_unit.cc" />
+    <ClCompile Include="src\media\video_preview\video_decoder_unit.cc" />
+    <ClCompile Include="src\media\video_preview\video_preview_pipeline.cc" />
     <ClCompile Include="src\net\curl\curl_adapter.cpp" />
     <ClCompile Include="src\net\file_stream_provider.cpp" />
     <ClCompile Include="src\net\io_channel.cpp" />

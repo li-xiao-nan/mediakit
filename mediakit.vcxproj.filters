@@ -63,6 +63,9 @@
     <Filter Include="UI">
       <UniqueIdentifier>{9b09b5f5-c44e-4573-851d-c935f79cf11e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="media\video_preview">
+      <UniqueIdentifier>{89f463be-a899-4d80-9483-ae4482163efb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h">
@@ -281,6 +284,15 @@
     <ClInclude Include="src\base\util.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="src\media\video_preview\video_preview_pipeline.h">
+      <Filter>media\video_preview</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\video_preview\demuxer_unit.h">
+      <Filter>media\video_preview</Filter>
+    </ClInclude>
+    <ClInclude Include="src\media\video_preview\video_decoder_unit.h">
+      <Filter>media\video_preview</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -429,6 +441,15 @@
     </ClCompile>
     <ClCompile Include="src\base\util.cc">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\video_preview\video_preview_pipeline.cc">
+      <Filter>media\video_preview</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\video_preview\demuxer_unit.cc">
+      <Filter>media\video_preview</Filter>
+    </ClCompile>
+    <ClCompile Include="src\media\video_preview\video_decoder_unit.cc">
+      <Filter>media\video_preview</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

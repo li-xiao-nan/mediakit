@@ -21,12 +21,14 @@
 #include "media/renderer/video_renderer.h"
 #include "media/demuxer/demuxer_delegate.h"
 #include "media/av_pipeline_observer.h"
+#include "media/video_preview/video_preview_pipeline.h"
 
 namespace media {
 
 class AVPipeline : public boost::enable_shared_from_this<AVPipeline>, 
   public DemuxerDelegate,
-  public RendererDelegate {
+  public RendererDelegate,
+  public VideoPreviewPipelineDelegate {
  public:
   enum PipelineState {
     STATE_CREATE,
@@ -53,6 +55,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   void Resume();
   void Seek(int64_t timestamp_ms);
   void Stop();
+  void GetVideoKeyFrameAsync(int timestamp_ms);
   int64_t GetPlaybackTime();
   void AddObserver(AVPipelineObserver* observer);
   void RemoveObserver(AVPipelineObserver* observer);
@@ -65,6 +68,9 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
 
   // RendererDelegate impl
   void OnPlayProgressUpdate(int timestamp) override;
+  // VideoPreviewPipelineDelegate impl
+  void OnGetKeyVideoFrame(int timestamp_ms,
+                          std::shared_ptr<VideoFrame> video_frame) override;
  private:
   static int GenerateId();
   void StartAction();
@@ -82,6 +88,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   VideoRenderer::PaintCB paint_cb_;
   std::shared_ptr<Demuxer> demuxer_;
   std::shared_ptr<Renderer> renderer_;
+  std::unique_ptr<VideoPreviewPipeline> video_preview_pipeline_;
   PipelineStatusCB error_cb_;
   PipelineStatusCB seek_cb_;
   std::list<AVPipelineObserver*> avpipeline_observer_list_;

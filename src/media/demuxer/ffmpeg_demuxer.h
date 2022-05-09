@@ -40,6 +40,7 @@ class FFmpegDemuxer : public Demuxer {
   virtual void Pause() override;
   virtual void Resume() override;
   virtual void SetDelegate(DemuxerDelegate* delegate) override;
+  std::string GetVideoUrl() override;
 
   // DemuxerStreamProvier implementation
   virtual DemuxerStream* GetDemuxerStream(DemuxerStream::Type type) override;

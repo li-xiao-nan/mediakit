@@ -44,6 +44,7 @@ public:
 	const string& queryString() const ; //the query is the string after the '?' character
 	void   setQueryString(const string& value);
 	string  str() const ;//return the full URL as a string
+  string OriginalUrl() const;
 
 	///@function name: parseQueryString
 	static void parseQueryString(const string& str,
@@ -84,6 +85,7 @@ private:
 	string _path;
 	string _anchor;
 	string _queryString;
+  string original_url_;
 };//class url
 
 } // namespace

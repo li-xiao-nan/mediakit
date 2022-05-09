@@ -155,6 +155,7 @@ void Url::encode(string& input){
 }
 //private  member functions
 void Url::initUrl(const string& absUrl){
+  original_url_ = absUrl;
 	string::size_type pos = absUrl.find("://");
 	if(pos != string::npos){
 		_protocol = absUrl.substr(0,pos);
@@ -211,6 +212,10 @@ void Url::splitQueryString(){
 		_queryString = _path.substr(pos+1);
 		_path.erase(pos);
 	}
+}
+
+string Url::OriginalUrl() const {
+  return original_url_;
 }
 
 ostream& operator<< (ostream& o, const Url& u){

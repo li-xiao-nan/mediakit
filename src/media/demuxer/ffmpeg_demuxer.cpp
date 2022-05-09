@@ -234,6 +234,10 @@ void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
   PostTask(TID_DECODE, boost::bind(action_cb, (ret >= 0 ? true : false)));
 }
 
+std::string FFmpegDemuxer::GetVideoUrl() {
+  return data_source_->GetFileName();
+}
+
 void FFmpegDemuxer::AfterSeekReadFirstPacket() {
   std::shared_ptr<EncodedAVFrame> encoded_avframe(new AVPacket());
   bool result = !av_read_frame(av_format_context_, encoded_avframe.get());

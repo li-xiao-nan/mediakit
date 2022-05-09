@@ -27,6 +27,8 @@ namespace media {
       std::make_unique<MessageLoop>(TID_DEMUXER);
     s_message_loop_instance_[TID_DECODE] = 
       std::make_unique<MessageLoop>(TID_DECODE);
+    s_message_loop_instance_[TID_WORK] = 
+      std::make_unique<MessageLoop>(TID_WORK);
   }
 
   void MessageLoopManager::StopAll() {

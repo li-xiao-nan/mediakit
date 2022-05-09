@@ -173,6 +173,7 @@ void ProgressWindow::ShowHoverWindow(int x, int y) {
   ::SetWindowPos(hwnd_hover_, 0, hover_window_x, hover_window_y, kHoverTextControlWidth,
     kHoverTextControlHeight, SWP_NOZORDER);
   int hover_timestamp = CaculatePlayTimestampByXPos(x);
+  main_window_->NotifyShowVideoPreview(hover_timestamp);
   SetWindowText(hwnd_hover_, FormatDurationInfoW(hover_timestamp).c_str());
   ShowWindow(hwnd_hover_, SW_SHOWNORMAL);
 }

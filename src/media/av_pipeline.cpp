@@ -21,16 +21,20 @@ AVPipeline::AVPipeline(std::shared_ptr<Demuxer> demuxer,
   : state_(STATE_CREATE)
   , demuxer_(demuxer)
   , renderer_(renderer)
+  , video_preview_pipeline_(new VideoPreviewPipeline(demuxer->GetVideoUrl()))
   , error_cb_(error_cb)
   , seek_cb_(seek_cb)
   , paint_cb_(paint_cb){
   demuxer_->SetDelegate(this);
   renderer_->SetDelegate(this);
+  video_preview_pipeline_->SetDelegate(this);
   id_ = GenerateId();
 }
 
 void AVPipeline::Start() {
   PostTask(TID_DECODE, boost::bind(&AVPipeline::StartAction, this));
+  PostTask(TID_WORK, boost::bind(&VideoPreviewPipeline::initialize,
+    video_preview_pipeline_.get()));
 }
 
 void AVPipeline::StartAction() { StateTransitAction(PIPELINE_OK); }
@@ -83,6 +87,10 @@ void AVPipeline::Stop() {
   Pause();
   renderer_->SetDelegate(nullptr);
   renderer_->Stop();
+}
+
+void AVPipeline::GetVideoKeyFrameAsync(int timestamp_ms) {
+  video_preview_pipeline_->GetKeyFrame(timestamp_ms);
 }
 
 void AVPipeline::OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) {
@@ -169,6 +177,13 @@ void AVPipeline::OnOpenMediaFileFailed(
     const std::string& error_description) {
   for (auto key : avpipeline_observer_list_) {
     key->OnOpenMediaFileFailed(file_name, error_code, error_description);
+  }
+}
+
+void AVPipeline::OnGetKeyVideoFrame(int timestamp_ms,
+                        std::shared_ptr<VideoFrame> video_frame) {
+  for (auto key : avpipeline_observer_list_) {
+    key->OnGetKeyVideoFrame(timestamp_ms, video_frame);
   }
 }
 

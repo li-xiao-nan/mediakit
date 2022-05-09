@@ -320,6 +320,16 @@ void MainWindow::OnPlayPauseButtionClick(){
   }
 }
 
+void MainWindow::NotifyShowVideoPreview(int timestamp_ms) {
+  mediaplayer_instance_->GetVideoKeyFrameAsync(timestamp_ms);
+}
+
+void MainWindow::OnGetKeyVideoFrame(
+    int timestamp_ms,
+    std::shared_ptr<media::VideoFrame> video_frame) {
+
+}
+
 void MainWindow::OnOpenMediaFileFailed(const std::string file_name,
                            int error_code,
                            const std::string& error_description) {

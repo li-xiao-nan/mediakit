@@ -21,6 +21,7 @@ class Demuxer : public DemuxerStreamProvider {
   virtual int64_t GetTimelineOffset() = 0;
   virtual void ShowMediaConfigInfo() = 0;
   virtual void SetDelegate(DemuxerDelegate* demuxer_delegate) = 0;
+  virtual std::string GetVideoUrl() = 0;
 };
 
 }  // namespace media

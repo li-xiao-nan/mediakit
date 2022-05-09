@@ -53,6 +53,10 @@ void MediaPlayer::Resume() {
   av_pipeline_->Resume();
 }
 
+void MediaPlayer::GetVideoKeyFrameAsync(int timestamp_ms) {
+  av_pipeline_->GetVideoKeyFrameAsync(timestamp_ms);
+}
+
 void MediaPlayer::Seek(int timestamp_ms) {
   av_pipeline_->Seek(timestamp_ms);
 }
@@ -70,6 +74,16 @@ void MediaPlayer::OnGetMediaInfo(const media::MediaInfo& media_info) {
     return;
   }
   mediaplayer_client_->OnGetMediaInfo(media_info);
+  return;
+}
+
+void MediaPlayer::OnGetKeyVideoFrame(
+    int timestamp_ms,
+    std::shared_ptr<media::VideoFrame> video_frame) {
+  if (!mediaplayer_client_) {
+    return;
+  }
+  mediaplayer_client_->OnGetKeyVideoFrame(timestamp_ms, video_frame);
   return;
 }
 
