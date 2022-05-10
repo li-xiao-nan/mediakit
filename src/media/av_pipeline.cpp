@@ -89,8 +89,8 @@ void AVPipeline::Stop() {
   renderer_->Stop();
 }
 
-void AVPipeline::GetVideoKeyFrameAsync(int timestamp_ms) {
-  video_preview_pipeline_->GetKeyFrame(timestamp_ms);
+void AVPipeline::GetVideoKeyFrameAsync(int timestamp_ms, int width, int height) {
+  video_preview_pipeline_->GetKeyFrame(timestamp_ms, width, height);
 }
 
 void AVPipeline::OnUpdateAlignedSeekTimestamp(int64_t seek_timestamp) {

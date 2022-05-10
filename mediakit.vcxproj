@@ -183,6 +183,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClInclude Include="src\player\media_player_client.h" />
     <ClInclude Include="src\UI\main_window.h" />
     <ClInclude Include="src\UI\progress_window.h" />
+    <ClInclude Include="src\UI\video_preview_window.h" />
     <ClInclude Include="src\utils\string_utils.h" />
     <ClInclude Include="src\window\main_message_loop_win.h" />
     <ClInclude Include="src\window\rgb_render.h" />
@@ -239,6 +240,7 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
     <ClCompile Include="src\player\media_player.cc" />
     <ClCompile Include="src\UI\main_window.cc" />
     <ClCompile Include="src\UI\progress_window.cc" />
+    <ClCompile Include="src\UI\video_preview_window.cc" />
     <ClCompile Include="src\utils\string_utils.cpp" />
     <ClCompile Include="src\window\main_message_loop_win.cc" />
     <ClCompile Include="src\window\rgb_render.cc" />

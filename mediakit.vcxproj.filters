@@ -293,6 +293,9 @@
     <ClInclude Include="src\media\video_preview\video_decoder_unit.h">
       <Filter>media\video_preview</Filter>
     </ClInclude>
+    <ClInclude Include="src\UI\video_preview_window.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -450,6 +453,9 @@
     </ClCompile>
     <ClCompile Include="src\media\video_preview\video_decoder_unit.cc">
       <Filter>media\video_preview</Filter>
+    </ClCompile>
+    <ClCompile Include="src\UI\video_preview_window.cc">
+      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

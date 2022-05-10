@@ -13,7 +13,7 @@ VideoFrame::VideoFrame(int w, int h, enum Format format)
     switch (_format) {
       case RGB:
         stride_ = _w*3;
-        _data = new unsigned char[_w * _h * 3];
+        _data = new unsigned char[_w * _h * sizeof(unsigned char) * 3];
         if (!_data) {
           // throw exception("new the image data buffer failed");
           LOGGING(LOG_LEVEL_ERROR) << "[RGB]VideoFrame:_data new operator failed; w:"

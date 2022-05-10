@@ -10,6 +10,7 @@
 #include <windows.h>
 #include "ui/progress_window.h"
 #include "player/media_player.h"
+#include "ui/video_preview_window.h"
 
 #define IDM_FILE_OPEN 40001
 
@@ -28,7 +29,10 @@ public:
   void SetProgressWindowTop();
   void OnWindowSizeChanged();
   void OnMouseMove();
-  void NotifyShowVideoPreview(int timestamp_ms);
+  // @timestamp_ms:视频帧预览时间戳，时间单位：毫秒
+  // @width: 预览视频帧窗口的宽度
+  // @height: 预览视频帧窗口的高度
+  void NotifyShowVideoPreview(int x, int y, int timestamp_ms);
   void SetMediaPlayer(std::shared_ptr<MediaPlayer> mediaplayer);
 
   // MediaPlayerClient impl
@@ -46,7 +50,9 @@ public:
   void OnOpenNewFile();
   void OnWindowClose();
   void DestroyPreMediaPlayer(std::shared_ptr<MediaPlayer> instance);
+  void HidePreviewWindow();
 private:
+  void ShowPreviewWindow(int x, int y);
   void StartPlayNewVideo(std::wstring file_path);
   void CreateMainMenu(HWND hwnd);
   ATOM RegisterWindowClass(HINSTANCE hInstance);
@@ -64,6 +70,7 @@ private:
   std::wstring current_playing_timestamp_str_;
   media::MediaInfo media_info_;
   std::unique_ptr<ProgressWindow> progress_window_;
+  std::unique_ptr<VideoPreviewWindow> video_preview_window_;
   int pre_playing_timestamp_by_second_;
   std::shared_ptr<MediaPlayer> mediaplayer_instance_;
   std::string file_path_;

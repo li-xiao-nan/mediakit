@@ -14,6 +14,8 @@ static const int kPlayTimeTextControlHeight = 15;
 static const int kPlayPauseButtionID = 100;
 static const int kPlayPauseButtionWidth = 50;
 static const int kPlayPauseButtionHeight = 20;
+static const int kPreviewVideoWindowW = 300;
+static const int kPreviewVideoWindowH = 150;
 
 MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0)
     , is_pauseing_(false){
@@ -46,6 +48,8 @@ MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0)
       new ProgressWindow(this, hwnd_, 0, 
         rect.bottom - kPlayControlAreaHeight, rect.right - rect.left, kPBHeight));
     CreateMainMenu(hwnd_);
+    video_preview_window_.reset(new VideoPreviewWindow(
+      hwnd_, 0, 0, kPreviewVideoWindowW, kPreviewVideoWindowH));
   }
 
 MainWindow::~MainWindow() {
@@ -320,14 +324,28 @@ void MainWindow::OnPlayPauseButtionClick(){
   }
 }
 
-void MainWindow::NotifyShowVideoPreview(int timestamp_ms) {
-  mediaplayer_instance_->GetVideoKeyFrameAsync(timestamp_ms);
+void MainWindow::NotifyShowVideoPreview(int x, int y, int timestamp_ms) {
+  if(!mediaplayer_instance_) return;
+  mediaplayer_instance_->GetVideoKeyFrameAsync(
+    timestamp_ms, kPreviewVideoWindowW, kPreviewVideoWindowH);
+  ShowPreviewWindow(x, y);
+}
+
+void MainWindow::ShowPreviewWindow(int x, int y) {
+  int preview_window_x = x;
+  int preview_window_y = y - kPreviewVideoWindowH;
+  video_preview_window_->ShowWindow(preview_window_x, preview_window_y, 
+    kPreviewVideoWindowW, kPreviewVideoWindowH);
+}
+
+void MainWindow::HidePreviewWindow() {
+  video_preview_window_->HideWindow();
 }
 
 void MainWindow::OnGetKeyVideoFrame(
     int timestamp_ms,
     std::shared_ptr<media::VideoFrame> video_frame) {
-
+  video_preview_window_->OnReceiveVideoFrame(video_frame);
 }
 
 void MainWindow::OnOpenMediaFileFailed(const std::string file_name,

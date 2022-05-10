@@ -53,8 +53,8 @@ void MediaPlayer::Resume() {
   av_pipeline_->Resume();
 }
 
-void MediaPlayer::GetVideoKeyFrameAsync(int timestamp_ms) {
-  av_pipeline_->GetVideoKeyFrameAsync(timestamp_ms);
+void MediaPlayer::GetVideoKeyFrameAsync(int timestamp_ms, int width, int height) {
+  av_pipeline_->GetVideoKeyFrameAsync(timestamp_ms, width, height);
 }
 
 void MediaPlayer::Seek(int timestamp_ms) {

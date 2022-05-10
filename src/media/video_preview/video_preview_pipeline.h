@@ -16,13 +16,11 @@ public:
 class VideoPreviewPipeline {
 public:
   VideoPreviewPipeline(const std::string& video_url);
-  void GetKeyFrame(int64_t timestamp_ms);
+  void GetKeyFrame(int64_t timestamp_ms, int width, int hegiht);
   bool initialize();
   void SetDelegate(VideoPreviewPipelineDelegate* delegate);
-
 private:
-  void GetKeyFrameInternal(int64_t timestamp_ms);
-
+  void GetKeyFrameInternal(int64_t timestamp_ms, int width, int hegiht);
 private:
 bool initialized_;
 VideoPreviewPipelineDelegate* delegate_;

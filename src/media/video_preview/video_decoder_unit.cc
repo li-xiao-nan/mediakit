@@ -3,7 +3,7 @@
 #include "media/FFmpeg/ffmpeg_common.h"
 
 namespace media {
-VideoDeocderUnit::VideoDeocderUnit(){}
+VideoDeocderUnit::VideoDeocderUnit():sws_context_(nullptr){}
 
 VideoDeocderUnit::~VideoDeocderUnit() {
   if (sws_context_) {
@@ -22,15 +22,19 @@ bool VideoDeocderUnit::initialize(const VideoDecoderConfig& config) {
   video_codec_config_ = config;
   result = ConfigDecoder();
   if(!result){
-
     return result;
   }
-  result = ConfigSwsContext();
   return true;
 }
 
 std::shared_ptr<VideoFrame> VideoDeocderUnit::Decode(
-  std::shared_ptr<EncodedAVFrame> encoded_avframe) {
+  std::shared_ptr<EncodedAVFrame> encoded_avframe,
+  int out_width, int out_height) {
+  if(out_width != out_width_ || out_height != out_height_) {
+    out_width_ = out_width;
+    out_height_ = out_height;
+    ConfigSwsContext(out_width_, out_height_);
+  }
   int decode_count;
   int decode_result = avcodec_decode_video2(
       av_codec_context_, av_frame_, &decode_count, encoded_avframe.get());
@@ -47,7 +51,7 @@ std::shared_ptr<VideoFrame> VideoDeocderUnit::Decode(
 
   if (decode_count != 0) {
     new_video_frame.reset(new VideoFrame(
-        av_codec_context_->width, av_codec_context_->height, VideoFrame::RGBA));
+      out_width, out_height, VideoFrame::RGB));
     Yuv2Rgb(av_frame_, new_video_frame);
     new_video_frame->timestamp_ =
         TimeBaseToMillionSecond(av_frame_->pkt_pts, GetVideoStreamTimeBase());
@@ -80,12 +84,15 @@ bool VideoDeocderUnit::ConfigDecoder() {
   return true;
 }
 
-bool VideoDeocderUnit::ConfigSwsContext() {
+bool VideoDeocderUnit::ConfigSwsContext(int out_width, int out_height) {
+  if(sws_context_) {
+    sws_freeContext(sws_context_);
+    sws_context_ = nullptr;
+  }
   sws_context_ =
       sws_getContext(av_codec_context_->width, av_codec_context_->height,
-                     av_codec_context_->pix_fmt, av_codec_context_->width,
-                     av_codec_context_->height, AV_PIX_FMT_RGBA, SWS_BILINEAR,
-                     NULL, NULL, NULL);
+        av_codec_context_->pix_fmt, out_width, out_height, AV_PIX_FMT_BGR24,
+        SWS_BILINEAR, NULL, NULL, NULL);
   return true;
 }
 

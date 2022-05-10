@@ -24,6 +24,7 @@ private:
   int CaculatePlayTimestampByXPos(int x);
  private:
   int left_, top_, width_, height_;
+  int pre_x_, pre_y_;
   static HHOOK pre_hook_;
   int64_t media_duration_;
   HWND hwnd_parent_;

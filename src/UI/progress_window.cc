@@ -168,12 +168,17 @@ std::string FormatDurationInfoA(int media_duration) {
 }
 
 void ProgressWindow::ShowHoverWindow(int x, int y) {
+  if(x == pre_x_ && y == pre_y_) {
+    return;
+  }
+  pre_x_ = x;
+  pre_y_ = y;
   int hover_window_x = left_ + x;
   int hover_window_y = top_ - kHoverTextControlHeight;
   ::SetWindowPos(hwnd_hover_, 0, hover_window_x, hover_window_y, kHoverTextControlWidth,
     kHoverTextControlHeight, SWP_NOZORDER);
   int hover_timestamp = CaculatePlayTimestampByXPos(x);
-  main_window_->NotifyShowVideoPreview(hover_timestamp);
+  main_window_->NotifyShowVideoPreview(hover_window_x, hover_window_y, hover_timestamp);
   SetWindowText(hwnd_hover_, FormatDurationInfoW(hover_timestamp).c_str());
   ShowWindow(hwnd_hover_, SW_SHOWNORMAL);
 }
@@ -183,6 +188,7 @@ int ProgressWindow::CaculatePlayTimestampByXPos(int x) {
   int hover_timestamp = media_duration_ * progress_value;
   return hover_timestamp;
 }
+
 void ProgressWindow::OnLButtionDown(int x, int y) {
   int click_timestamp = CaculatePlayTimestampByXPos(x);
   main_window_->Seek(click_timestamp);
@@ -191,6 +197,7 @@ void ProgressWindow::OnLButtionDown(int x, int y) {
 
 void ProgressWindow::HideHoverWindow() {
   ShowWindow(hwnd_hover_, SW_HIDE);
+  main_window_->HidePreviewWindow();
 }
 
 } // namespace mediakit

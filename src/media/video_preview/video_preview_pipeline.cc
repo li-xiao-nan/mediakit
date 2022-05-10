@@ -26,20 +26,22 @@ void VideoPreviewPipeline::SetDelegate(VideoPreviewPipelineDelegate* delegate) {
   delegate_ = delegate;
 }
 
-void VideoPreviewPipeline::GetKeyFrame(int64_t timestamp_ms) {
+void VideoPreviewPipeline::GetKeyFrame(int64_t timestamp_ms,
+  int width, int height) {
   AsyncTask task = 
-    boost::bind(&VideoPreviewPipeline::GetKeyFrameInternal, this, timestamp_ms);
+    boost::bind(&VideoPreviewPipeline::GetKeyFrameInternal, this,
+      timestamp_ms, width, height);
   MessageLoopManager::GetInstance()->PostTask(TID_WORK, task);
 }
 
 // run on work thread
-void VideoPreviewPipeline::GetKeyFrameInternal(int64_t timestamp_ms) {
+void VideoPreviewPipeline::GetKeyFrameInternal(int64_t timestamp_ms,
+  int width, int hegiht) {
   if(!initialized_ || working_) {
     return;
   }
-  
-  working_ = true;
 
+  working_ = true;
   demuxer_unit_->Seek(timestamp_ms);
   video_decoder_unit_->ClearBuffer();
   std::shared_ptr<VideoFrame> video_frame = nullptr;
@@ -51,7 +53,7 @@ void VideoPreviewPipeline::GetKeyFrameInternal(int64_t timestamp_ms) {
     if (next_key_avframe == nullptr) {
       break;
     }
-    video_frame = video_decoder_unit_->Decode(next_key_avframe);
+    video_frame = video_decoder_unit_->Decode(next_key_avframe, width, hegiht);
     if(!video_frame){
       continue;
     } else {
