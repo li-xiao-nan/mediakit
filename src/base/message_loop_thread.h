@@ -24,6 +24,9 @@ public:
   void PostTask(AsyncTask task);
   void Stop();
 private:
+  void DemuxerThreadMain();
+  void DecodeThreadMain();
+  void WorkThreadMain();
 private:
   int thread_id_;
   MKThreadId mk_thread_id_;
