@@ -3,7 +3,9 @@
 #include "media/FFmpeg/ffmpeg_common.h"
 
 namespace media {
-VideoDeocderUnit::VideoDeocderUnit():sws_context_(nullptr){}
+VideoDeocderUnit::VideoDeocderUnit()
+  : sws_context_(nullptr)
+  , av_codec_context_(nullptr){}
 
 VideoDeocderUnit::~VideoDeocderUnit() {
   if (sws_context_) {
@@ -30,15 +32,19 @@ bool VideoDeocderUnit::initialize(const VideoDecoderConfig& config) {
 std::shared_ptr<VideoFrame> VideoDeocderUnit::Decode(
   std::shared_ptr<EncodedAVFrame> encoded_avframe,
   int out_width, int out_height) {
+  AUTORUNTIMER("VideoDeocderUnit::Decode");
   if(out_width != out_width_ || out_height != out_height_) {
     out_width_ = out_width;
     out_height_ = out_height;
     ConfigSwsContext(out_width_, out_height_);
   }
   int decode_count;
-  int decode_result = avcodec_decode_video2(
-      av_codec_context_, av_frame_, &decode_count, encoded_avframe.get());
-
+  int decode_result = 0;
+  {
+    AUTORUNTIMER("VideoDeocderUnit(avcodec_decode_video2)");
+    decode_result = avcodec_decode_video2(
+        av_codec_context_, av_frame_, &decode_count, encoded_avframe.get());
+  }
   std::shared_ptr<VideoFrame> new_video_frame = nullptr;
   
   if (decode_result < 0) {
@@ -50,6 +56,7 @@ std::shared_ptr<VideoFrame> VideoDeocderUnit::Decode(
   }
 
   if (decode_count != 0) {
+    AUTORUNTIMER("Yuv2Rgb");
     new_video_frame.reset(new VideoFrame(
       out_width, out_height, VideoFrame::RGB));
     Yuv2Rgb(av_frame_, new_video_frame);

@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <chrono>
+#include "base/timer/ClockTime.h"
 namespace media {
   enum LogLevel {
     LOG_LEVEL_DEBUG,
@@ -37,6 +38,7 @@ namespace media {
     std::ostringstream format_out_string_stream_;
   };
 
+#define AUTORUNTIMER(func_name) media::ScopeTimeCount auto_run_timer(func_name) 
 #define TRACEPOINT media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, media::LOG_LEVEL_DEBUG).stream()
 #define LOGGING(severity) media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, severity).stream()
 #define TraceAVPacketProcess(pts)   !IsAVPacketProcessTraceEnabled() ? (void)0 : (media::FormatLogMessage(__FILE__, __FUNCTION__, __LINE__, LOG_LEVEL_DEBUG).stream() << "pts:" << pts);
@@ -45,19 +47,19 @@ namespace media {
    public:
     ScopeTimeCount(const std::string func_name)
         : time_count_object_name_(func_name) {
-      start_timestamp_ =
-          std::chrono::time_point_cast<std::chrono::milliseconds>(
+      start_timestamp_ = MediaCore::getTicks();
+          /*std::chrono::time_point_cast<std::chrono::milliseconds>(
               std::chrono::system_clock::now())
               .time_since_epoch()
-              .count();
+              .count();*/
     }
     ~ScopeTimeCount() {
-      int64_t cast_time =
-          std::chrono::time_point_cast<std::chrono::milliseconds>(
+      int64_t cast_time = MediaCore::getTicks() - start_timestamp_;
+          /*std::chrono::time_point_cast<std::chrono::milliseconds>(
               std::chrono::system_clock::now())
               .time_since_epoch()
               .count() -
-          start_timestamp_;
+          start_timestamp_;*/
       LOGGING(LOG_LEVEL_DEBUG)
           << time_count_object_name_ << "cast: " << cast_time << " ms.";
     }

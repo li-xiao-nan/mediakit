@@ -86,7 +86,7 @@ void FFmpegDemuxer::NotifyDemuxerCapacityAvailable() {
 
 void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
                                               ActionCB action_cb) {
-  ScopeTimeCount auto_time_count(__FUNCTION__);
+  AUTORUNTIMER("FFmpegDemuxer::OpenAVFormatContextAction");
   av_register_all();
 
   bool result = false;
@@ -144,6 +144,7 @@ void FFmpegDemuxer::OnOpenAVFormatContextDone(PipelineStatusCB status_cb,
 void FFmpegDemuxer::FindStreamInfoAction(PipelineStatusCB status_cb,
                                          ActionCB action_cb) {
   TRACEPOINT;
+  AUTORUNTIMER("FFmpegDemuxer::FindStreamInfoAction");
   bool result = false;
   if (avformat_find_stream_info(av_format_context_, NULL) < 0) {
     LOGGING(LOG_LEVEL_ERROR)<< "Could not find the stream information";

@@ -25,6 +25,7 @@ FFmpegVideoDecoder::~FFmpegVideoDecoder() {
 
 void FFmpegVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                     InitCB init_cb, OutputCB output_cb) {
+  AUTORUNTIMER("FFmpegVideoDecoder::Initialize");
   output_cb_ = output_cb;
   config_ = config;
   ConfigureDecoder(true);

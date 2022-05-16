@@ -62,6 +62,7 @@ private:
   void CreatePlayPauseButtion(int left, int top, int w, int h);
 private:
   bool is_pauseing_;
+  int pre_video_preview_timestamp_;
   HMENU h_main_menu;
   HWND hwnd_;
   HWND playing_time_hwnd_;

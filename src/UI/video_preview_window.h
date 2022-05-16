@@ -12,6 +12,7 @@ public:
   void OnReceiveVideoFrame(std::shared_ptr<media::VideoFrame> video_frame);
   void ShowWindow(int x, int y, int w, int h);
   void HideWindow();
+  void NotifyShow(int x, int y, int w, int h);
 private:
   void InitBigMapInfo();
   ATOM RegisterWindowClass(HINSTANCE hInstance);
@@ -20,6 +21,7 @@ private:
   int y_;
   int w_;
   int h_;
+  bool pending_show_window_;
   std::shared_ptr<media::VideoFrame> video_frame_;
   HINSTANCE hInstance_;
   ::HWND hwnd_;

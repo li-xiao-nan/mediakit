@@ -84,6 +84,7 @@ int64_t AVPipeline::GetPlaybackTime() {
 }
 
 void AVPipeline::Stop() {
+  video_preview_pipeline_->Stop();
   Pause();
   renderer_->SetDelegate(nullptr);
   renderer_->Stop();

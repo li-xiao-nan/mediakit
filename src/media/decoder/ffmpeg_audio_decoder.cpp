@@ -11,6 +11,7 @@ FFmpegAudioDecoder::FFmpegAudioDecoder()
 void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                     InitCB init_cb,
                                     OutputCB output_cb) {
+  AUTORUNTIMER("FFmpegAudioDecoder::Initialize");
   config_ = config;
   init_cb_ = init_cb;
   output_cb_ = output_cb;

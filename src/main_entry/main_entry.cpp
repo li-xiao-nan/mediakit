@@ -20,6 +20,5 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   UNREFERENCED_PARAMETER(lpCmdLine);
   std::shared_ptr<mediakit::MainWindow> main_window(new mediakit::MainWindow());
   int result = mediakit::EnterMainMessageLoop(hInstance);
-  media::MessageLoopManager::GetInstance()->StopAll();
   return result;
 }

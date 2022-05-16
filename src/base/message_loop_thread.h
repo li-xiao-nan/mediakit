@@ -21,14 +21,18 @@ public:
   MessageLoop(MKThreadId mk_thread_id);
   unsigned int GetTID();
   MKThreadId GetThreadType();
-  void PostTask(AsyncTask task);
+  void PostTask(AsyncTask async_task, bool out_task_run_statistics_info,
+    const std::string& post_from);
+  void RunNextTask();
   void Stop();
 private:
   void DemuxerThreadMain();
   void DecodeThreadMain();
   void WorkThreadMain();
+  void OnTaskRunCompleted();
 private:
   int thread_id_;
+  int pending_task_count_;
   MKThreadId mk_thread_id_;
   std::unique_ptr<boost::asio::io_service> task_runner_;
   std::unique_ptr<boost::thread> message_loop_thread_;

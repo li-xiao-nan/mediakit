@@ -83,6 +83,9 @@ void VideoPreviewWindow::OnReceiveVideoFrame(
   std::shared_ptr<media::VideoFrame> video_frame) {
   video_frame_ = video_frame;
   DrawVideoFrame();
+  if(pending_show_window_) {
+    ShowWindow(x_, y_, w_, h_);
+  }
 }
 
 ATOM VideoPreviewWindow::RegisterWindowClass(HINSTANCE hInstance) {
@@ -106,12 +109,21 @@ ATOM VideoPreviewWindow::RegisterWindowClass(HINSTANCE hInstance) {
   return RegisterClassExW(&wcex);
 }
 
+void VideoPreviewWindow::NotifyShow(int x, int y, int w, int h) {
+  x_ = x;
+  y_ = y;
+  w_ = w;
+  h_ = h;
+  pending_show_window_ = true;
+}
+
 void VideoPreviewWindow::ShowWindow(int x, int y, int w, int h) {
   ::SetWindowPos(hwnd_, 0, x, y, w, h, SWP_NOZORDER);
   ::ShowWindow(hwnd_, SW_SHOWNORMAL);
 }
 
 void VideoPreviewWindow::HideWindow() {
+  pending_show_window_ = false;
   ::ShowWindow(hwnd_, SW_HIDE);
 }
 

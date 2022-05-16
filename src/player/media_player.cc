@@ -2,6 +2,7 @@
 #include "media/av_pipeline_factory.h"
 #include "boost/bind.hpp"
 #include "log/log_wrapper.h"
+#include "base/message_loop_thread_manager.h"
 
 namespace mediakit {
 std::shared_ptr<MediaPlayer> MediaPlayer::CreateMediaPlayer(
@@ -14,6 +15,9 @@ std::shared_ptr<MediaPlayer> MediaPlayer::CreateMediaPlayer(
   return new_media_player;
 }
 
+void MediaPlayer::StopSystem() {
+  media::MessageLoopManager::GetInstance()->StopAll();
+}
 MediaPlayer::MediaPlayer(HWND parent_hwnd, const std::string& video_url):
   video_url_(video_url),
   parent_hwnd_(parent_hwnd){}
@@ -104,7 +108,4 @@ void MediaPlayer::OnOpenMediaFileFailed(const std::string file_name,
   mediaplayer_client_->OnOpenMediaFileFailed(file_name, error_code, error_description);
   return;
 }
-
-
-
 } // namespace mediakit

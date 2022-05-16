@@ -13,6 +13,7 @@ class MediaPlayer : public media::AVPipelineObserver{
 public:  
   static std::shared_ptr<MediaPlayer> CreateMediaPlayer(
     HWND parent_hwnd, int x, int y, int w, int h, const std::string& video_url);
+  static void StopSystem();
   void DisplayCallBack(std::shared_ptr<media::VideoFrame> video_frame);
   void Start();
   void Stop();

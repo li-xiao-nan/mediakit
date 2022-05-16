@@ -17,8 +17,10 @@ static const int kPlayPauseButtionHeight = 20;
 static const int kPreviewVideoWindowW = 300;
 static const int kPreviewVideoWindowH = 150;
 
-MainWindow::MainWindow() : pre_playing_timestamp_by_second_(0)
-    , is_pauseing_(false){
+MainWindow::MainWindow()
+  : pre_playing_timestamp_by_second_(0)
+  , is_pauseing_(false)
+  , pre_video_preview_timestamp_(0){
     HMODULE hInstance = GetModuleHandle(NULL);
     RegisterWindowClass(hInstance);
     hwnd_ = CreateWindowW(kWindowClassName, kWindowTitle, WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
@@ -97,6 +99,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd,
 }
 
 void MainWindow::OnWindowClose() {
+  MediaPlayer::StopSystem();
   if(mediaplayer_instance_) {
     mediaplayer_instance_->Stop();
   }
@@ -134,7 +137,9 @@ void MainWindow::StartPlayNewVideo(std::wstring file_path) {
   if(mediaplayer_instance_) {
     mediaplayer_instance_->Stop();
     LOGGING(media::LOG_LEVEL_INFO) << "mediaplayer_instance_->Stop()";
-    media::MessageLoopManager::GetInstance()->PostTask(media::TID_MAIN, boost::bind(&MainWindow::DestroyPreMediaPlayer, this, mediaplayer_instance_));
+    POSTTASK(media::TID_MAIN, 
+      boost::bind(
+        &MainWindow::DestroyPreMediaPlayer, this, mediaplayer_instance_));
     mediaplayer_instance_ = nullptr;
   }
    RECT rects;
@@ -326,6 +331,12 @@ void MainWindow::OnPlayPauseButtionClick(){
 
 void MainWindow::NotifyShowVideoPreview(int x, int y, int timestamp_ms) {
   if(!mediaplayer_instance_) return;
+  if(timestamp_ms == pre_video_preview_timestamp_) {
+    LOGGING(media::LOG_LEVEL_DEBUG) << "drop video preview request";
+    return;
+  } else {
+    pre_video_preview_timestamp_= timestamp_ms;
+  }
   mediaplayer_instance_->GetVideoKeyFrameAsync(
     timestamp_ms, kPreviewVideoWindowW, kPreviewVideoWindowH);
   ShowPreviewWindow(x, y);
@@ -334,7 +345,7 @@ void MainWindow::NotifyShowVideoPreview(int x, int y, int timestamp_ms) {
 void MainWindow::ShowPreviewWindow(int x, int y) {
   int preview_window_x = x;
   int preview_window_y = y - kPreviewVideoWindowH;
-  video_preview_window_->ShowWindow(preview_window_x, preview_window_y, 
+  video_preview_window_->NotifyShow(preview_window_x, preview_window_y, 
     kPreviewVideoWindowW, kPreviewVideoWindowH);
 }
 

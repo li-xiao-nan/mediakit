@@ -9,6 +9,7 @@ DemuxerUnit::DemuxerUnit(const std::string& source_url)
   :source_url_(source_url){}
 
 void DemuxerUnit::Seek(int64_t timestamp_ms) {
+  AUTORUNTIMER("Seek");
   int ret = av_seek_frame(av_format_context_, -1, timestamp_ms * 1000,
                           AVSEEK_FLAG_BACKWARD);
   ClearBuffer();
@@ -25,6 +26,7 @@ std::shared_ptr<EncodedAVFrame> DemuxerUnit::ReadAVFrame() {
 }
 
 std::shared_ptr<EncodedAVFrame> DemuxerUnit::ReadVideoAVFrame() {
+  AUTORUNTIMER("DemuxerUnit::ReadVideoAVFrame");
   return ReadAVFrameByType(AVMEDIA_TYPE_VIDEO);
 }
 
