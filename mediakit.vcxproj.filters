@@ -66,6 +66,9 @@
     <Filter Include="media\video_preview">
       <UniqueIdentifier>{89f463be-a899-4d80-9483-ae4482163efb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="base\sonic">
+      <UniqueIdentifier>{ff06ec1e-0255-43d1-a164-6f1e2826a190}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h">
@@ -296,6 +299,9 @@
     <ClInclude Include="src\UI\video_preview_window.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="src\base\sonic\sonic.h">
+      <Filter>base\sonic</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\base\ImageType.cpp">
@@ -456,6 +462,9 @@
     </ClCompile>
     <ClCompile Include="src\UI\video_preview_window.cc">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="src\base\sonic\sonic.c">
+      <Filter>base\sonic</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -59,6 +59,7 @@ class VideoRendererImpl : public VideoRenderer {
 
   bool pending_paint_;
   State state_;
+  float playback_rate_;
   int64_t start_playing_time_;
   PaintCB paint_cb_;
   GetTimeCB get_time_cb_;

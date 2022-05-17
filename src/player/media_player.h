@@ -20,6 +20,7 @@ public:
   void Seek(int timestamp_ms);
   void Pause();
   void Resume();
+  void SetPlaybackRate(float rate);
   void GetVideoKeyFrameAsync(int timestamp_ms, int width, int hegiht);
   void SetClient(MediaPlayerClient* client);
   void UpdatePlayerWindowPosition(int left, int top, int w, int h);

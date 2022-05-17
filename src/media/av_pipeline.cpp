@@ -90,6 +90,10 @@ void AVPipeline::Stop() {
   renderer_->Stop();
 }
 
+void AVPipeline::SetPlaybackRate(float rate) {
+  renderer_->SetPlaybackRate(rate);
+}
+
 void AVPipeline::GetVideoKeyFrameAsync(int timestamp_ms, int width, int height) {
   video_preview_pipeline_->GetKeyFrame(timestamp_ms, width, height);
 }

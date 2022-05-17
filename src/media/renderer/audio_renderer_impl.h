@@ -7,6 +7,7 @@
 
 #include "audio_renderer.h"
 #include "base/macros.h"
+#include "base/sonic/sonic.h"
 #include "media/demuxer/demuxer_stream.h"
 #include "media/renderer/audio_renderer_sink.h"
 #include "media/base/pipeline_status.h"
@@ -56,13 +57,17 @@ class AudioRendererImpl : public AudioRenderer,
   void ReadReadyFrameLocked();
   void InitAudioRenderSink(const AudioDecoderConfig& audio_decoder_config,
                            AudioRendererSink::InitCB init_cb);
-
+  void SpeedUpAudio(std::shared_ptr<AudioFrame> audio_frame);
+  void CreateSonicStream(int sample_rate, int channel_count);
+  
   bool pending_read_;
+  float playback_rate_;
   std::queue<std::shared_ptr<AudioFrame> > ready_audio_frames_;
   std::queue<std::shared_ptr<AudioFrame> > pending_paint_frames_;
   AudioFrameStream* audio_frame_stream_;
   AudioRendererSink* audio_renderer_sink_;
   DemuxerStream* demuxer_stream_;
+  sonicStream sonic_stream_;
   State state_;
   boost::mutex frame_queue_mutex_;
   PipelineStatusCB init_cb_;

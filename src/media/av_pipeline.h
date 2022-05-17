@@ -55,6 +55,7 @@ class AVPipeline : public boost::enable_shared_from_this<AVPipeline>,
   void Resume();
   void Seek(int64_t timestamp_ms);
   void Stop();
+  void SetPlaybackRate(float rate);
   void GetVideoKeyFrameAsync(int timestamp_ms, int width, int hegiht);
   int64_t GetPlaybackTime();
   void AddObserver(AVPipelineObserver* observer);

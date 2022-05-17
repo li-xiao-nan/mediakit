@@ -57,6 +57,10 @@ void MediaPlayer::Resume() {
   av_pipeline_->Resume();
 }
 
+void MediaPlayer::SetPlaybackRate(float rate) {
+  av_pipeline_->SetPlaybackRate(rate);
+}
+
 void MediaPlayer::GetVideoKeyFrameAsync(int timestamp_ms, int width, int height) {
   av_pipeline_->GetVideoKeyFrameAsync(timestamp_ms, width, height);
 }

@@ -153,6 +153,7 @@ void MainWindow::StartPlayNewVideo(std::wstring file_path) {
    SetMediaPlayer(mediaplayer);
    mediaplayer->SetClient(this);
    mediaplayer->Start();
+   //mediaplayer->SetPlaybackRate(1.0f);
    file_path_ = video_url;
    SetWindowText(hwnd_, file_path.c_str());
 }

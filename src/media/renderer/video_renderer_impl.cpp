@@ -12,6 +12,7 @@ VideoRendererImpl::VideoRendererImpl(
     const VideoFrameStream::VecVideoDecoders& vec_video_decoders)
     : pending_paint_(false),
       pause_state_(false),
+      playback_rate_(1.0f),
       state_(STATE_UNINITIALIZED),
       video_frame_stream_(new VideoFrameStream(vec_video_decoders)),
       droped_frame_count_(0),
@@ -62,6 +63,7 @@ void VideoRendererImpl::StartPlayingFrom(int64_t offset) {
 }
 
 void VideoRendererImpl::SetPlaybackRate(float rate) {
+  playback_rate_ = rate;
 }
 
 std::wstring toWString(int64_t value){
@@ -191,7 +193,7 @@ void VideoRendererImpl::ThreadMain() {
 VideoRendererImpl::FrameOperation
 VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
                                                int64_t next_frame_pts) {
-  if (next_frame_pts > current_time)
+  if (next_frame_pts > current_time*playback_rate_)
     return OPERATION_WAIT_FOR_PAINT;
 
   int64_t time_delta = current_time - next_frame_pts;

@@ -6,7 +6,7 @@ namespace media {
 FFmpegAudioDecoder::FFmpegAudioDecoder()
   : swr_context_(nullptr),
     av_codec_context_(nullptr),
-    av_frame_(nullptr){}
+    av_frame_(nullptr) {}
 
 void FFmpegAudioDecoder::Initialize(const AudioDecoderConfig& config,
                                     InitCB init_cb,
