@@ -31,12 +31,12 @@ public:
 
 	float read_float32();
 	//return current stream position
-	virtual long tell() const  = 0;
-	virtual int seek(long p) = 0;
+	virtual long long tell() const  = 0;
+	virtual int seek(long long p) = 0;
 	virtual void go_to_end() = 0;
 	virtual bool eof() const =0;
 	virtual bool bad() const = 0;
-	virtual size_t size() const {return static_cast<size_t>(-1);}
+	virtual long long size() const {return static_cast<size_t>(-1);}
 	virtual void reset(){}
   virtual std::string GetFileName(){ return url_.OriginalUrl();}
 private:

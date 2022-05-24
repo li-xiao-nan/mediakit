@@ -4,7 +4,7 @@
 #include "media//FFmpeg/ffmpeg_common.h"
 
 namespace media {
-static int kFFmpgeAVIOBufferSize = 1024 * 3;
+static int kFFmpgeAVIOBufferSize = 1024 * 4;
 DemuxerUnit::DemuxerUnit(const std::string& source_url)
   :source_url_(source_url){}
 
@@ -131,7 +131,7 @@ bool DemuxerUnit::CreateAVIOContext() {
     av_io_buffer_, kFFmpgeAVIOBufferSize, 
     0, this, FFmpegReadPacketCB, NULL, FFmpegSeekCB);
 
-  av_io_context_->seekable = 0;
+  av_io_context_->seekable = AVIO_SEEKABLE_NORMAL;
   av_io_context_->write_flag = false;
   // Enable fast, but inaccurate seeks for MP3.
   av_format_context_->flags;  //|= AVFMT_FLAG_FAST_SEEK;
@@ -147,29 +147,30 @@ int DemuxerUnit::FFmpegReadPacketCB(void* opaque,
 }
 int64_t DemuxerUnit::FFmpegSeekCB(void* opaque, int64_t offset, int whence) {
   DemuxerUnit* demuxer = static_cast<DemuxerUnit*>(opaque);
-  demuxer->FileSeek(static_cast<long>(offset), whence);
-  return 0;
+  return demuxer->FileSeek(offset, whence);
 }
 
 int DemuxerUnit::FileRead(unsigned char* buffer, int buffer_size) {
   return data_source_->read(buffer, buffer_size);
 }
 
-long DemuxerUnit::FileSeek(long offset, int whence) {
+long long DemuxerUnit::FileSeek(long long offset, int whence) {
   if (whence == SEEK_SET) {
     if (offset < 0)
       return -1;
     else
       data_source_->seek(offset);
   } else if (whence == SEEK_CUR) {
-    data_source_->seek(data_source_->tell() +
-                       static_cast<std::streamoff>(offset));
+    data_source_->seek(data_source_->tell() + offset);
   } else if (whence == SEEK_END) {
-    data_source_->seek(1024);
+    data_source_->seek(data_source_->size());
+  } else if (whence == AVSEEK_SIZE) {
+    long long result_size = data_source_->size();
+    return result_size;
   } else {
     return 0;
   }
-  long result = data_source_->tell();
+  long long result = data_source_->tell();
   return result;
 }
 

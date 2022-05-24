@@ -17,7 +17,7 @@
 #include "base/message_loop_thread_manager.h"
 #include "log/log_wrapper.h"
 
-int kFFmpgeAVIOBufferSize = 1024*3;
+int kFFmpgeAVIOBufferSize = 1024*4;
 
 namespace media {
 
@@ -96,12 +96,13 @@ void FFmpegDemuxer::OpenAVFormatContextAction(PipelineStatusCB status_cb,
         avio_alloc_context(av_io_buffer_, kFFmpgeAVIOBufferSize, 0, this,
                            FFmpegReadPacketCB, NULL, FFmpegSeekCB);
 
-    av_io_context_->seekable = 0;
+    av_io_context_->seekable = AVIO_SEEKABLE_NORMAL;
     av_io_context_->write_flag = false;
     // Enable fast, but inaccurate seeks for MP3.
-    av_format_context_->flags; //|= AVFMT_FLAG_FAST_SEEK;
+    //av_format_context_->flags = AVFMT_FLAG_FAST_SEEK;
     av_format_context_->pb = av_io_context_;
     // open the input file
+    LOGGING(LOG_LEVEL_INFO)<<"Begin open input video file";
     int error_code = avformat_open_input(&av_format_context_, NULL, NULL, NULL);
     if (error_code != 0) {
       result = false;
@@ -146,6 +147,7 @@ void FFmpegDemuxer::FindStreamInfoAction(PipelineStatusCB status_cb,
   TRACEPOINT;
   AUTORUNTIMER("FFmpegDemuxer::FindStreamInfoAction");
   bool result = false;
+  LOGGING(LOG_LEVEL_INFO) << "[stage] find stream info";
   if (avformat_find_stream_info(av_format_context_, NULL) < 0) {
     LOGGING(LOG_LEVEL_ERROR)<< "Could not find the stream information";
   } else {
@@ -158,6 +160,7 @@ void FFmpegDemuxer::FindStreamInfoAction(PipelineStatusCB status_cb,
 
 void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
                                          bool result) {
+  LOGGING(LOG_LEVEL_INFO)<<"[stage] after find stream info";
   if (!result) {
     status_cb(DEMUXER_FIND_STREAM_INFO_FAILED);
     return;
@@ -193,6 +196,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
       video_demuxer_stream->set_video_decoder_config(video_decoder_config);
       streams_.push_back(video_demuxer_stream);
       max_duration = std::max(max_duration, video_demuxer_stream->duration());
+      LOGGING(LOG_LEVEL_INFO)<<"find video stream info, stream index:"<<i<<";";
     } else if (media_type == AVMEDIA_TYPE_AUDIO) {
       FFmpegDemuxerStream* audio_demuxer_stream =
           static_cast<FFmpegDemuxerStream*>(
@@ -206,6 +210,7 @@ void FFmpegDemuxer::OnFindStreamInfoDone(PipelineStatusCB status_cb,
       audio_demuxer_stream->set_audio_decoder_config(audio_decoder_config);
       streams_.push_back(audio_demuxer_stream);
       max_duration = std::max(max_duration, audio_demuxer_stream->duration());
+      LOGGING(LOG_LEVEL_INFO) << "find audio stream info, stream index:" << i << ";";
     }
   }
 
@@ -331,7 +336,7 @@ int FFmpegDemuxer::ReadPacketCB(unsigned char* buffer, int buffer_size) {
  return data_source_->read(buffer, buffer_size);
 }
 
-long FFmpegDemuxer::SeekCB(long offset, int whence) {
+long long FFmpegDemuxer::SeekCB(long long offset, int whence) {
   if (whence == SEEK_SET) {
     if (offset < 0)
       return -1;
@@ -341,11 +346,14 @@ long FFmpegDemuxer::SeekCB(long offset, int whence) {
     data_source_->seek(data_source_->tell() +
                        static_cast<std::streamoff>(offset));
   } else if (whence == SEEK_END) {
-    data_source_->seek(1024);
+    data_source_->seek(data_source_->size());
+  } else if(whence == AVSEEK_SIZE) {
+    long long result_size = data_source_->size();
+    return result_size;
   } else {
     return 0;
   }
-  long result = data_source_->tell();
+  long long result = data_source_->tell();
   return result;
 }
 int FFmpegDemuxer::FFmpegReadPacketCB(void* opaque, unsigned char* buffer,
@@ -355,8 +363,7 @@ int FFmpegDemuxer::FFmpegReadPacketCB(void* opaque, unsigned char* buffer,
 }
 int64_t FFmpegDemuxer::FFmpegSeekCB(void* opaque, int64_t offset, int whence) {
   FFmpegDemuxer* ffmpeg_demuxer = static_cast<FFmpegDemuxer*>(opaque);
-  ffmpeg_demuxer->SeekCB(static_cast<long>(offset), whence);
-  return 0;
+  return ffmpeg_demuxer->SeekCB(offset, whence);
 }
 
 int64_t FFmpegDemuxer::EstimateStartTimeFromProbeAVPacketBuffer(

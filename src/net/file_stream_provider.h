@@ -33,17 +33,17 @@ public:
 	FileStreamProvider(const Url& url, FILE* fp);
   ~FileStreamProvider() override;
 	virtual size_t read(void* dst, size_t num);
-	virtual long tell() const;
-	virtual int seek(long p);
+	virtual long long tell() const;
+	virtual int seek(long long p);
 	virtual void go_to_end();
 	virtual bool eof() const;
 	virtual bool bad() const ;
-	virtual size_t size() const;
+	virtual long long size() const;
 private:
 	FILE* _fp;
 	int _pos;
 	bool _error;
-	long _size;
+	long long _size;
 
   DISALLOW_COPY_AND_ASSIGN(FileStreamProvider);
 };

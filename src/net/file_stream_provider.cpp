@@ -26,9 +26,9 @@ namespace net {
 
 FileStreamProvider::FileStreamProvider(const Url& url, FILE* fp)
     : IOChannel(url), _fp(fp), _pos(0), _error(false) {
-  fseek(_fp, 0, SEEK_END);
-  _size = ftell(_fp);
-  fseek(_fp, 0, SEEK_SET);
+  _fseeki64(_fp, 0, SEEK_END);
+  _size = _ftelli64(_fp);
+  _fseeki64(_fp, 0, SEEK_SET);
   printf("position = %ld\n", ftell(_fp));
 }
 
@@ -48,22 +48,22 @@ size_t FileStreamProvider::read(void* dst, size_t num) {
   }
   return -1;
 }
-long FileStreamProvider::tell() const {
+long long FileStreamProvider::tell() const {
   if (_fp) {
-    return ftell(_fp);
+    return _ftelli64(_fp);
   }
   return -1;
 }
-int FileStreamProvider::seek(long p) {
+int FileStreamProvider::seek(long long p) {
   int result = -1;
   if (_fp) {
-    result = fseek(_fp, p, SEEK_SET);
+    result = _fseeki64(_fp, p, SEEK_SET);
   }
   return result;
 }
 void FileStreamProvider::go_to_end() {
   if (_fp) {
-    fseek(_fp, 0, SEEK_END);
+    _fseeki64(_fp, 0, SEEK_END);
   }
 }
 bool FileStreamProvider::eof() const {
@@ -73,6 +73,6 @@ bool FileStreamProvider::eof() const {
   return true;
 }
 bool FileStreamProvider::bad() const { return _error; }
-size_t FileStreamProvider::size() const { return _size; }
+long long FileStreamProvider::size() const { return _size; }
 
 }  // namespace

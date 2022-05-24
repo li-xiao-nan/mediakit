@@ -37,7 +37,7 @@ private:
                                int buffer_size);
  static int64_t FFmpegSeekCB(void* opaque, int64_t offset, int whence);
  int FileRead(unsigned char* buffer, int buffer_size);
- long FileSeek(long offset, int whence);
+ long long FileSeek(long long offset, int whence);
 private:
   std::string source_url_;
   // key: stream index

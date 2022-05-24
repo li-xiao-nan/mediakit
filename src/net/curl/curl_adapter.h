@@ -23,16 +23,16 @@ public:
 	virtual size_t readNonBlocking(void* dst, size_t bytes);
 	virtual bool eof() const;
 	virtual bool bad() const;
-	virtual long tell() const ; // return the global position within the file
+	virtual long long tell() const ; // return the global position within the file
 	virtual void go_to_end();
-	virtual int seek(long pos);
+	virtual int seek(long long pos);
 	//return the size of the stream
 	// if size of the stream is unknown, 0 is returned .
 	//in that case you might try calling this function again after filling
 	//the cache a bit
 	//Another approach might be filling the cache ourselves
 	//aming at obtainning a useful value
-	virtual size_t size() const;
+	virtual long long size() const;
 private:
 	void init(const string& url, const string& cachefile);
 	//use this file to cache data

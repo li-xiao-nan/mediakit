@@ -309,12 +309,12 @@ bool CurlStreamFile::eof() const {
   return ret;
 }
 bool CurlStreamFile::bad() const { return _error; }
-long CurlStreamFile::tell() const {
+long long  CurlStreamFile::tell() const {
   long ret = std::ftell(_cache);
   return ret;
 }
 
-int CurlStreamFile::seek(long pos) {
+int CurlStreamFile::seek(long long pos) {
   int result = -1;
   if (pos < 0) {
     std::ostringstream os;
@@ -353,7 +353,7 @@ void CurlStreamFile::go_to_end() {
   }
 }
 
-size_t CurlStreamFile::size() const {
+long long CurlStreamFile::size() const {
   if (!_size) {
     double size;
     CURLcode ret =
