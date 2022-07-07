@@ -35,6 +35,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -99,10 +100,11 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;WIN32_LEAN_AND_MEAN;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>$(SolutionDir)src\base\jsoncpp\;$(SolutionDir)src\;$(SolutionDir)third_party\boost\include\;$(SolutionDir)third_party\curl\include\;$(SolutionDir)third_party\ffmpeg\include\;$(SolutionDir)third_party\freeglut\include\;$(SolutionDir)third_party\glew\include\;$(SolutionDir)third_party\log\;$(SolutionDir)third_party\sdl\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -110,7 +112,17 @@ copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(SolutionDir)third_party\curl\lib;$(SolutionDir)third_party\boost\lib\x86\$(Configuration);$(SolutionDir)third_party\ffmpeg\lib\win\;$(SolutionDir)third_party\freeglut\lib\win\;$(SolutionDir)third_party\sdl\x86\$(Configuration);$(SolutionDir)third_party\glew\lib\$(Configuration)\win32;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32.lib;dxguid.lib;SDL.lib;libcurl.lib;swresample.lib;avcodec.lib;avformat.lib;avutil.lib;swscale.lib;comctl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy $(SolutionDir)third_party\sdl\x86\$(ConfigurationName)\SDL.dll $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\curl\x86\$(ConfigurationName)\* $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\ffmpeg\x86\$(ConfigurationName)\*.dll $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\ffmpeg\x86\$(ConfigurationName)\*.pdb $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\freeglut\x86\$(ConfigurationName)\* $(SolutionDir)$(ConfigurationName)\
+copy $(SolutionDir)third_party\glew\x86\$(ConfigurationName)\*.dll $(SolutionDir)$(ConfigurationName)\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\base\base_type.h" />
