@@ -24,7 +24,8 @@ RendererImpl::RendererImpl(std::shared_ptr<AudioRenderer> audio_renderer,
     : state_(STATE_UNINITIALIZED),
       playback_clock_(new PlaybackClock()),
       audio_renderer_(audio_renderer),
-      video_renderer_(video_renderer) {
+      video_renderer_(video_renderer),
+      is_seeking_(false){
   // TODO(lixiaonan): 暂时不添加多个pipeline实例的ID管理模块，默认ID为0，后续需要添加，并修改此处代码
   playback_clock_map_.insert(std::pair<int, std::shared_ptr<TimeSource>>(0, playback_clock_));
   video_renderer_->SetDelegate(this);
@@ -71,8 +72,8 @@ void RendererImpl::Pause() {
 }
 
 void RendererImpl::Resume() {
-  playback_clock_->Resume();
   LOGGING(LOG_LEVEL_DEBUG) << "CurrentMediaTime:" << GetCurrentTime();
+  playback_clock_->Resume();
   audio_renderer_->Resume();
   video_renderer_->Resume();
   return;
@@ -89,9 +90,10 @@ void RendererImpl::UpdateAlignSeekTimestamp(int64_t timestamp) {
 }
 
 void RendererImpl::Seek(int64_t timestamp_ms) {
-  playback_clock_->Seek(timestamp_ms);
+  playback_clock_->Pause();
   audio_renderer_->ClearAVFrameBuffer();
   video_renderer_->ClearAVFrameBuffer();
+  is_seeking_ = true;
   return;
 }
 
@@ -148,6 +150,15 @@ void RendererImpl::OnPlayClockUpdate(int64_t timestamp) {
   }
 }
 
-void RendererImpl::OnGetFirstAudioFrame() { playback_clock_->StartTicking(); }
+void RendererImpl::OnGetFirstAudioFrame(int64_t pts) { 
+  if (is_seeking_) {
+    LOGGING(LOG_LEVEL_DEBUG) << "Seek-Timestamp(ms):" << pts << ";";
+    playback_clock_->Seek(pts);
+    playback_clock_->Resume();
+    is_seeking_ = false;
+  } else {
+    playback_clock_->StartTicking();
+  }
+}
 
 }  // namespace media

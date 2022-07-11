@@ -21,7 +21,7 @@ MessageLoop::MessageLoop(MKThreadId mk_thread_id):pending_task_count_(0) {
   } else if(mk_thread_id == TID_DECODE) {
     thread_main_func = boost::bind(&MessageLoop::DecodeThreadMain, this);
   } else if(mk_thread_id == TID_WORK) {
-    thread_main_func = boost::bind(&MessageLoop::DecodeThreadMain, this);
+    thread_main_func = boost::bind(&MessageLoop::WorkThreadMain, this);
   } else {
     BOOST_ASSERT_MSG(0, "unsupported thread id");
   }

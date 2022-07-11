@@ -225,7 +225,7 @@ void FFmpegDemuxer::SetDelegate(DemuxerDelegate* delegate) {
 void FFmpegDemuxer::SeekAction(int64_t timestamp_ms, PipelineStatusCB state_cb,
                                ActionCB action_cb) {
   LOGGING(LOG_LEVEL_DEBUG)<<"Enter";
-  ScopeTimeCount("SeekAction");
+  ScopeTimer("SeekAction");
   int ret = 
     av_seek_frame(av_format_context_, -1, timestamp_ms * 1000, AVSEEK_FLAG_BACKWARD);
   for(auto key : streams_) {

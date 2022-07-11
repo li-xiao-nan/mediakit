@@ -7,7 +7,7 @@
 namespace media {
 class AudioRendererDelegate {
  public:
-  virtual void OnGetFirstAudioFrame() = 0;
+  virtual void OnGetFirstAudioFrame(int64_t pts) = 0;
 };
 
 class AudioRenderer {

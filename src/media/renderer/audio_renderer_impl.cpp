@@ -72,6 +72,7 @@ void AudioRendererImpl::ClearAVFrameBuffer() {
   std::queue<std::shared_ptr<AudioFrame> > empty_02;
   std::swap(empty_02, pending_paint_frames_);
   audio_frame_stream_->ClearBuffer();
+  is_first_frame_ = true;
 }
 
 void AudioRendererImpl::ShowStateInfo() {
@@ -213,7 +214,8 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
     return;
   } else {
     if (is_first_frame_ && delegate_) {
-      delegate_->OnGetFirstAudioFrame();
+      int64_t first_frame_pts = ready_audio_frames_.front()->pts();
+      delegate_->OnGetFirstAudioFrame(first_frame_pts);
       is_first_frame_ = false;
     }
   }

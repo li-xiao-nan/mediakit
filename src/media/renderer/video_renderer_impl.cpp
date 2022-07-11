@@ -146,11 +146,13 @@ void VideoRendererImpl::ThreadMain() {
       }
       if (pending_paint_frames_.empty()) {
         ReadFrameIfNeeded();
+        int wait_time = 0;
         int64_t begin_wait_timestamp = get_time_cb_();
-        LOGGING(LOG_LEVEL_DEBUG) << "video decoded frame is empty, begin wait";
-        ScopeTimeCount ScopeTimeCount("Wait decode time:");
+        ScopeTimer ScopeTimer("Wait decode time:", &wait_time);
         frame_available_.wait(lock);
-        is_wait_happened_ = true;
+        if (wait_time > 5) {
+          is_wait_happened_ = true;
+        }
       }
 
       if(is_stoped_) break;
@@ -164,6 +166,7 @@ void VideoRendererImpl::ThreadMain() {
       if(is_wait_happened_) {
         LOGGING(LOG_LEVEL_INFO)<<"wait happened,AVFrame pts:"<< next_frame_timestamp
           <<"; current time:" << current_time;
+        is_wait_happened_ = false;
       }
       switch (operation) {
         case OPERATION_DROP_FRAME:
@@ -184,7 +187,6 @@ void VideoRendererImpl::ThreadMain() {
         default:
           break;
       }  // switch
-      is_wait_happened_ = false;
     }
     Sleep(kSleepInterval);
   }    // for(;;)

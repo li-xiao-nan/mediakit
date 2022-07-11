@@ -61,7 +61,7 @@ void AVPipeline::Resume() {
 
 void AVPipeline::Seek(int64_t timestamp_ms) {
   // pause play
-  Pause();
+  demuxer_->Pause();
   AsyncTask task =
       boost::bind(&AVPipeline::SeekAction, this, timestamp_ms);
   PostTask(TID_DECODE, task);

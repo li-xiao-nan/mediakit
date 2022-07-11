@@ -51,7 +51,7 @@ class RendererImpl : public Renderer, public VideoRendererDelegate,
   void OnPlayClockUpdate(int64_t timestamp) override;
 
   // AudioRendererDelegate impl
-  void OnGetFirstAudioFrame() override;
+  void OnGetFirstAudioFrame(int64_t pts) override;
 
  private:
   enum State {
@@ -81,6 +81,7 @@ class RendererImpl : public Renderer, public VideoRendererDelegate,
   PipelineStatusCB status_cb_;
   State state_;
   RendererDelegate* delegate_;
+  bool is_seeking_;
   std::shared_ptr<TimeSource> playback_clock_;
   DemuxerStreamProvider* demuxer_stream_provider_;
   std::shared_ptr<AudioRenderer> audio_renderer_;
