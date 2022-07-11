@@ -35,6 +35,7 @@ class AudioRendererImpl : public AudioRenderer,
   void ClearAVFrameBuffer() override;
   void ShowStateInfo() override;
   void Stop() override;
+  void SetDelegate(AudioRendererDelegate* delegate) override;
 
   //
   virtual void Render(uint8_t* data, int data_size);
@@ -75,6 +76,8 @@ class AudioRendererImpl : public AudioRenderer,
   GetTimeCB get_time_cb_;
   bool is_waiting_;
   int64_t begin_wait_timestamp_;
+  AudioRendererDelegate* delegate_;
+  bool is_first_frame_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioRendererImpl);
 };

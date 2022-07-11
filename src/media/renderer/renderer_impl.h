@@ -22,7 +22,8 @@
 namespace media {
 class TimeSource;
 
-class RendererImpl : public Renderer, public VideoRendererDelegate {
+class RendererImpl : public Renderer, public VideoRendererDelegate,
+  public AudioRendererDelegate  {
  public:
   static std::shared_ptr<TimeSource> GetPlaybackClock(int Id);
 
@@ -48,6 +49,9 @@ class RendererImpl : public Renderer, public VideoRendererDelegate {
 
   // VideoRendererDelegate impl
   void OnPlayClockUpdate(int64_t timestamp) override;
+
+  // AudioRendererDelegate impl
+  void OnGetFirstAudioFrame() override;
 
  private:
   enum State {

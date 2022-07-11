@@ -8,6 +8,7 @@
 
 #ifndef MEDIA_BASE_PIPELINE_STATUS_H_
 #define MEDIA_BASE_PIPELINE_STATUS_H_
+#include "boost/function.hpp"
 namespace media {
 
 enum PipelineStatus {

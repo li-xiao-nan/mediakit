@@ -54,7 +54,6 @@ void RendererImpl::StartPlayingFrom(int64_t time_offset) {
   playback_clock_->SetStartTime(time_offset);
   video_renderer_->StartPlayingFrom(time_offset);
   audio_renderer_->StartPlayingFrom(time_offset);
-  playback_clock_->StartTicking();
 }
 void RendererImpl::SetPlaybackRate(float rate) {
   video_renderer_->SetPlaybackRate(rate);
@@ -110,6 +109,7 @@ int64_t RendererImpl::GetPlaybackTime() {
   return current_timestamp;
 }
 void RendererImpl::InitializeAudioRenderer() {
+  audio_renderer_->SetDelegate(this);
   audio_renderer_->Initialize(
       demuxer_stream_provider_->GetDemuxerStream(DemuxerStream::AUDIO),
       boost::bind(&RendererImpl::OnInitializeAudioRendererDone, this, _1),
@@ -147,5 +147,7 @@ void RendererImpl::OnPlayClockUpdate(int64_t timestamp) {
     delegate_->OnPlayProgressUpdate(timestamp);
   }
 }
+
+void RendererImpl::OnGetFirstAudioFrame() { playback_clock_->StartTicking(); }
 
 }  // namespace media

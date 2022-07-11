@@ -12,7 +12,8 @@ AudioRendererImpl::AudioRendererImpl(
     : state_(STATE_UNINITIALIZED)
     , is_waiting_(false)
     , playback_rate_(1.0f)
-    , sonic_stream_(nullptr){
+    , sonic_stream_(nullptr)
+    , is_first_frame_(true){
   pending_read_ = false;
   audio_frame_stream_ = new AudioFrameStream(vec_audio_decoders);
   audio_renderer_sink_ = new SdlAudioRendererSink();
@@ -208,6 +209,14 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
   ReadFrameIfNeeded();
   boost::mutex::scoped_lock lock(frame_queue_mutex_);
   static int64_t pre_timestamp;
+  if (ready_audio_frames_.empty()) {
+    return;
+  } else {
+    if (is_first_frame_ && delegate_) {
+      delegate_->OnGetFirstAudioFrame();
+      is_first_frame_ = false;
+    }
+  }
   int64_t current_time = get_time_cb_();
   pre_timestamp = current_time;
   for (size_t i = 0; i < ready_audio_frames_.size(); i++) {
@@ -238,6 +247,10 @@ void AudioRendererImpl::InitAudioRenderSink(const AudioDecoderConfig& audio_deco
     audio_parameters.sample_format_ = audio_decoder_config.sample_format();
     audio_renderer_sink_->Initialize(this, init_cb,
         audio_parameters);
+}
+
+void AudioRendererImpl::SetDelegate(AudioRendererDelegate* delegate) {
+  delegate_ = delegate;
 }
 
 }  // namespace media
