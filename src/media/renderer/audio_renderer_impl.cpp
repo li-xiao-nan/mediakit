@@ -208,7 +208,7 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
   ReadFrameIfNeeded();
   boost::mutex::scoped_lock lock(frame_queue_mutex_);
   static int64_t pre_timestamp;
-  int64_t current_time = get_time_cb_()*2;
+  int64_t current_time = get_time_cb_();
   pre_timestamp = current_time;
   for (size_t i = 0; i < ready_audio_frames_.size(); i++) {
     std::shared_ptr<AudioFrame> next_audio_frame = ready_audio_frames_.front();
