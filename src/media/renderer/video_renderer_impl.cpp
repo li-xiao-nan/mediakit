@@ -195,7 +195,7 @@ void VideoRendererImpl::ThreadMain() {
 VideoRendererImpl::FrameOperation
 VideoRendererImpl::DetermineNextFrameOperation(int64_t current_time,
                                                int64_t next_frame_pts) {
-  if (next_frame_pts > current_time*playback_rate_)
+  if (next_frame_pts > current_time)
     return OPERATION_WAIT_FOR_PAINT;
 
   int64_t time_delta = current_time - next_frame_pts;

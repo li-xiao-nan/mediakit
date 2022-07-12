@@ -59,6 +59,7 @@ void RendererImpl::StartPlayingFrom(int64_t time_offset) {
 void RendererImpl::SetPlaybackRate(float rate) {
   video_renderer_->SetPlaybackRate(rate);
   audio_renderer_->SetPlaybackRate(rate);
+  playback_clock_->SetPlaybackRate(rate);
 }
 
 void RendererImpl::SetVolume(float volume) {

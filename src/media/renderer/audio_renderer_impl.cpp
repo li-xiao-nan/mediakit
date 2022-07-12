@@ -189,13 +189,12 @@ void AudioRendererImpl::SpeedUpAudio(std::shared_ptr<AudioFrame> audio_frame) {
 
   int read_count = 0;
   int current_read_count = 0;
-  //  do {
+  do {
   current_read_count = sonicReadShortFromStream(
       sonic_stream_, (short*)(audio_frame->SpeedData() + read_count),
       (audio_frame->SpeedDataSize() - read_count) / 4);
   read_count += current_read_count * 4;
-  //  } while(current_read_count >0 && read_count <
-  //  audio_frame->SpeedDataSize());
+   } while(current_read_count >0 && read_count < audio_frame->SpeedDataSize());
   audio_frame->SetSpeedDataSize(read_count);
   audio_frame->EnableSpeedData();
 }
@@ -227,10 +226,11 @@ void AudioRendererImpl::ReadReadyFrameLocked() {
     if (next_frame_pts > current_time)
       return;
     int64_t time_delta = current_time - next_frame_pts;
-    if (time_delta < kMaxTimeDelta) {
+    if (time_delta < kMaxTimeDelta * playback_rate_) {
       pending_paint_frames_.push(next_audio_frame);
     } else {
-      LOGGING(LOG_LEVEL_DEBUG) << "[Audio][DropFrame] pts:" << next_frame_pts;
+      LOGGING(LOG_LEVEL_DEBUG) << "[Audio][DropFrame] pts:" << next_frame_pts
+                               << "CTS:" << current_time;
     }
     ready_audio_frames_.pop();
   }

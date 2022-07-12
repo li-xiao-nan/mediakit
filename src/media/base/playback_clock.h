@@ -22,6 +22,7 @@ class PlaybackClock : public TimeSource {
   bool is_ticking_;
   float playback_rate_;
   int64_t current_media_time_;
+  int64_t media_play_time_;
   WallClockTimer wall_clock_timer_;
 };
 }  // namespace media
